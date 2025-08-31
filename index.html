@@ -10,28 +10,41 @@
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            background-color: #f0f2f5; /* Tom de cinza mais suave */
+            background-color: #f8f9fa;
         }
-        .sidebar-link.active {
-            background-color: #eef2ff;
-            color: #4f46e5;
-            font-weight: 600;
+        .nav-link {
+            position: relative;
+            transition: color 0.3s;
         }
-        .sidebar-link.active i {
-            color: #4f46e5;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0d6efd;
+            transition: width 0.3s;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #0d6efd;
+        }
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
         }
         /* Animações de Transição de Página */
         .content-section {
             display: none;
             opacity: 0;
-            transition: opacity 0.3s ease-in-out;
+            transition: opacity 0.4s ease-in-out;
         }
         .content-section.active {
             display: block;
             opacity: 1;
         }
         .tab-button.active {
-            background-color: #4f46e5;
+            background-color: #0d6efd;
             color: white;
         }
         .subject-card {
@@ -49,166 +62,161 @@
         .hero-container {
             position: relative;
             overflow: hidden;
-            background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
-        }
-         .hero-container::before, .hero-container::after {
-            content: '';
-            position: absolute;
-            background-color: rgba(79, 70, 229, 0.05);
-            border-radius: 50%;
-            z-index: 1;
-            animation: pulse 15s infinite ease-in-out;
+            background: radial-gradient(circle at 10% 20%, rgb(224, 239, 255) 0%, rgb(255, 255, 255) 90%);
         }
         .hero-container::before {
-            top: -10%; left: -10%; width: 250px; height: 250px;
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(13, 110, 253, 0.05);
+            border-radius: 50%;
+            z-index: 1;
         }
         .hero-container::after {
-            bottom: -15%; right: -15%; width: 400px; height: 400px; animation-delay: 3s;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.7; }
-            100% { transform: scale(1); opacity: 1; }
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(13, 110, 253, 0.05);
+            border-radius: 50%;
+            z-index: 1;
         }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-gray-800">
 
-    <div class="relative min-h-screen md:flex">
-        <!-- Mobile Header -->
-        <div class="md:hidden flex justify-between items-center bg-white p-4 shadow-md sticky top-0 z-40">
-            <a href="#" class="flex items-center space-x-2 text-2xl font-bold" onclick="navigateTo('inicio')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                <span class="text-indigo-600">Genius</span>
-            </a>
-            <button id="mobile-menu-button" class="text-slate-600 hover:text-indigo-600 focus:outline-none">
-                <i data-lucide="menu" class="h-6 w-6"></i>
-            </button>
-        </div>
-
-        <!-- Sidebar -->
-        <aside id="sidebar" class="bg-white text-slate-600 w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out z-50 shadow-lg md:shadow-none">
-            <a href="#" class="flex items-center space-x-2 text-2xl font-bold px-4" onclick="navigateTo('inicio')">
-                <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                <span class="text-indigo-600">Genius</span>
-            </a>
-
-            <nav class="flex flex-col space-y-2">
-                <a href="#" class="sidebar-link flex items-center space-x-3 py-3 px-4 rounded-lg transition duration-300 hover:bg-slate-100" data-target="inicio" onclick="navigateTo('inicio', this)">
-                    <i data-lucide="home" class="h-5 w-5 text-slate-400"></i>
-                    <span>Início</span>
+    <!-- Cabeçalho e Navegação -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="#" class="flex items-center space-x-2 text-2xl font-bold text-gray-800" onclick="navigateTo('inicio')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-blue-600"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <span class="text-blue-600">Genius</span>
                 </a>
-                <a href="#" class="sidebar-link flex items-center space-x-3 py-3 px-4 rounded-lg transition duration-300 hover:bg-slate-100" data-target="materias" onclick="navigateTo('materias', this)">
-                    <i data-lucide="library" class="h-5 w-5 text-slate-400"></i>
-                    <span>Matérias</span>
-                </a>
-                <a href="#" class="sidebar-link flex items-center space-x-3 py-3 px-4 rounded-lg transition duration-300 hover:bg-slate-100" data-target="questoes" onclick="navigateTo('questoes', this)">
-                    <i data-lucide="file-question" class="h-5 w-5 text-slate-400"></i>
-                    <span>Questões</span>
-                </a>
-                <a href="#" class="sidebar-link flex items-center space-x-3 py-3 px-4 rounded-lg transition duration-300 hover:bg-slate-100" data-target="sobre" onclick="navigateTo('sobre', this)">
-                    <i data-lucide="info" class="h-5 w-5 text-slate-400"></i>
-                    <span>Sobre</span>
-                </a>
-                <a href="#" class="sidebar-link flex items-center space-x-3 py-3 px-4 rounded-lg transition duration-300 hover:bg-slate-100" data-target="contato" onclick="navigateTo('contato', this)">
-                    <i data-lucide="mail" class="h-5 w-5 text-slate-400"></i>
-                    <span>Contato</span>
-                </a>
-            </nav>
-        </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 h-screen overflow-y-auto">
-            <div class="p-4 sm:p-6 lg:p-10">
-                <!-- Seção Início -->
-                <section id="inicio" class="content-section">
-                    <div class="hero-container rounded-lg p-8 md:p-12 min-h-[calc(100vh-5rem)] flex items-center justify-center">
-                        <div class="relative z-10 text-center max-w-3xl mx-auto">
-                            <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold text-indigo-600 mb-4">Bem-vindo ao Genius!</h1>
-                            <p class="text-lg md:text-xl text-slate-600 mb-8">Nossa missão é transformar sua jornada de estudos. Aqui, você não apenas decora, mas compreende profundamente cada conteúdo. Oferecemos ferramentas interativas e explicações em diferentes níveis para que você possa se preparar de forma eficiente e completa para os maiores vestibulares do país.</p>
-                            <div class="flex flex-col sm:flex-row justify-center gap-4">
-                                <button class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300" onclick="navigateTo('materias')">Explore as Matérias</button>
-                                <button class="bg-white text-slate-800 font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-slate-200 transition duration-300" onclick="navigateTo('questoes')">Pratique com Questões</button>
-                            </div>
-                        </div>
-                    </div>
-                </section>
+                <!-- Navegação Desktop -->
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="nav-link active" data-target="inicio" onclick="navigateTo('inicio', this)">Início</a>
+                    <a href="#" class="nav-link" data-target="materias" onclick="navigateTo('materias', this)">Matérias</a>
+                    <a href="#" class="nav-link" data-target="questoes" onclick="navigateTo('questoes', this)">Questões</a>
+                    <a href="#" class="nav-link" data-target="sobre" onclick="navigateTo('sobre', this)">Sobre</a>
+                    <a href="#" class="nav-link" data-target="contato" onclick="navigateTo('contato', this)">Contato</a>
+                </div>
 
-                <!-- Seção Matérias -->
-                <section id="materias" class="content-section">
-                    <div id="materias-home">
-                        <h2 class="text-4xl font-bold mb-8 text-center text-slate-700">Matérias</h2>
-                        <div id="materias-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-                            <!-- Cards de matérias -->
-                        </div>
-                    </div>
-                    <div id="materia-detalhe" class="hidden">
-                        <!-- Conteúdo da matéria -->
-                    </div>
-                </section>
-
-                <!-- Seção Questões -->
-                <section id="questoes" class="content-section">
-                    <div class="max-w-4xl mx-auto">
-                        <h2 class="text-4xl font-bold mb-8 text-center text-slate-700">Questões de Vestibular</h2>
-                        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                            <h3 class="text-xl font-semibold mb-4">Filtros</h3>
-                            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                <div>
-                                    <label for="filtro-disciplina" class="block text-sm font-medium text-gray-700">Disciplina</label>
-                                    <select id="filtro-disciplina" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                                </div>
-                                <div>
-                                    <label for="filtro-assunto" class="block text-sm font-medium text-gray-700">Assunto</label>
-                                    <select id="filtro-assunto" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
-                                </div>
-                                 <div>
-                                    <label for="generate-questions-btn" class="block text-sm font-medium text-gray-700 invisible">Ação</label>
-                                    <button id="generate-questions-btn" class="mt-1 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 disabled:bg-slate-400 disabled:cursor-not-allowed">Gerar Questões</button>
-                                </div>
-                            </div>
-                        </div>
-                        <div id="questoes-list" class="space-y-6">
-                             <!-- Mensagem ou questões -->
-                        </div>
-                    </div>
-                </section>
-
-                <!-- Seção Sobre -->
-                <section id="sobre" class="content-section">
-                    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                        <h2 class="text-4xl font-bold mb-4 text-center text-indigo-600">Nossa Missão</h2>
-                        <p class="text-slate-600 text-center leading-relaxed">
-                            Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O Genius nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
-                        </p>
-                    </div>
-                </section>
-
-                <!-- Seção Contato -->
-                <section id="contato" class="content-section">
-                    <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
-                        <h2 class="text-3xl font-bold mb-2 text-center">Fale Conosco</h2>
-                        <p class="text-center text-slate-500 mb-6">Tem alguma dúvida, sugestão ou feedback? Adoraríamos ouvir você!</p>
-                        <form onsubmit="event.preventDefault(); alert('Mensagem enviada! (simulação)');">
-                            <div class="mb-4">
-                                <label for="nome" class="block text-slate-700 font-medium mb-2">Nome</label>
-                                <input type="text" id="nome" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Seu nome completo" required>
-                            </div>
-                            <div class="mb-4">
-                                <label for="email" class="block text-slate-700 font-medium mb-2">Email</label>
-                                <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="seu.email@exemplo.com" required>
-                            </div>
-                            <div class="mb-6">
-                                <label for="mensagem" class="block text-slate-700 font-medium mb-2">Mensagem</label>
-                                <textarea id="mensagem" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Escreva sua mensagem aqui..." required></textarea>
-                            </div>
-                            <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Enviar Mensagem</button>
-                        </form>
-                    </div>
-                </section>
+                <!-- Botão Menu Mobile -->
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-blue-600 focus:outline-none">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
             </div>
-        </main>
-    </div>
+
+            <!-- Menu Mobile -->
+            <div id="mobile-menu" class="hidden md:hidden py-4">
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="navigateTo('inicio', this)">Início</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="navigateTo('materias', this)">Matérias</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="navigateTo('questoes', this)">Questões</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="navigateTo('sobre', this)">Sobre</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="navigateTo('contato', this)">Contato</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
+
+        <!-- Seção Início -->
+        <section id="inicio" class="content-section">
+            <div class="hero-container rounded-lg p-8 md:p-12 min-h-[60vh] flex items-center justify-center">
+                <div class="relative z-10 text-center max-w-3xl mx-auto">
+                    <h1 class="text-4xl md:text-5xl font-bold text-blue-600 mb-4">Bem-vindo ao Genius!</h1>
+                    <p class="text-lg md:text-xl text-gray-600 mb-8">Nossa missão é transformar sua jornada de estudos. Aqui, você não apenas decora, mas compreende profundamente cada conteúdo. Oferecemos ferramentas interativas e explicações em diferentes níveis para que você possa se preparar de forma eficiente e completa para os maiores vestibulares do país.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="bg-blue-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300" onclick="navigateTo('materias')">Explore as Matérias</button>
+                        <button class="bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-300 transition duration-300" onclick="navigateTo('questoes')">Pratique com Questões</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Matérias -->
+        <section id="materias" class="content-section">
+            <div id="materias-home">
+                <h2 class="text-3xl font-bold mb-6 text-center">Matérias</h2>
+                <div id="materias-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    <!-- Cards de matérias serão inseridos aqui pelo JS -->
+                </div>
+            </div>
+            <div id="materia-detalhe" class="hidden">
+                <!-- Conteúdo detalhado da matéria será inserido aqui -->
+            </div>
+        </section>
+
+        <!-- Seção Questões -->
+        <section id="questoes" class="content-section">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-3xl font-bold mb-6 text-center">Questões de Vestibular</h2>
+                <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+                    <h3 class="text-xl font-semibold mb-4">Filtros</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="filtro-disciplina" class="block text-sm font-medium text-gray-700">Disciplina</label>
+                            <select id="filtro-disciplina" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></select>
+                        </div>
+                        <div>
+                            <label for="filtro-assunto" class="block text-sm font-medium text-gray-700">Assunto</label>
+                            <select id="filtro-assunto" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></select>
+                        </div>
+                         <div>
+                            <label for="generate-questions-btn" class="block text-sm font-medium text-gray-700 invisible">Ação</label>
+                            <button id="generate-questions-btn" class="mt-1 w-full bg-blue-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-blue-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">Gerar Questões</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="questoes-list" class="space-y-6">
+                     <!-- Mensagem inicial ou questões geradas -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Seção Sobre -->
+        <section id="sobre" class="content-section">
+             <div class="max-w-3xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-bold mb-4 text-center text-blue-600">Nossa Missão</h2>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O Genius nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
+                </p>
+            </div>
+        </section>
+
+        <!-- Seção Contato -->
+        <section id="contato" class="content-section">
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-lg shadow-md">
+                <h2 class="text-3xl font-bold mb-2 text-center">Fale Conosco</h2>
+                <p class="text-center text-gray-500 mb-6">Tem alguma dúvida, sugestão ou feedback? Adoraríamos ouvir você!</p>
+                <form onsubmit="event.preventDefault(); alert('Mensagem enviada! (simulação)');">
+                    <div class="mb-4">
+                        <label for="nome" class="block text-gray-700 font-medium mb-2">Nome</label>
+                        <input type="text" id="nome" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Seu nome completo" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="seu.email@exemplo.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="mensagem" class="block text-gray-700 font-medium mb-2">Mensagem</label>
+                        <textarea id="mensagem" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Escreva sua mensagem aqui..." required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-blue-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300">Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
     
     <script>
         // --- CONFIGURAÇÃO DA API ---
@@ -518,30 +526,24 @@
         
         async function fetchQuestoesFromGemini(materiaNome, assuntoNome) {
             const prompt = `
-                Aja como um especialista em criação de questões de vestibular para o Brasil (estilo ENEM, Fuvest, Unicamp). 
-                Crie exatamente 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
-                
-                Para cada questão, forneça:
-                - "banca": Uma banca de vestibular brasileira aleatória (ex: "ENEM", "Fuvest", "Unicamp").
-                - "enunciado": O enunciado da questão, claro e conciso.
-                - "alternativas": Uma lista com exatamente 5 objetos, cada um com "texto" e "correta" (boolean). Apenas uma deve ser correta.
-                - "resolucao": Uma resolução comentada explicando o porquê da resposta correta.
+                Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP). Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
+                A precisão é crucial. Antes de gerar a resposta final, revise internamente cada questão para garantir que:
+                1.  O enunciado seja claro e inequívoco.
+                2.  Haja apenas UMA alternativa correta.
+                3.  As alternativas incorretas sejam plausíveis, mas comprovadamente erradas.
+                4.  A resolução explique detalhadamente o raciocínio para a resposta correta.
+                5.  A justificativa para cada erro seja precisa e didática.
 
-                Retorne a resposta APENAS como um array de objetos JSON, seguindo estritamente este formato, sem nenhum texto ou formatação adicional antes ou depois do array:
-                [
-                  {
-                    "banca": "...",
-                    "enunciado": "...",
-                    "alternativas": [
-                      { "texto": "...", "correta": false },
-                      { "texto": "...", "correta": true },
-                      { "texto": "...", "correta": false },
-                      { "texto": "...", "correta": false },
-                      { "texto": "...", "correta": false }
-                    ],
-                    "resolucao": "..."
-                  }
-                ]
+                Para cada uma das 10 questões, forneça um objeto JSON com a seguinte estrutura:
+                - "banca": Uma banca de vestibular brasileira aleatória.
+                - "enunciado": O enunciado da questão.
+                - "alternativas": Uma lista com exatamente 5 objetos. Cada objeto deve ter:
+                    - "texto": O texto da alternativa.
+                    - "correta": um booleano (true para a única correta, false para as outras).
+                    - "justificativa_erro": Uma string explicando por que a alternativa está errada. Se a alternativa for a correta, esta string deve ser vazia.
+                - "resolucao": Uma resolução comentada completa para a questão.
+
+                Retorne a resposta APENAS como um array de objetos JSON, sem nenhum texto ou formatação adicional.
             `;
 
             try {
@@ -561,7 +563,7 @@
 
 
         function setupNavigation() {
-            navigateTo('inicio', document.querySelector('.sidebar-link[data-target="inicio"]'));
+            navigateTo('inicio', document.querySelector('.nav-link[data-target="inicio"]'));
         }
         
         function navigateTo(targetId, clickedLink = null) {
@@ -584,42 +586,30 @@
             }, 300);
 
 
-            document.querySelectorAll('.sidebar-link').forEach(link => {
+            document.querySelectorAll('.nav-link').forEach(link => {
                 link.classList.remove('active');
             });
 
             if (clickedLink) {
                 clickedLink.classList.add('active');
             } else {
-                const linkToActivate = document.querySelector(`.sidebar-link[data-target="${targetId}"]`);
+                const linkToActivate = document.querySelector(`.nav-link[data-target="${targetId}"]`);
                 if (linkToActivate) linkToActivate.classList.add('active');
             }
             
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (!mobileMenu.classList.contains('hidden')) {
+                mobileMenu.classList.add('hidden');
+            }
+
             window.scrollTo(0, 0);
         }
 
         function setupMobileMenu() {
             const mobileMenuButton = document.getElementById('mobile-menu-button');
-            const sidebar = document.getElementById('sidebar');
-            
-            const backdrop = document.createElement('div');
-            backdrop.className = 'fixed inset-0 bg-black bg-opacity-50 z-40 md:hidden hidden';
-            document.body.appendChild(backdrop);
-
-            const toggleMenu = () => {
-                sidebar.classList.toggle('-translate-x-full');
-                backdrop.classList.toggle('hidden');
-            };
-
-            mobileMenuButton.addEventListener('click', toggleMenu);
-            backdrop.addEventListener('click', toggleMenu);
-            
-            document.querySelectorAll('#sidebar .sidebar-link').forEach(link => {
-                link.addEventListener('click', () => {
-                    if (window.innerWidth < 768) {
-                        toggleMenu();
-                    }
-                });
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
             });
         }
 
@@ -627,11 +617,9 @@
         function renderMateriasGrid() {
             const grid = document.getElementById('materias-grid');
             grid.innerHTML = db.materias.map(materia => `
-                <div class="subject-card bg-white p-6 rounded-lg shadow-md cursor-pointer flex flex-col items-center text-center" onclick="showMateriaDetalhe('${materia.id}')">
-                    <div class="h-16 w-16 rounded-full ${materia.cor} flex items-center justify-center mb-4">
-                        <i data-lucide="${materia.icone}" class="h-8 w-8"></i>
-                    </div>
-                    <h3 class="text-lg font-bold text-slate-700">${materia.nome}</h3>
+                <div class="subject-card ${materia.cor} p-6 rounded-lg shadow-md cursor-pointer flex flex-col items-center text-center" onclick="showMateriaDetalhe('${materia.id}')">
+                    <i data-lucide="${materia.icone}" class="h-12 w-12 mb-4"></i>
+                    <h3 class="text-xl font-bold">${materia.nome}</h3>
                 </div>
             `).join('');
             lucide.createIcons();
@@ -643,13 +631,13 @@
             
             detalheDiv.innerHTML = `
                 <div class="max-w-7xl mx-auto">
-                    <button onclick="showMateriasHome()" class="flex items-center gap-2 mb-6 text-indigo-600 hover:underline font-semibold">
+                    <button onclick="showMateriasHome()" class="flex items-center gap-2 mb-6 text-blue-600 hover:underline font-semibold">
                         <i data-lucide="arrow-left" class="h-4 w-4"></i>
                         Voltar para todas as matérias
                     </button>
                     <h2 class="text-4xl font-bold mb-2">${materia.nome}</h2>
                     <div class="flex flex-wrap gap-3 mb-8 border-b border-slate-200 pb-6">
-                        ${materia.assuntos.map(assunto => `<a href="#assunto-${assunto.id}" onclick="event.preventDefault(); document.getElementById('assunto-${assunto.id}').scrollIntoView({behavior: 'smooth', block: 'center'});" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-full text-sm font-medium hover:bg-indigo-600 hover:text-white transition duration-300">${assunto.nome}</a>`).join('')}
+                        ${materia.assuntos.map(assunto => `<a href="#assunto-${assunto.id}" onclick="event.preventDefault(); document.getElementById('assunto-${assunto.id}').scrollIntoView({behavior: 'smooth', block: 'center'});" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-600 hover:text-white transition duration-300">${assunto.nome}</a>`).join('')}
                     </div>
 
                     <div id="assuntos-container" class="space-y-8">
@@ -695,13 +683,13 @@
                 if (assunto.conteudo[tipo] && assunto.conteudo[tipo].length > 0) {
                     displayDiv.innerHTML = assunto.conteudo[tipo];
                 } else {
-                    displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div><p>Gerando explicação com IA...</p></div>`;
+                    displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Gerando explicação com IA...</p></div>`;
 
                     const promptMapping = {
                         resumo: `Gere um resumo objetivo sobre "${assunto.nome}" em português do Brasil, focado em estudantes de vestibular. Use listas com marcadores (bullet points) e destaque os pontos principais.`,
                         completo: `Gere uma explicação completa sobre "${assunto.nome}" em português do Brasil, no nível de exigência dos vestibulares brasileiros (como Enem e Fuvest). Inclua a teoria principal, fórmulas importantes (se aplicável) e exemplos práticos.`,
-                aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria.`
-            };
+                        aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria.`
+                    };
                     const promptText = promptMapping[tipo];
                     
                     const generatedContent = await generateContentWithGemini(promptText);
@@ -834,7 +822,7 @@
 
             questoesList.innerHTML = filteredQuestoes.map((q) => `
                 <div class="bg-white p-6 rounded-lg shadow-md">
-                    <p class="text-sm font-semibold text-indigo-600 mb-2">${q.banca}</p>
+                    <p class="text-sm font-semibold text-blue-600 mb-2">${q.banca}</p>
                     <p class="mb-4 text-slate-700">${q.enunciado}</p>
                     <div id="alternativas-${q.id}" class="space-y-3">
                         ${(q.alternativas || []).map((alt, altIndex) => `
@@ -843,7 +831,7 @@
                                     <i data-lucide="x-circle" class="w-4 h-4"></i>
                                 </button>
                                 <label class="flex items-start w-full cursor-pointer">
-                                    <input type="radio" name="questao-${q.id}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-indigo-600 border-gray-300 focus:ring-indigo-500 flex-shrink-0">
+                                    <input type="radio" name="questao-${q.id}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
                                     <div class="flex-grow">
                                         <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto}</span>
                                         <div id="incorrect-explanation-${q.id}-${altIndex}" class="hidden mt-2"></div>
@@ -852,7 +840,7 @@
                             </div>
                         `).join('')}
                     </div>
-                    <button class="mt-4 bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition" onclick="checkAnswer('${q.id}')">Confirmar Resposta</button>
+                    <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="checkAnswer('${q.id}')">Confirmar Resposta</button>
                     <div id="resultado-${q.id}" class="hidden mt-4 p-4 rounded-md"></div>
                 </div>
             `).join('');
@@ -893,29 +881,23 @@
             questao.alternativas.forEach((alt, index) => {
                 if (!alt.correta) {
                     const altContainer = document.getElementById(`incorrect-explanation-${questao.id}-${index}`);
-                    altContainer.innerHTML = `<button class="text-xs text-indigo-600 hover:underline font-semibold" onclick="explainIncorrectAlternative(this, '${questao.id}', ${index})">Por que está errada?</button>`;
+                    altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="explainIncorrectAlternative(this, '${questao.id}', ${index})">Por que está errada?</button>`;
                     altContainer.classList.remove('hidden');
                 }
             });
         }
 
-        async function explainIncorrectAlternative(button, questaoId, alternativeIndex) {
+        function explainIncorrectAlternative(button, questaoId, alternativeIndex) {
             button.disabled = true;
             const explanationDiv = document.getElementById(`incorrect-explanation-${questaoId}-${alternativeIndex}`);
-            explanationDiv.innerHTML = `<p class="text-xs text-slate-500">Analisando...</p>`;
-
+            
             const questao = db.questoes.find(q => q.id === questaoId);
             const alternativa = questao.alternativas[alternativeIndex];
 
-            const prompt = `Considerando a seguinte questão de vestibular: "${questao.enunciado}". A alternativa "${alternativa.texto}" está incorreta. Explique de forma clara e didática, em poucas palavras, qual é o erro específico nessa alternativa.`;
-
-            try {
-                const explanation = await generateContentWithGemini(prompt);
-                explanationDiv.innerHTML = `<p class="text-xs text-red-700 mt-1 p-2 bg-red-50 rounded-md border-l-2 border-red-500">${explanation}</p>`;
-            } catch(e) {
-                explanationDiv.innerHTML = `<p class="text-xs text-red-700">Não foi possível gerar a explicação.</p>`;
-                button.disabled = false;
-            }
+            // Usa a justificativa pré-gerada
+            const explanation = alternativa.justificativa_erro || "Não foi possível carregar a justificativa para este erro.";
+            
+            explanationDiv.innerHTML = `<p class="text-xs text-red-700 mt-1 p-2 bg-red-50 rounded-md border-l-2 border-red-500">${explanation}</p>`;
         }
     </script>
 
