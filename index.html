@@ -203,6 +203,14 @@
                 <p class="text-gray-600 text-center leading-relaxed text-lg">
                     Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O Genius nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
                 </p>
+
+                <div class="mt-8 border-t pt-6 text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Gerenciamento de Cache</h3>
+                    <p class="text-gray-600 mb-4">Para economizar seu limite de API, as respostas são salvas no seu navegador. Se quiser novas respostas, você pode limpar o cache.</p>
+                    <button onclick="clearCache()" class="bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 flex items-center justify-center gap-2 mx-auto">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i> Limpar Cache de Conteúdo
+                    </button>
+                </div>
             </div>
         </section>
 
@@ -233,6 +241,7 @@
     <script>
         // --- CONFIGURAÇÃO DA API ---
         const GEMINI_API_KEY = "AIzaSyDJKF3LyK4AjAgsWWA4bWXxdYxLOguykng";
+        const CACHE_PREFIX = 'genius-cache-';
 
         // --- BANCO DE DADOS ESTRUTURAL ---
         const db = {
@@ -338,9 +347,50 @@
             questoes: [] // Começa vazio, será preenchido pela API
         };
         
+        // --- LÓGICA DE CACHE ---
+        function getCache(key) {
+            try {
+                const item = localStorage.getItem(key);
+                return item ? JSON.parse(item) : null;
+            } catch (error) {
+                console.error("Erro ao ler do cache:", error);
+                return null;
+            }
+        }
+
+        function setCache(key, value) {
+            try {
+                localStorage.setItem(key, JSON.stringify(value));
+            } catch (error) {
+                console.error("Erro ao salvar no cache:", error);
+            }
+        }
+
+        function clearCache() {
+            try {
+                let keysToRemove = [];
+                for (let i = 0; i < localStorage.length; i++) {
+                    if (localStorage.key(i).startsWith(CACHE_PREFIX)) {
+                        keysToRemove.push(localStorage.key(i));
+                    }
+                }
+                keysToRemove.forEach(key => localStorage.removeItem(key));
+                alert('Cache limpo com sucesso! A página será recarregada.');
+                location.reload();
+            } catch (error) {
+                 alert('Erro ao limpar o cache.');
+                 console.error("Erro ao limpar cache:", error);
+            }
+        }
+        
         // --- LÓGICA DA APLICAÇÃO ---
         document.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
+            const cachedQuestoes = getCache(CACHE_PREFIX + 'questoes');
+            if (cachedQuestoes) {
+                db.questoes = cachedQuestoes;
+            }
+
             setupNavigation();
             setupMobileMenu();
             renderMateriasGrid();
@@ -405,6 +455,8 @@
         }
         
         async function fetchQuestoesFromGemini(materiaNome, assuntoNome) {
+            const cacheKey = `${CACHE_PREFIX}questoes-${materiaNome}-${assuntoNome}-${Date.now()}`; // Unique key to not reuse old questions
+            
             const prompt = `
                 Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
                 A precisão factual e gramatical é CRÍTICA. Antes de gerar a resposta final, você DEVE revisar internamente cada questão para garantir que:
@@ -431,7 +483,7 @@
                 const questoes = JSON.parse(jsonString);
                 
                 questoes.forEach((q, index) => {
-                    q.id = `${materiaNome}-${assuntoNome}-${Date.now()}-${index}`;
+                    q.id = `${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}-${Date.now()}-${index}`;
                 });
                 return questoes;
 
@@ -593,6 +645,9 @@
         }
 
         async function showConteudo(button, materiaId, assuntoId, tipo) {
+            const cacheKey = `${CACHE_PREFIX}content-${materiaId}-${assuntoId}-${tipo}`;
+            const cachedContent = getCache(cacheKey);
+
             const materia = db.materias.find(m => m.id === materiaId);
             const assunto = materia.assuntos.find(a => a.id === assuntoId);
             
@@ -605,8 +660,8 @@
             displayDiv.style.opacity = 0;
 
             setTimeout(async () => {
-                if (assunto.conteudo[tipo] && assunto.conteudo[tipo].length > 0) {
-                    displayDiv.innerHTML = assunto.conteudo[tipo];
+                if (cachedContent) {
+                    displayDiv.innerHTML = cachedContent;
                 } else {
                     displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Gerando explicação com IA...</p></div>`;
 
@@ -618,7 +673,7 @@
                     const promptText = promptMapping[tipo];
                     
                     const generatedContent = await generateContentWithGemini(promptText);
-                    assunto.conteudo[tipo] = generatedContent; 
+                    setCache(cacheKey, generatedContent);
                     displayDiv.innerHTML = generatedContent;
                 }
                 displayDiv.style.opacity = 1;
@@ -635,10 +690,17 @@
             }
             
             outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Buscando repertório...</p></div>`;
+            const cacheKey = `${CACHE_PREFIX}repertorio-${theme.replace(/\s/g, '_')}`;
+            const cachedData = getCache(cacheKey);
+            if(cachedData) {
+                outputDiv.innerHTML = cachedData;
+                return;
+            }
 
             const prompt = `Aja como um professor de cursinho especialista em redação para o ENEM. Para o tema "${theme}", gere um repertório sociocultural rico e variado. Organize a resposta em seções claras usando H3 para títulos (###): 'Contexto Histórico', 'Filosofia e Sociologia', 'Livros e Filmes', e 'Dados e Estatísticas'. Para cada item, forneça uma breve explicação de como ele pode ser usado na argumentação. Seja criativo e forneça referências que ajudem o aluno a se destacar.`;
             
             const result = await generateContentWithGemini(prompt);
+            setCache(cacheKey, result);
             outputDiv.innerHTML = result;
         }
 
@@ -651,10 +713,17 @@
             }
 
             outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div><p>Montando o esboço...</p></div>`;
+             const cacheKey = `${CACHE_PREFIX}esboco-${theme.replace(/\s/g, '_')}`;
+            const cachedData = getCache(cacheKey);
+            if(cachedData) {
+                outputDiv.innerHTML = cachedData;
+                return;
+            }
 
             const prompt = `Aja como um corretor de redação nota 1000 do ENEM. Para o tema "${theme}", crie um esboço de projeto de texto dissertativo-argumentativo. A estrutura deve ser: 1. Introdução (com tese clara). 2. Desenvolvimento 1 (tópico frasal e argumentos). 3. Desenvolvimento 2 (tópico frasal e argumentos). 4. Conclusão (com uma Proposta de Intervenção completa, detalhando Agente, Ação, Meio/Modo, Finalidade e Detalhamento). Use títulos H3 (###) para cada seção.`;
             
             const result = await generateContentWithGemini(prompt);
+            setCache(cacheKey, result);
             outputDiv.innerHTML = result;
         }
 
@@ -669,10 +738,17 @@
             }
 
             outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div><p>Analisando seu parágrafo...</p></div>`;
+            const cacheKey = `${CACHE_PREFIX}analise-${theme.replace(/\s/g, '_')}-${paragraph.substring(0, 30)}`;
+            const cachedData = getCache(cacheKey);
+            if(cachedData) {
+                outputDiv.innerHTML = cachedData;
+                return;
+            }
 
             const prompt = `Aja como um professor de redação atencioso e construtivo. O tema da redação é "${theme}". Analise o seguinte parágrafo escrito por um aluno: "${paragraph}". Forneça um feedback em tópicos, focando em: 1. Coesão e Coerência. 2. Força da Argumentação. 3. Correção Gramatical. 4. Uso do Repertório. IMPORTANTE: Não reescreva o parágrafo para o aluno. Apenas aponte os pontos fortes e as áreas que podem ser melhoradas, sugerindo o que o aluno deve pensar para aprimorar o texto.`;
             
             const result = await generateContentWithGemini(prompt);
+            setCache(cacheKey, result);
             outputDiv.innerHTML = result;
         }
 
@@ -763,6 +839,7 @@
                 });
                 
                 db.questoes.push(...newQuestoes);
+                setCache(CACHE_PREFIX + 'questoes', db.questoes); // Salva todas as questões no cache
                 renderQuestoes();
 
             } catch (error) {
