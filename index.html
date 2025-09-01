@@ -219,18 +219,19 @@
             <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
                 <h2 class="text-3xl font-bold mb-2 text-center">Fale Conosco</h2>
                 <p class="text-center text-gray-500 mb-6">Tem alguma dúvida, sugestão ou feedback? Adoraríamos ouvir você!</p>
-                <form onsubmit="event.preventDefault(); alert('Mensagem enviada! (simulação)');">
+                <!-- O formulário agora aponta para o Formspree. Substitua a URL pela sua. -->
+                <form action="https://formspree.io/f/mzzagllo" method="POST">
                     <div class="mb-4">
                         <label for="nome" class="block text-gray-700 font-medium mb-2">Nome</label>
-                        <input type="text" id="nome" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Seu nome completo" required>
+                        <input type="text" id="nome" name="nome" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Seu nome completo" required>
                     </div>
                     <div class="mb-4">
                         <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
-                        <input type="email" id="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="seu.email@exemplo.com" required>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="seu.email@exemplo.com" required>
                     </div>
                     <div class="mb-6">
                         <label for="mensagem" class="block text-gray-700 font-medium mb-2">Mensagem</label>
-                        <textarea id="mensagem" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Escreva sua mensagem aqui..." required></textarea>
+                        <textarea id="mensagem" name="mensagem" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Escreva sua mensagem aqui..." required></textarea>
                     </div>
                     <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Enviar Mensagem</button>
                 </form>
@@ -455,7 +456,11 @@
         }
         
         async function fetchQuestoesFromGemini(materiaNome, assuntoNome) {
-            const cacheKey = `${CACHE_PREFIX}questoes-${materiaNome}-${assuntoNome}-${Date.now()}`; // Unique key to not reuse old questions
+            const cacheKey = `${CACHE_PREFIX}questoes-${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}`;
+            const cachedQuestoes = getCache(cacheKey);
+            if (cachedQuestoes) {
+                return cachedQuestoes;
+            }
             
             const prompt = `
                 Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
@@ -485,6 +490,8 @@
                 questoes.forEach((q, index) => {
                     q.id = `${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}-${Date.now()}-${index}`;
                 });
+                
+                setCache(cacheKey, questoes);
                 return questoes;
 
             } catch(error) {
@@ -666,8 +673,8 @@
                     displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Gerando explicação com IA...</p></div>`;
 
                     const promptMapping = {
-                        resumo: `Gere um resumo objetivo sobre "${assunto.nome}" em português do Brasil, focado em estudantes de vestibular. Use listas com marcadores (bullet points) e destaque os pontos principais.`,
-                        completo: `Gere uma explicação completa sobre "${assunto.nome}" em português do Brasil, no nível de exigência dos vestibulares brasileiros (como Enem e Fuvest). Inclua a teoria principal, fórmulas importantes (se aplicável) e exemplos práticos.`,
+                        resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${assunto.nome}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais.`,
+                        completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${assunto.nome}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (se aplicável):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede.`,
                         aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria.`
                     };
                     const promptText = promptMapping[tipo];
