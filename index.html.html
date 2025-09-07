@@ -64,18 +64,6 @@
             transform: translateY(-8px);
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        .progress-bar {
-            background-color: var(--border-color);
-            border-radius: 9999px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background-color: var(--primary-color);
-            border-radius: 9999px;
-            transition: width 0.5s ease-in-out;
-        }
-        /* Design Temático da Home Revertido */
         .hero-container {
             position: relative;
             overflow: hidden;
@@ -102,6 +90,17 @@
             background-color: rgba(67, 56, 202, 0.05);
             border-radius: 50%;
             z-index: 1;
+        }
+        /* Loading Skeleton */
+        .skeleton {
+            background-color: #e2e8f0;
+            border-radius: 0.25rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse {
+            50% {
+                opacity: .5;
+            }
         }
     </style>
 </head>
@@ -456,12 +455,6 @@
         }
         
         async function fetchQuestoesFromGemini(materiaNome, assuntoNome) {
-            const cacheKey = `${CACHE_PREFIX}questoes-${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}`;
-            const cachedQuestoes = getCache(cacheKey);
-            if (cachedQuestoes) {
-                return cachedQuestoes;
-            }
-            
             const prompt = `
                 Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
                 A precisão factual e gramatical é CRÍTICA. Antes de gerar a resposta final, você DEVE revisar internamente cada questão para garantir que:
@@ -491,7 +484,6 @@
                     q.id = `${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}-${Date.now()}-${index}`;
                 });
                 
-                setCache(cacheKey, questoes);
                 return questoes;
 
             } catch(error) {
@@ -669,28 +661,27 @@
             
             container.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
             button.classList.add('active');
+            
+            displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Carregando...</p></div>`;
+            displayDiv.style.opacity = 1;
 
-            displayDiv.style.opacity = 0;
-
-            setTimeout(async () => {
-                if (cachedContent) {
+            if (cachedContent) {
+                setTimeout(() => { // Pequeno delay para a percepção do loading
                     displayDiv.innerHTML = cachedContent;
-                } else {
-                    displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Gerando explicação com IA...</p></div>`;
-
-                    const promptMapping = {
-                        resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${assunto.nome}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                        completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${assunto.nome}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (se aplicável):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                        aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
-                    };
-                    const promptText = promptMapping[tipo];
-                    
-                    const generatedContent = await generateContentWithGemini(promptText);
-                    setCache(cacheKey, generatedContent);
-                    displayDiv.innerHTML = generatedContent;
-                }
-                displayDiv.style.opacity = 1;
-            }, 200);
+                }, 200);
+                return;
+            }
+            
+            const promptMapping = {
+                resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${assunto.nome}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${assunto.nome}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (se aplicável):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
+            };
+            const promptText = promptMapping[tipo];
+            
+            const generatedContent = await generateContentWithGemini(promptText);
+            setCache(cacheKey, generatedContent);
+            displayDiv.innerHTML = generatedContent;
         }
 
         // --- LÓGICA PARA REDAÇÃO ---
@@ -757,6 +748,8 @@
             if (!theme) {
                 outputDiv.innerHTML = `<p class="text-red-600">Por favor, insira um tema para a redação.</p>`;
                 return;
+
+                
             }
 
             outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div><p>Montando o esboço...</p></div>`;
@@ -1007,4 +1000,3 @@
 
 </body>
 </html>
-
