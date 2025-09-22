@@ -1,547 +1,547 @@
-!DOCTYPE html
-html lang=pt-BR class=scroll-smooth
-head
-    meta charset=UTF-8
-    meta name=viewport content=width=device-width, initial-scale=1.0
-    titleGenius - Plataforma de Estudostitle
-    script src=httpscdn.tailwindcss.comscript
-    link href=httpsfonts.googleapis.comcss2family=Poppinswght@300;400;500;600;700&display=swap rel=stylesheet
-    script src=httpsunpkg.comlucide@latestscript
-    style
-        root {
-            --background #f8f9fa;
-            --card-bg #ffffff;
-            --text-primary #1f2937;
-            --text-secondary #6b7280;
-            --primary-color #4338ca;
-            --primary-hover #3730a3;
-            --border-color #e5e7eb;
+<!DOCTYPE html>
+<html lang="pt-BR" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Genius - Plataforma de Estudos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --background: #f8f9fa;
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --primary-color: #4338ca;
+            --primary-hover: #3730a3;
+            --border-color: #e5e7eb;
         }
         body {
-            font-family 'Poppins', sans-serif;
-            background-color var(--background);
-            color var(--text-primary);
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--background);
+            color: var(--text-primary);
         }
         .nav-link {
-            position relative;
-            transition color 0.3s;
+            position: relative;
+            transition: color 0.3s;
         }
-        .nav-linkafter {
-            content '';
-            position absolute;
-            width 0;
-            height 2px;
-            bottom -4px;
-            left 50%;
-            transform translateX(-50%);
-            background-color var(--primary-color);
-            transition width 0.3s;
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--primary-color);
+            transition: width 0.3s;
         }
-        .nav-link.active, .nav-linkhover {
-            color var(--primary-color);
+        .nav-link.active, .nav-link:hover {
+            color: var(--primary-color);
         }
-        .nav-link.activeafter, .nav-linkhoverafter {
-            width 100%;
+        .nav-link.active::after, .nav-link:hover::after {
+            width: 100%;
         }
         .content-section {
-            display none;
-            opacity 0;
-            transition opacity 0.4s ease-in-out;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.4s ease-in-out;
         }
         .content-section.active {
-            display block;
-            opacity 1;
+            display: block;
+            opacity: 1;
         }
         .tab-button.active {
-            background-color var(--primary-color);
-            color white;
+            background-color: var(--primary-color);
+            color: white;
         }
         .subject-card {
-            transition transform 0.3s ease, box-shadow 0.3s ease;
-            will-change transform;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            will-change: transform;
         }
-        .subject-cardhover {
-            transform translateY(-8px);
-            box-shadow 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        .subject-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-         Design Temático da Home Revertido 
+        /* Design Temático da Home Revertido */
         .hero-container {
-            position relative;
-            overflow hidden;
-            background radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
+            position: relative;
+            overflow: hidden;
+            background: radial-gradient(circle at 10% 20%, rgb(239, 246, 255) 0%, rgb(255, 255, 255) 90%);
         }
-        .hero-containerbefore {
-            content '';
-            position absolute;
-            top -50px;
-            left -50px;
-            width 200px;
-            height 200px;
-            background-color rgba(67, 56, 202, 0.05);
-            border-radius 50%;
-            z-index 1;
+        .hero-container::before {
+            content: '';
+            position: absolute;
+            top: -50px;
+            left: -50px;
+            width: 200px;
+            height: 200px;
+            background-color: rgba(67, 56, 202, 0.05);
+            border-radius: 50%;
+            z-index: 1;
         }
-        .hero-containerafter {
-            content '';
-            position absolute;
-            bottom -80px;
-            right -80px;
-            width 300px;
-            height 300px;
-            background-color rgba(67, 56, 202, 0.05);
-            border-radius 50%;
-            z-index 1;
+        .hero-container::after {
+            content: '';
+            position: absolute;
+            bottom: -80px;
+            right: -80px;
+            width: 300px;
+            height: 300px;
+            background-color: rgba(67, 56, 202, 0.05);
+            border-radius: 50%;
+            z-index: 1;
         }
-         Loading Skeleton 
+        /* Loading Skeleton */
         @keyframes pulse {
-            50% { opacity .5; }
+            50% { opacity: .5; }
         }
         .skeleton {
-            background-color #e2e8f0;
-            border-radius 0.5rem;
-            animation pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            background-color: #e2e8f0;
+            border-radius: 0.5rem;
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
         }
-    style
-head
-body class=text-gray-800
+    </style>
+</head>
+<body class="text-gray-800">
 
-    !-- Cabeçalho e Navegação --
-    header class=bg-white shadow-md sticky top-0 z-50
-        nav class=container mx-auto px-4 smpx-6 lgpx-8
-            div class=flex items-center justify-between h-16
-                a href=# class=flex items-center space-x-2 text-2xl font-bold text-gray-800 onclick=window.app.navigateTo('inicio')
-                    svg xmlns=httpwww.w3.org2000svg width=24 height=24 viewBox=0 0 24 fill=none stroke=currentColor stroke-width=2 stroke-linecap=round stroke-linejoin=round class=text-indigo-600path d=M12 2L2 7l10 5 10-5-10-5zpath d=M2 17l10 5 10-5path d=M2 12l10 5 10-5svg
-                    span class=text-indigo-600Geniusspan
-                a
-                div class=hidden mdflex space-x-8
-                    a href=# class=nav-link active data-target=inicio onclick=window.app.navigateTo('inicio', this)Inícioa
-                    a href=# class=nav-link data-target=materias onclick=window.app.navigateTo('materias', this)Matériasa
-                    a href=# class=nav-link data-target=questoes onclick=window.app.navigateTo('questoes', this)Questõesa
-                    a href=# class=nav-link data-target=sobre onclick=window.app.navigateTo('sobre', this)Sobrea
-                    a href=# class=nav-link data-target=contato onclick=window.app.navigateTo('contato', this)Contatoa
-                div
-                div class=mdhidden
-                    button id=mobile-menu-button class=text-gray-600 hovertext-indigo-600 focusoutline-none
-                        i data-lucide=menu class=h-6 w-6i
-                    button
-                div
-            div
-            div id=mobile-menu class=hidden mdhidden py-4
-                a href=# class=block py-2 px-4 text-sm hoverbg-gray-100 rounded onclick=window.app.navigateTo('inicio', this)Inícioa
-                a href=# class=block py-2 px-4 text-sm hoverbg-gray-100 rounded onclick=window.app.navigateTo('materias', this)Matériasa
-                a href=# class=block py-2 px-4 text-sm hoverbg-gray-100 rounded onclick=window.app.navigateTo('questoes', this)Questõesa
-                a href=# class=block py-2 px-4 text-sm hoverbg-gray-100 rounded onclick=window.app.navigateTo('sobre', this)Sobrea
-                a href=# class=block py-2 px-4 text-sm hoverbg-gray-100 rounded onclick=window.app.navigateTo('contato', this)Contatoa
-            div
-        nav
-    header
+    <!-- Cabeçalho e Navegação -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <a href="#" class="flex items-center space-x-2 text-2xl font-bold text-gray-800" onclick="window.app.navigateTo('inicio')">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                    <span class="text-indigo-600">Genius</span>
+                </a>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#" class="nav-link active" data-target="inicio" onclick="window.app.navigateTo('inicio', this)">Início</a>
+                    <a href="#" class="nav-link" data-target="materias" onclick="window.app.navigateTo('materias', this)">Matérias</a>
+                    <a href="#" class="nav-link" data-target="questoes" onclick="window.app.navigateTo('questoes', this)">Questões</a>
+                    <a href="#" class="nav-link" data-target="sobre" onclick="window.app.navigateTo('sobre', this)">Sobre</a>
+                    <a href="#" class="nav-link" data-target="contato" onclick="window.app.navigateTo('contato', this)">Contato</a>
+                </div>
+                <div class="md:hidden">
+                    <button id="mobile-menu-button" class="text-gray-600 hover:text-indigo-600 focus:outline-none">
+                        <i data-lucide="menu" class="h-6 w-6"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="mobile-menu" class="hidden md:hidden py-4">
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="window.app.navigateTo('inicio', this)">Início</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="window.app.navigateTo('materias', this)">Matérias</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="window.app.navigateTo('questoes', this)">Questões</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="window.app.navigateTo('sobre', this)">Sobre</a>
+                <a href="#" class="block py-2 px-4 text-sm hover:bg-gray-100 rounded" onclick="window.app.navigateTo('contato', this)">Contato</a>
+            </div>
+        </nav>
+    </header>
 
-    !-- Conteúdo Principal --
-    main class=container mx-auto px-4 smpx-6 lgpx-8 py-8 mdpy-12
+    <!-- Conteúdo Principal -->
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
 
-        !-- Seção Início --
-        section id=inicio class=content-section
-            div class=hero-container rounded-xl p-8 mdp-12 min-h-[calc(100vh-8rem)] flex items-center justify-center
-                div class=relative z-10 text-center max-w-3xl mx-auto
-                    h1 class=text-4xl mdtext-5xl font-bold text-indigo-600 mb-4Bem-vindo ao Genius!h1
-                    p class=text-lg mdtext-xl text-gray-600 mb-8Nossa missão é transformar sua jornada de estudos. Aqui, você não apenas decora, mas compreende profundamente cada conteúdo. Oferecemos ferramentas interativas e explicações em diferentes níveis para que você possa se preparar de forma eficiente e completa para os maiores vestibulares do país.p
-                    div class=flex flex-col smflex-row justify-center gap-4
-                        button class=bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hoverbg-indigo-700 transition duration-300 onclick=window.app.navigateTo('materias')Explore as Matériasbutton
-                        button class=bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg shadow-lg hoverbg-gray-300 transition duration-300 onclick=window.app.navigateTo('questoes')Pratique com Questõesbutton
-                    div
-                div
-            div
-        section
+        <!-- Seção Início -->
+        <section id="inicio" class="content-section">
+            <div class="hero-container rounded-xl p-8 md:p-12 min-h-[calc(100vh-8rem)] flex items-center justify-center">
+                <div class="relative z-10 text-center max-w-3xl mx-auto">
+                    <h1 class="text-4xl md:text-5xl font-bold text-indigo-600 mb-4">Bem-vindo ao Genius!</h1>
+                    <p class="text-lg md:text-xl text-gray-600 mb-8">Nossa missão é transformar sua jornada de estudos. Aqui, você não apenas decora, mas compreende profundamente cada conteúdo. Oferecemos ferramentas interativas e explicações em diferentes níveis para que você possa se preparar de forma eficiente e completa para os maiores vestibulares do país.</p>
+                    <div class="flex flex-col sm:flex-row justify-center gap-4">
+                        <button class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300" onclick="window.app.navigateTo('materias')">Explore as Matérias</button>
+                        <button class="bg-gray-200 text-gray-800 font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-gray-300 transition duration-300" onclick="window.app.navigateTo('questoes')">Pratique com Questões</button>
+                    </div>
+                </div>
+            </div>
+        </section>
 
 
-        !-- Seção Matérias --
-        section id=materias class=content-section
-            div id=materias-home
-                h2 class=text-4xl font-bold mb-8 text-center text-gray-800Matériash2
-                div id=materias-grid class=grid grid-cols-2 smgrid-cols-3 mdgrid-cols-3 lggrid-cols-4 xlgrid-cols-5 gap-8
-                    !-- Cards de matérias serão inseridos aqui pelo JS --
-                div
-            div
-            div id=materia-detalhe class=hidden
-                !-- Conteúdo detalhado da matéria será inserido aqui --
-            div
-        section
+        <!-- Seção Matérias -->
+        <section id="materias" class="content-section">
+            <div id="materias-home">
+                <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">Matérias</h2>
+                <div id="materias-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-8">
+                    <!-- Cards de matérias serão inseridos aqui pelo JS -->
+                </div>
+            </div>
+            <div id="materia-detalhe" class="hidden">
+                <!-- Conteúdo detalhado da matéria será inserido aqui -->
+            </div>
+        </section>
 
-        !-- Seção Questões --
-        section id=questoes class=content-section
-            div class=max-w-4xl mx-auto
-                h2 class=text-4xl font-bold mb-8 text-center text-gray-800Questões de Vestibularh2
-                div class=bg-white p-6 rounded-xl shadow-lg mb-8
-                    h3 class=text-xl font-bold text-gray-800 mb-4Filtrosh3
-                    div class=grid grid-cols-1 mdgrid-cols-3 gap-4
-                        div
-                            label for=filtro-disciplina class=block text-sm font-medium text-gray-700Disciplinalabel
-                            select id=filtro-disciplina class=mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focusoutline-none focusring-indigo-500 focusborder-indigo-500 smtext-smselect
-                        div
-                        div
-                            label for=filtro-assunto class=block text-sm font-medium text-gray-700Assuntolabel
-                            select id=filtro-assunto class=mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focusoutline-none focusring-indigo-500 focusborder-indigo-500 smtext-smselect
-                        div
-                         div
-                            label for=generate-questions-btn class=block text-sm font-medium text-gray-700 invisibleAçãolabel
-                            button id=generate-questions-btn class=mt-1 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hoverbg-indigo-700 transition duration-300 disabledbg-gray-400 disabledcursor-not-allowedGerar Questõesbutton
-                        div
-                    div
-                div
-                div id=questoes-list class=space-y-6
-                     !-- Mensagem inicial ou questões geradas --
-                div
-            div
-        section
+        <!-- Seção Questões -->
+        <section id="questoes" class="content-section">
+            <div class="max-w-4xl mx-auto">
+                <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">Questões de Vestibular</h2>
+                <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Filtros</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label for="filtro-disciplina" class="block text-sm font-medium text-gray-700">Disciplina</label>
+                            <select id="filtro-disciplina" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                        </div>
+                        <div>
+                            <label for="filtro-assunto" class="block text-sm font-medium text-gray-700">Assunto</label>
+                            <select id="filtro-assunto" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                        </div>
+                         <div>
+                            <label for="generate-questions-btn" class="block text-sm font-medium text-gray-700 invisible">Ação</label>
+                            <button id="generate-questions-btn" class="mt-1 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">Gerar Questões</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="questoes-list" class="space-y-6">
+                     <!-- Mensagem inicial ou questões geradas -->
+                </div>
+            </div>
+        </section>
 
-        !-- Seção Sobre --
-        section id=sobre class=content-section
-             div class=max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg
-                h2 class=text-4xl font-bold mb-4 text-center text-indigo-600Nossa Missãoh2
-                p class=text-gray-600 text-center leading-relaxed text-lg
+        <!-- Seção Sobre -->
+        <section id="sobre" class="content-section">
+             <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-4xl font-bold mb-4 text-center text-indigo-600">Nossa Missão</h2>
+                <p class="text-gray-600 text-center leading-relaxed text-lg">
                     Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O Genius nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
-                p
+                </p>
 
-                div class=mt-8 border-t pt-6 text-center
-                    h3 class=text-xl font-bold text-gray-800 mb-4Gerenciamento de Cacheh3
-                    p class=text-gray-600 mb-4Para economizar seu limite de API, as respostas são salvas no seu navegador. Se quiser novas respostas, você pode limpar o cache.p
-                    button onclick=window.app.clearCache() class=bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hoverbg-red-700 transition duration-300 flex items-center justify-center gap-2 mx-auto
-                        i data-lucide=trash-2 class=h-4 w-4i Limpar Cache de Conteúdo
-                    button
-                div
-            div
-        section
+                <div class="mt-8 border-t pt-6 text-center">
+                    <h3 class="text-xl font-bold text-gray-800 mb-4">Gerenciamento de Cache</h3>
+                    <p class="text-gray-600 mb-4">Para economizar seu limite de API, as respostas são salvas no seu navegador. Se quiser novas respostas, você pode limpar o cache.</p>
+                    <button onclick="window.app.clearCache()" class="bg-red-600 text-white font-semibold py-2 px-6 rounded-lg shadow-lg hover:bg-red-700 transition duration-300 flex items-center justify-center gap-2 mx-auto">
+                        <i data-lucide="trash-2" class="h-4 w-4"></i> Limpar Cache de Conteúdo
+                    </button>
+                </div>
+            </div>
+        </section>
 
-        !-- Seção Contato --
-        section id=contato class=content-section
-            div class=max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg
-                h2 class=text-3xl font-bold mb-2 text-centerFale Conoscoh2
-                p class=text-center text-gray-500 mb-6Tem alguma dúvida, sugestão ou feedback Adoraríamos ouvir você!p
-                !-- O formulário agora aponta para o Formspree. Substitua a URL pela sua. --
-                form action=httpsformspree.iofSUA_URL_UNICA_AQUI method=POST
-                    div class=mb-4
-                        label for=nome class=block text-gray-700 font-medium mb-2Nomelabel
-                        input type=text id=nome name=nome class=w-full px-4 py-2 border border-gray-300 rounded-lg focusoutline-none focusring-2 focusring-indigo-500 placeholder=Seu nome completo required
-                    div
-                    div class=mb-4
-                        label for=email class=block text-gray-700 font-medium mb-2Emaillabel
-                        input type=email id=email name=email class=w-full px-4 py-2 border border-gray-300 rounded-lg focusoutline-none focusring-2 focusring-indigo-500 placeholder=seu.email@exemplo.com required
-                    div
-                    div class=mb-6
-                        label for=mensagem class=block text-gray-700 font-medium mb-2Mensagemlabel
-                        textarea id=mensagem name=mensagem rows=5 class=w-full px-4 py-2 border border-gray-300 rounded-lg focusoutline-none focusring-2 focusring-indigo-500 placeholder=Escreva sua mensagem aqui... requiredtextarea
-                    div
-                    button type=submit class=w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hoverbg-indigo-700 transition duration-300Enviar Mensagembutton
-                form
-            div
-        section
-    main
+        <!-- Seção Contato -->
+        <section id="contato" class="content-section">
+            <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+                <h2 class="text-3xl font-bold mb-2 text-center">Fale Conosco</h2>
+                <p class="text-center text-gray-500 mb-6">Tem alguma dúvida, sugestão ou feedback? Adoraríamos ouvir você!</p>
+                <!-- O formulário agora aponta para o Formspree. Substitua a URL pela sua. -->
+                <form action="https://formspree.io/f/SUA_URL_UNICA_AQUI" method="POST">
+                    <div class="mb-4">
+                        <label for="nome" class="block text-gray-700 font-medium mb-2">Nome</label>
+                        <input type="text" id="nome" name="nome" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Seu nome completo" required>
+                    </div>
+                    <div class="mb-4">
+                        <label for="email" class="block text-gray-700 font-medium mb-2">Email</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="seu.email@exemplo.com" required>
+                    </div>
+                    <div class="mb-6">
+                        <label for="mensagem" class="block text-gray-700 font-medium mb-2">Mensagem</label>
+                        <textarea id="mensagem" name="mensagem" rows="5" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Escreva sua mensagem aqui..." required></textarea>
+                    </div>
+                    <button type="submit" class="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-lg hover:bg-indigo-700 transition duration-300">Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
     
-    script type=module
-        import { initializeApp } from httpswww.gstatic.comfirebasejs11.6.1firebase-app.js;
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from httpswww.gstatic.comfirebasejs11.6.1firebase-firestore.js;
-        import { getAuth, signInAnonymously } from httpswww.gstatic.comfirebasejs11.6.1firebase-auth.js;
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         
         const app = {
-             --- CONFIGURAÇÃO ---
-            GEMINI_API_KEY AIzaSyDJKF3LyK4AjAgsWWA4bWXxdYxLOguykng,
-            PEXELS_API_KEY YppLItQT82ImRBs5QFnoG8gPzQgTgdqjiShqFhCc3mOKYlYfluPPn2WK,
-            CACHE_PREFIX 'genius-cache-',
-            firestoreDb null,
-            db {
-                materias [
+            // --- CONFIGURAÇÃO ---
+            GEMINI_API_KEY: "AIzaSyBrSjz9TsaZ4dCE8vRrVtjXmaJ807SAX30",
+            PEXELS_API_KEY: "YppLItQT82ImRBs5QFnoG8gPzQgTgdqjiShqFhCc3mOKYlYfluPPn2WK",
+            CACHE_PREFIX: 'genius-cache-',
+            firestoreDb: null,
+            db: {
+                materias: [
                     {
-                        id 'matematica',
-                        nome 'Matemática',
-                        icone 'pi',
-                        cor 'bg-red-100 text-red-800',
-                        frentes [
+                        id: 'matematica',
+                        nome: 'Matemática',
+                        icone: 'pi',
+                        cor: 'bg-red-100 text-red-800',
+                        frentes: [
                             { 
-                                nome 'Frente A Matemática Básica e Álgebra',
-                                modulos [
-                                    { nome 'Módulo 1 Fundamentos', assuntos [{id 'operacoes-numericas', nome 'Operações numéricas'},{id 'razoes-proporcoes', nome 'Razões, proporções e escalas'},{id 'regra-de-tres', nome 'Regra de três'},{id 'porcentagem', nome 'Porcentagem'}]},
-                                    { nome 'Módulo 2 Funções', assuntos [{id 'funcao-afim', nome 'Função afim (1º grau)'},{id 'funcao-quadratica', nome 'Função quadrática (2º grau)'},{id 'funcao-modular', nome 'Função modular'},{id 'funcao-composta-inversa', nome 'Função composta e inversa'}]},
-                                    { nome 'Módulo 3 Funções Transcendentais', assuntos [{id 'funcao-exponencial', nome 'Função exponencial'},{id 'funcao-logaritmica', nome 'Função logarítmica'}]},
-                                    { nome 'Módulo 4 Álgebra Avançada', assuntos [{id 'polinomios', nome 'Polinômios'},{id 'equacoes', nome 'Equações e inequações'},{id 'sistemas-equacoes', nome 'Sistemas de equações'},{id 'numeros-complexos', nome 'Números complexos'},{id 'matrizes-determinantes', nome 'Matrizes e determinantes'}]}
+                                nome: 'Matemática Básica e Álgebra',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações numéricas'},{id: 'razoes-proporcoes', nome: 'Razões, proporções e escalas'},{id: 'regra-de-tres', nome: 'Regra de três'},{id: 'porcentagem', nome: 'Porcentagem'}]},
+                                    { nome: 'Módulo 2: Funções', assuntos: [{id: 'funcao-afim', nome: 'Função afim (1º grau)'},{id: 'funcao-quadratica', nome: 'Função quadrática (2º grau)'},{id: 'funcao-modular', nome: 'Função modular'},{id: 'funcao-composta-inversa', nome: 'Função composta e inversa'}]},
+                                    { nome: 'Módulo 3: Funções Transcendentais', assuntos: [{id: 'funcao-exponencial', nome: 'Função exponencial'},{id: 'funcao-logaritmica', nome: 'Função logarítmica'}]},
+                                    { nome: 'Módulo 4: Álgebra Avançada', assuntos: [{id: 'polinomios', nome: 'Polinômios'},{id: 'equacoes', nome: 'Equações e inequações'},{id: 'sistemas-equacoes', nome: 'Sistemas de equações'},{id: 'numeros-complexos', nome: 'Números complexos'},{id: 'matrizes-determinantes', nome: 'Matrizes e determinantes'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Geometria e Trigonometria',
-                                modulos [
-                                    { nome 'Módulo 1 Geometria Plana', assuntos [{id 'angulos-poligonos', nome 'Ângulos e polígonos'},{id 'triangulos-quadrilateros', nome 'Triângulos e quadriláteros'},{id 'circulo-circunferencia', nome 'Círculo e circunferência'},{id 'areas-figuras-planas', nome 'Áreas de figuras planas'}]},
-                                    { nome 'Módulo 2 Geometria Espacial', assuntos [{id 'prismas-piramides', nome 'Prismas e pirâmides'},{id 'cilindros-cones', nome 'Cilindros e cones'},{id 'esferas', nome 'Esferas'},{id 'volumes-areas', nome 'Volumes e áreas de superfície'}]},
-                                    { nome 'Módulo 3 Geometria Analítica', assuntos [{id 'ponto-reta-circunferencia', nome 'Ponto, reta e circunferência'},{id 'conicas', nome 'Cônicas'}]},
-                                    { nome 'Módulo 4 Trigonometria', assuntos [{id 'razoes-trigonometricas', nome 'Razões trigonométricas'},{id 'ciclo-trigonometrico', nome 'Ciclo e funções trigonométricas'},{id 'leis-seno-cosseno', nome 'Leis do seno e do cosseno'}]}
+                                nome: 'Geometria e Trigonometria',
+                                modulos: [
+                                    { nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e quadriláteros'},{id: 'circulo-circunferencia', nome: 'Círculo e circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de figuras planas'}]},
+                                    { nome: 'Módulo 2: Geometria Espacial', assuntos: [{id: 'prismas-piramides', nome: 'Prismas e pirâmides'},{id: 'cilindros-cones', nome: 'Cilindros e cones'},{id: 'esferas', nome: 'Esferas'},{id: 'volumes-areas', nome: 'Volumes e áreas de superfície'}]},
+                                    { nome: 'Módulo 3: Geometria Analítica', assuntos: [{id: 'ponto-reta-circunferencia', nome: 'Ponto, reta e circunferência'},{id: 'conicas', nome: 'Cônicas'}]},
+                                    { nome: 'Módulo 4: Trigonometria', assuntos: [{id: 'razoes-trigonometricas', nome: 'Razões trigonométricas'},{id: 'ciclo-trigonometrico', nome: 'Ciclo e funções trigonométricas'},{id: 'leis-seno-cosseno', nome: 'Leis do seno e do cosseno'}]}
                                 ]
                             },
                             {
-                                nome 'Frente C Estatística e Lógica',
-                                modulos [
-                                    { nome 'Módulo 1 Análise de Dados', assuntos [{id 'analise-combinatoria', nome 'Análise combinatória'},{id 'probabilidade', nome 'Probabilidade'},{id 'estatistica-descritiva', nome 'Estatística descritiva'}]},
-                                    { nome 'Módulo 2 Matemática Financeira e Sequências', assuntos [{id 'juros', nome 'Juros simples e compostos'},{id 'pa-pg', nome 'Progressões (PA e PG)'},{id 'sequencias-numericas', nome 'Sequências numéricas'},{id 'raciocinio-logico', nome 'Raciocínio lógico'}]}
+                                nome: 'Estatística e Lógica',
+                                modulos: [
+                                    { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise combinatória'},{id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística descritiva'}]},
+                                    { nome: 'Módulo 2: Matemática Financeira e Sequências', assuntos: [{id: 'juros', nome: 'Juros simples e compostos'},{id: 'pa-pg', nome: 'Progressões (PA e PG)'},{id: 'sequencias-numericas', nome: 'Sequências numéricas'},{id: 'raciocinio-logico', nome: 'Raciocínio lógico'}]}
                                 ]
                             }
                         ]
                     },
                     { 
-                        id 'fisica', 
-                        nome 'Física', 
-                        icone 'atom',
-                        cor 'bg-blue-100 text-blue-800',
-                        frentes [
+                        id: 'fisica', 
+                        nome: 'Física', 
+                        icone: 'atom',
+                        cor: 'bg-blue-100 text-blue-800',
+                        frentes: [
                             {
-                                nome 'Frente A Mecânica',
-                                modulos [
-                                    { nome 'Módulo 1 Cinemática', assuntos [{id 'cinematica', nome 'Cinemática'}]},
-                                    { nome 'Módulo 2 Leis de Newton e Dinâmica', assuntos [{id 'leis-newton', nome 'Leis de Newton e Dinâmica'}]},
-                                    { nome 'Módulo 3 Trabalho, Energia e Potência', assuntos [{id 'trabalho-energia-potencia', nome 'Trabalho, Energia e Potência'}]},
-                                    { nome 'Módulo 4 Impulso e Quantidade de Movimento', assuntos [{id 'impulso-quantidade-movimento', nome 'Impulso e Colisões'}]},
-                                    { nome 'Módulo 5 Estática e Hidrostática', assuntos [{id 'estatica-hidrostatica', nome 'Estática e Hidrostática'}]},
-                                    { nome 'Módulo 6 Gravitação Universal', assuntos [{id 'gravitacao-universal', nome 'Gravitação Universal'}]}
+                                nome: 'Mecânica',
+                                modulos: [
+                                    { nome: 'Módulo 1: Cinemática', assuntos: [{id: 'cinematica', nome: 'Cinemática'}]},
+                                    { nome: 'Módulo 2: Leis de Newton e Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton e Dinâmica'}]},
+                                    { nome: 'Módulo 3: Trabalho, Energia e Potência', assuntos: [{id: 'trabalho-energia-potencia', nome: 'Trabalho, Energia e Potência'}]},
+                                    { nome: 'Módulo 4: Impulso e Quantidade de Movimento', assuntos: [{id: 'impulso-quantidade-movimento', nome: 'Impulso e Colisões'}]},
+                                    { nome: 'Módulo 5: Estática e Hidrostática', assuntos: [{id: 'estatica-hidrostatica', nome: 'Estática e Hidrostática'}]},
+                                    { nome: 'Módulo 6: Gravitação Universal', assuntos: [{id: 'gravitacao-universal', nome: 'Gravitação Universal'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Termologia e Óptica',
-                                modulos [
-                                    { nome 'Módulo 1 Termometria e Calorimetria', assuntos [{id 'termometria-calorimetria', nome 'Termometria e Calorimetria'}]},
-                                    { nome 'Módulo 2 Termodinâmica e Gases', assuntos [{id 'termodinamica-gases', nome 'Termodinâmica e Gases'}]},
-                                    { nome 'Módulo 3 Óptica Geométrica', assuntos [{id 'optica-geometrica', nome 'Óptica Geométrica'}]}
+                                nome: 'Termologia e Óptica',
+                                modulos: [
+                                    { nome: 'Módulo 1: Termometria e Calorimetria', assuntos: [{id: 'termometria-calorimetria', nome: 'Termometria e Calorimetria'}]},
+                                    { nome: 'Módulo 2: Termodinâmica e Gases', assuntos: [{id: 'termodinamica-gases', nome: 'Termodinâmica e Gases'}]},
+                                    { nome: 'Módulo 3: Óptica Geométrica', assuntos: [{id: 'optica-geometrica', nome: 'Óptica Geométrica'}]}
                                 ]
                             },
                             {
-                                nome 'Frente C Ondulatória e Eletromagnetismo',
-                                modulos [
-                                    { nome 'Módulo 1 Ondulatória', assuntos [{id 'ondulatoria', nome 'Ondulatória'}]},
-                                    { nome 'Módulo 2 Eletrostática', assuntos [{id 'eletrostatica', nome 'Eletrostática'}]},
-                                    { nome 'Módulo 3 Eletrodinâmica', assuntos [{id 'eletrodinamica', nome 'Eletrodinâmica'}]},
-                                    { nome 'Módulo 4 Magnetismo e Eletromagnetismo', assuntos [{id 'magnetismo-eletromagnetismo', nome 'Magnetismo'}]},
-                                    { nome 'Módulo 5 Física Moderna', assuntos [{id 'fisica-moderna', nome 'Física Moderna'}]}
+                                nome: 'Ondulatória e Eletromagnetismo',
+                                modulos: [
+                                    { nome: 'Módulo 1: Ondulatória', assuntos: [{id: 'ondulatoria', nome: 'Ondulatória'}]},
+                                    { nome: 'Módulo 2: Eletrostática', assuntos: [{id: 'eletrostatica', nome: 'Eletrostática'}]},
+                                    { nome: 'Módulo 3: Eletrodinâmica', assuntos: [{id: 'eletrodinamica', nome: 'Eletrodinâmica'}]},
+                                    { nome: 'Módulo 4: Magnetismo e Eletromagnetismo', assuntos: [{id: 'magnetismo-eletromagnetismo', nome: 'Magnetismo'}]},
+                                    { nome: 'Módulo 5: Física Moderna', assuntos: [{id: 'fisica-moderna', nome: 'Física Moderna'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'quimica',
-                        nome 'Química',
-                        icone 'flask-conical',
-                        cor 'bg-purple-100 text-purple-800',
-                        frentes [
+                        id: 'quimica',
+                        nome: 'Química',
+                        icone: 'flask-conical',
+                        cor: 'bg-purple-100 text-purple-800',
+                        frentes: [
                              {
-                                nome 'Frente A Química Geral',
-                                modulos [
-                                    { nome 'Módulo 1 Estrutura da Matéria', assuntos [{id 'estrutura-atomica', nome 'Estrutura atômica'}]},
-                                    { nome 'Módulo 2 Tabela Periódica e Propriedades', assuntos [{id 'tabela-periodica', nome 'Tabela Periódica'}]},
-                                    { nome 'Módulo 3 Ligações e Interações', assuntos [{id 'ligacoes-quimicas', nome 'Ligações Químicas e Geometria Molecular'}]},
-                                    { nome 'Módulo 4 Funções Inorgânicas', assuntos [{id 'funcoes-inorganicas', nome 'Funções Inorgânicas'}]},
-                                    { nome 'Módulo 5 Radioatividade', assuntos [{id 'radioatividade', nome 'Radioatividade'}]}
+                                nome: 'Química Geral',
+                                modulos: [
+                                    { nome: 'Módulo 1: Estrutura da Matéria', assuntos: [{id: 'estrutura-atomica', nome: 'Estrutura atômica'}]},
+                                    { nome: 'Módulo 2: Tabela Periódica e Propriedades', assuntos: [{id: 'tabela-periodica', nome: 'Tabela Periódica'}]},
+                                    { nome: 'Módulo 3: Ligações e Interações', assuntos: [{id: 'ligacoes-quimicas', nome: 'Ligações Químicas e Geometria Molecular'}]},
+                                    { nome: 'Módulo 4: Funções Inorgânicas', assuntos: [{id: 'funcoes-inorganicas', nome: 'Funções Inorgânicas'}]},
+                                    { nome: 'Módulo 5: Radioatividade', assuntos: [{id: 'radioatividade', nome: 'Radioatividade'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Físico-Química',
-                                modulos [
-                                    { nome 'Módulo 1 Cálculos e Soluções', assuntos [{id 'estequiometria', nome 'Estequiometria'}, {id 'solucoes', nome 'Soluções'}]},
-                                    { nome 'Módulo 2 Termoquímica', assuntos [{id 'termoquimica', nome 'Termoquímica'}]},
-                                    { nome 'Módulo 3 Cinética e Equilíbrio', assuntos [{id 'cinetica-quimica', nome 'Cinética Química'}, {id 'equilibrio-quimico', nome 'Equilíbrio Químico e Iônico'}]},
-                                    { nome 'Módulo 4 Eletroquímica', assuntos [{id 'eletroquimica', nome 'Eletroquímica e Oxirredução'}]}
+                                nome: 'Físico-Química',
+                                modulos: [
+                                    { nome: 'Módulo 1: Cálculos e Soluções', assuntos: [{id: 'estequiometria', nome: 'Estequiometria'}, {id: 'solucoes', nome: 'Soluções'}]},
+                                    { nome: 'Módulo 2: Termoquímica', assuntos: [{id: 'termoquimica', nome: 'Termoquímica'}]},
+                                    { nome: 'Módulo 3: Cinética e Equilíbrio', assuntos: [{id: 'cinetica-quimica', nome: 'Cinética Química'}, {id: 'equilibrio-quimico', nome: 'Equilíbrio Químico e Iônico'}]},
+                                    { nome: 'Módulo 4: Eletroquímica', assuntos: [{id: 'eletroquimica', nome: 'Eletroquímica e Oxirredução'}]}
                                 ]
                             },
                             {
-                                nome 'Frente C Química Orgânica',
-                                modulos [
-                                    { nome 'Módulo 1 Introdução e Hidrocarbonetos', assuntos [{id 'intro-organica', nome 'Introdução à Química Orgânica'}]},
-                                    { nome 'Módulo 2 Funções Orgânicas', assuntos [{id 'funcoes-organicas', nome 'Funções Orgânicas'}]},
-                                    { nome 'Módulo 3 Isomeria', assuntos [{id 'isomeria', nome 'Isomeria'}]},
-                                    { nome 'Módulo 4 Reações Orgânicas', assuntos [{id 'reacoes-organicas', nome 'Reações Orgânicas'}]},
-                                    { nome 'Módulo 5 Macromoléculas', assuntos [{id 'polimeros-bioquimica', nome 'Polímeros e Bioquímica'}]}
+                                nome: 'Química Orgânica',
+                                modulos: [
+                                    { nome: 'Módulo 1: Introdução e Hidrocarbonetos', assuntos: [{id: 'intro-organica', nome: 'Introdução à Química Orgânica'}]},
+                                    { nome: 'Módulo 2: Funções Orgânicas', assuntos: [{id: 'funcoes-organicas', nome: 'Funções Orgânicas'}]},
+                                    { nome: 'Módulo 3: Isomeria', assuntos: [{id: 'isomeria', nome: 'Isomeria'}]},
+                                    { nome: 'Módulo 4: Reações Orgânicas', assuntos: [{id: 'reacoes-organicas', nome: 'Reações Orgânicas'}]},
+                                    { nome: 'Módulo 5: Macromoléculas', assuntos: [{id: 'polimeros-bioquimica', nome: 'Polímeros e Bioquímica'}]}
                                 ]
                             }
                         ]
                     },
                     { 
-                        id 'biologia', 
-                        nome 'Biologia', 
-                        icone 'leaf',
-                        cor 'bg-green-100 text-green-800',
-                        frentes [
+                        id: 'biologia', 
+                        nome: 'Biologia', 
+                        icone: 'leaf',
+                        cor: 'bg-green-100 text-green-800',
+                        frentes: [
                             {
-                                nome 'Frente A Base da Vida',
-                                modulos [
-                                    { nome 'Módulo 1 Origem da Vida e Bioquímica', assuntos [{id 'origem-vida-bioquimica', nome 'Origem da Vida e Bioquímica'}]},
-                                    { nome 'Módulo 2 Citologia', assuntos [{id 'citologia', nome 'Citologia'}]},
-                                    { nome 'Módulo 3 Biologia Molecular', assuntos [{id 'biologia-molecular', nome 'Biologia Molecular'}]},
-                                    { nome 'Módulo 4 Histologia e Embriologia', assuntos [{id 'histologia-embriologia', nome 'Histologia e Embriologia'}]}
+                                nome: 'Base da Vida',
+                                modulos: [
+                                    { nome: 'Módulo 1: Origem da Vida e Bioquímica', assuntos: [{id: 'origem-vida-bioquimica', nome: 'Origem da Vida e Bioquímica'}]},
+                                    { nome: 'Módulo 2: Citologia', assuntos: [{id: 'citologia', nome: 'Citologia'}]},
+                                    { nome: 'Módulo 3: Biologia Molecular', assuntos: [{id: 'biologia-molecular', nome: 'Biologia Molecular'}]},
+                                    { nome: 'Módulo 4: Histologia e Embriologia', assuntos: [{id: 'histologia-embriologia', nome: 'Histologia e Embriologia'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Genética e Evolução',
-                                modulos [
-                                    { nome 'Módulo 1 Genética', assuntos [{id 'genetica', nome 'Genética Mendeliana e Pós-Mendeliana'}]},
-                                    { nome 'Módulo 2 Evolução', assuntos [{id 'evolucao', nome 'Evolução'}]},
-                                    { nome 'Módulo 3 Biotecnologia', assuntos [{id 'biotecnologia', nome 'Biotecnologia'}]}
+                                nome: 'Genética e Evolução',
+                                modulos: [
+                                    { nome: 'Módulo 1: Genética', assuntos: [{id: 'genetica', nome: 'Genética Mendeliana e Pós-Mendeliana'}]},
+                                    { nome: 'Módulo 2: Evolução', assuntos: [{id: 'evolucao', nome: 'Evolução'}]},
+                                    { nome: 'Módulo 3: Biotecnologia', assuntos: [{id: 'biotecnologia', nome: 'Biotecnologia'}]}
                                 ]
                             },
                             {
-                                nome 'Frente C Fisiologia e Seres Vivos',
-                                modulos [
-                                    { nome 'Módulo 1 Fisiologia Humana', assuntos [{id 'fisiologia-humana', nome 'Fisiologia Humana'}]},
-                                    { nome 'Módulo 2 Microbiologia e Parasitologia', assuntos [{id 'micro-parasito', nome 'Microbiologia e Parasitologia'}]},
-                                    { nome 'Módulo 3 Zoologia', assuntos [{id 'zoologia', nome 'Zoologia'}]},
-                                    { nome 'Módulo 4 Botânica', assuntos [{id 'botanica', nome 'Botânica'}]}
+                                nome: 'Fisiologia e Seres Vivos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fisiologia Humana', assuntos: [{id: 'fisiologia-humana', nome: 'Fisiologia Humana'}]},
+                                    { nome: 'Módulo 2: Microbiologia e Parasitologia', assuntos: [{id: 'micro-parasito', nome: 'Microbiologia e Parasitologia'}]},
+                                    { nome: 'Módulo 3: Zoologia', assuntos: [{id: 'zoologia', nome: 'Zoologia'}]},
+                                    { nome: 'Módulo 4: Botânica', assuntos: [{id: 'botanica', nome: 'Botânica'}]}
                                 ]
                             },
                             {
-                                nome 'Frente D Ecologia',
-                                modulos [
-                                    { nome 'Módulo 1 Fundamentos da Ecologia', assuntos [{id 'fundamentos-ecologia', nome 'Conceitos e Cadeias Alimentares'}]},
-                                    { nome 'Módulo 2 Populações e Comunidades', assuntos [{id 'populacoes-comunidades', nome 'Dinâmica de Populações e Relações'}]},
-                                    { nome 'Módulo 3 Biomas e Sucessão', assuntos [{id 'biomas-sucessao', nome 'Biomas e Sucessão Ecológica'}]},
-                                    { nome 'Módulo 4 Ecologia Aplicada', assuntos [{id 'impactos-ambientais', nome 'Impactos Ambientais'}]}
+                                nome: 'Ecologia',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos da Ecologia', assuntos: [{id: 'fundamentos-ecologia', nome: 'Conceitos e Cadeias Alimentares'}]},
+                                    { nome: 'Módulo 2: Populações e Comunidades', assuntos: [{id: 'populacoes-comunidades', nome: 'Dinâmica de Populações e Relações'}]},
+                                    { nome: 'Módulo 3: Biomas e Sucessão', assuntos: [{id: 'biomas-sucessao', nome: 'Biomas e Sucessão Ecológica'}]},
+                                    { nome: 'Módulo 4: Ecologia Aplicada', assuntos: [{id: 'impactos-ambientais', nome: 'Impactos Ambientais'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'historia',
-                        nome 'História',
-                        icone 'landmark',
-                        cor 'bg-yellow-100 text-yellow-800',
-                        frentes [
+                        id: 'historia',
+                        nome: 'História',
+                        icone: 'landmark',
+                        cor: 'bg-yellow-100 text-yellow-800',
+                        frentes: [
                             {
-                                nome 'Frente A História Geral',
-                                modulos [
-                                    { nome 'Módulo 1 Antiguidade e Idade Média', assuntos [{id 'antiguidade-media', nome 'Antiguidade e Idade Média'}]},
-                                    { nome 'Módulo 2 Idade Moderna', assuntos [{id 'idade-moderna', nome 'Idade Moderna'}]},
-                                    { nome 'Módulo 3 Idade Contemporânea (Séculos XIX e XX)', assuntos [{id 'idade-contemporanea', nome 'Idade Contemporânea'}]}
+                                nome: 'História Geral',
+                                modulos: [
+                                    { nome: 'Módulo 1: Antiguidade e Idade Média', assuntos: [{id: 'antiguidade-media', nome: 'Antiguidade e Idade Média'}]},
+                                    { nome: 'Módulo 2: Idade Moderna', assuntos: [{id: 'idade-moderna', nome: 'Idade Moderna'}]},
+                                    { nome: 'Módulo 3: Idade Contemporânea (Séculos XIX e XX)', assuntos: [{id: 'idade-contemporanea', nome: 'Idade Contemporânea'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B História do Brasil',
-                                modulos [
-                                    { nome 'Módulo 1 Brasil Colônia', assuntos [{id 'brasil-colonia', nome 'Brasil Colônia'}]},
-                                    { nome 'Módulo 2 Brasil Império', assuntos [{id 'brasil-imperio', nome 'Brasil Império'}]},
-                                    { nome 'Módulo 3 Brasil República', assuntos [{id 'brasil-republica', nome 'Brasil República'}]}
+                                nome: 'História do Brasil',
+                                modulos: [
+                                    { nome: 'Módulo 1: Brasil Colônia', assuntos: [{id: 'brasil-colonia', nome: 'Brasil Colônia'}]},
+                                    { nome: 'Módulo 2: Brasil Império', assuntos: [{id: 'brasil-imperio', nome: 'Brasil Império'}]},
+                                    { nome: 'Módulo 3: Brasil República', assuntos: [{id: 'brasil-republica', nome: 'Brasil República'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'geografia',
-                        nome 'Geografia',
-                        icone 'globe-2',
-                        cor 'bg-indigo-100 text-indigo-800',
-                        frentes [
+                        id: 'geografia',
+                        nome: 'Geografia',
+                        icone: 'globe-2',
+                        cor: 'bg-indigo-100 text-indigo-800',
+                        frentes: [
                              {
-                                nome 'Frente A Geografia Geral',
-                                modulos [
-                                    { nome 'Módulo 1 Introdução e Natureza', assuntos [{id 'geografia-fisica-cartografia', nome 'Geografia Física e Cartografia'}]},
-                                    { nome 'Módulo 2 População e Urbanização', assuntos [{id 'demografia-urbanizacao-mundial', nome 'Demografia e Urbanização Mundial'}]},
-                                    { nome 'Módulo 3 Economia e Globalização', assuntos [{id 'economia-globalizacao', nome 'Economia, Indústria e Globalização'}]},
-                                    { nome 'Módulo 4 Geopolítica', assuntos [{id 'geopolitica', nome 'Geopolítica e Conflitos Atuais'}]}
+                                nome: 'Geografia Geral',
+                                modulos: [
+                                    { nome: 'Módulo 1: Introdução e Natureza', assuntos: [{id: 'geografia-fisica-cartografia', nome: 'Geografia Física e Cartografia'}]},
+                                    { nome: 'Módulo 2: População e Urbanização', assuntos: [{id: 'demografia-urbanizacao-mundial', nome: 'Demografia e Urbanização Mundial'}]},
+                                    { nome: 'Módulo 3: Economia e Globalização', assuntos: [{id: 'economia-globalizacao', nome: 'Economia, Indústria e Globalização'}]},
+                                    { nome: 'Módulo 4: Geopolítica', assuntos: [{id: 'geopolitica', nome: 'Geopolítica e Conflitos Atuais'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Geografia do Brasil',
-                                modulos [
-                                    { nome 'Módulo 1 Aspectos Naturais', assuntos [{id 'aspectos-naturais-brasil', nome 'Aspectos Naturais do Brasil'}]},
-                                    { nome 'Módulo 2 População e Urbanização', assuntos [{id 'populacao-urbanizacao-br', nome 'População e Urbanização Brasileira'}]},
-                                    { nome 'Módulo 3 Economia e Espaço RuralIndustrial', assuntos [{id 'economia-brasil', nome 'Economia, Agricultura e Indústria'}]},
-                                    { nome 'Módulo 4 Questões Ambientais e Regionais', assuntos [{id 'questoes-ambientais-br', nome 'Questões Ambientais e Regionais'}]}
+                                nome: 'Geografia do Brasil',
+                                modulos: [
+                                    { nome: 'Módulo 1: Aspectos Naturais', assuntos: [{id: 'aspectos-naturais-brasil', nome: 'Aspectos Naturais do Brasil'}]},
+                                    { nome: 'Módulo 2: População e Urbanização', assuntos: [{id: 'populacao-urbanizacao-br', nome: 'População e Urbanização Brasileira'}]},
+                                    { nome: 'Módulo 3: Economia e Espaço Rural/Industrial', assuntos: [{id: 'economia-brasil', nome: 'Economia, Agricultura e Indústria'}]},
+                                    { nome: 'Módulo 4: Questões Ambientais e Regionais', assuntos: [{id: 'questoes-ambientais-br', nome: 'Questões Ambientais e Regionais'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'filosofia',
-                        nome 'Filosofia',
-                        icone 'brain-circuit',
-                        cor 'bg-teal-100 text-teal-800',
-                        frentes [
+                        id: 'filosofia',
+                        nome: 'Filosofia',
+                        icone: 'brain-circuit',
+                        cor: 'bg-teal-100 text-teal-800',
+                        frentes: [
                             {
-                                nome 'Frentes Únicas',
-                                modulos [
-                                    { nome 'Módulo 1 Filosofia Antiga e Medieval', assuntos [{id 'filosofia-antiga-medieval', nome 'Filosofia Antiga e Medieval'}]},
-                                    { nome 'Módulo 2 Filosofia Moderna e Contemporânea', assuntos [{id 'filosofia-moderna-contemporanea', nome 'Filosofia Moderna e Contemporânea'}]},
-                                    { nome 'Módulo 3 Eixos Temáticos', assuntos [{id 'etica-politica-ciencia', nome 'Ética, Política e Ciência'}]}
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Filosofia Antiga e Medieval', assuntos: [{id: 'filosofia-antiga-medieval', nome: 'Filosofia Antiga e Medieval'}]},
+                                    { nome: 'Módulo 2: Filosofia Moderna e Contemporânea', assuntos: [{id: 'filosofia-moderna-contemporanea', nome: 'Filosofia Moderna e Contemporânea'}]},
+                                    { nome: 'Módulo 3: Eixos Temáticos', assuntos: [{id: 'etica-politica-ciencia', nome: 'Ética, Política e Ciência'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'sociologia',
-                        nome 'Sociologia',
-                        icone 'users',
-                        cor 'bg-cyan-100 text-cyan-800',
-                        frentes [
+                        id: 'sociologia',
+                        nome: 'Sociologia',
+                        icone: 'users',
+                        cor: 'bg-cyan-100 text-cyan-800',
+                        frentes: [
                              {
-                                nome 'Frentes Únicas',
-                                modulos [
-                                    { nome 'Módulo 1 Conceitos Fundamentais', assuntos [{id 'conceitos-sociologicos', nome 'Cultura, Identidade e Estratificação Social'}]},
-                                    { nome 'Módulo 2 Estruturas Sociais', assuntos [{id 'estruturas-sociais', nome 'Trabalho, Política e Movimentos Sociais'}]},
-                                    { nome 'Módulo 3 Pensadores da Sociologia', assuntos [{id 'pensadores-sociologia', nome 'Sociologia Clássica e Contemporânea'}]}
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social'}]},
+                                    { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais'}]},
+                                    { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'portugues',
-                        nome 'Português',
-                        icone 'spell-check',
-                        cor 'bg-orange-100 text-orange-800',
-                        frentes [
+                        id: 'portugues',
+                        nome: 'Português',
+                        icone: 'spell-check',
+                        cor: 'bg-orange-100 text-orange-800',
+                        frentes: [
                             {
-                                nome 'Frente A Gramática',
-                                modulos [
-                                     { nome 'Módulo 1 Morfologia', assuntos [{id 'morfologia', nome 'Morfologia'}]},
-                                     { nome 'Módulo 2 Sintaxe', assuntos [{id 'sintaxe', nome 'Sintaxe do Período Simples e Composto'}]},
-                                     { nome 'Módulo 3 Normas e Pontuação', assuntos [{id 'concordancia-regencia-crase', nome 'Concordância, Regência e Crase'}, {id 'pontuacao', nome 'Pontuação'}]}
+                                nome: 'Gramática',
+                                modulos: [
+                                     { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia'}]},
+                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe do Período Simples e Composto'}]},
+                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase'}, {id: 'pontuacao', nome: 'Pontuação'}]}
                                 ]
                             },
                             {
-                                nome 'Frente B Texto e Interpretação',
-                                modulos [
-                                    { nome 'Módulo 1 Fundamentos do Texto', assuntos [{id 'coesao-coerencia', nome 'Coesão e Coerência'}]},
-                                    { nome 'Módulo 2 Análise Textual', assuntos [{id 'interpretacao-textos', nome 'Interpretação e Tipos Textuais'}]},
-                                    { nome 'Módulo 3 Recursos Expressivos', assuntos [{id 'figuras-variacao-linguistica', nome 'Figuras e Variação Linguística'}]}
+                                nome: 'Texto e Interpretação',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
+                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais'}]},
+                                    { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'literatura',
-                        nome 'Literatura',
-                        icone 'book-open',
-                        cor 'bg-lime-100 text-lime-800',
-                        frentes [
+                        id: 'literatura',
+                        nome: 'Literatura',
+                        icone: 'book-open',
+                        cor: 'bg-lime-100 text-lime-800',
+                        frentes: [
                             {
-                                nome 'Frentes Únicas',
-                                modulos [
-                                    { nome 'Módulo 1 Período Colonial', assuntos [{id 'literatura-colonial', nome 'Trovadorismo, Classicismo, Barroco e Arcadismo'}]},
-                                    { nome 'Módulo 2 Século XIX', assuntos [{id 'literatura-seculo-xix', nome 'Romantismo, Realismo, Naturalismo, Parnasianismo e Simbolismo'}]},
-                                    { nome 'Módulo 3 Século XX e XXI', assuntos [{id 'literatura-moderna', nome 'Pré-Modernismo, Modernismo e Tendências Contemporâneas'}]}
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Período Colonial', assuntos: [{id: 'literatura-colonial', nome: 'Trovadorismo, Classicismo, Barroco e Arcadismo'}]},
+                                    { nome: 'Módulo 2: Século XIX', assuntos: [{id: 'literatura-seculo-xix', nome: 'Romantismo, Realismo, Naturalismo, Parnasianismo e Simbolismo'}]},
+                                    { nome: 'Módulo 3: Século XX e XXI', assuntos: [{id: 'literatura-moderna', nome: 'Pré-Modernismo, Modernismo e Tendências Contemporâneas'}]}
                                 ]
                             }
                         ]
                     },
                     {
-                        id 'redacao',
-                        nome 'Redação',
-                        icone 'file-pen-line',
-                        cor 'bg-rose-100 text-rose-800',
-                        frentes [
+                        id: 'redacao',
+                        nome: 'Redação',
+                        icone: 'file-pen-line',
+                        cor: 'bg-rose-100 text-rose-800',
+                        frentes: [
                             {
-                                nome 'Módulos',
-                                modulos [
-                                     { nome 'Módulo 1 Estrutura e Competências', assuntos [{id 'estrutura-dissertativa', nome 'Estrutura Dissertativo-Argumentativa'}, {id 'competencias-enem', nome 'Competências do ENEM'}]}
+                                nome: 'Módulos',
+                                modulos: [
+                                     { nome: 'Módulo 1: Estrutura e Competências', assuntos: [{id: 'estrutura-dissertativa', nome: 'Estrutura Dissertativo-Argumentativa'}, {id: 'competencias-enem', nome: 'Competências do ENEM'}]}
                                 ]
                             }
                         ]
                     }
                 ],
-                questoes []  Começa vazio, será preenchido pela API
+                questoes: [] // Começa vazio, será preenchido pela API
             },
             
-             --- FUNÇÕES DE LÓGICA ---
-            init function() {
+            // --- FUNÇÕES DE LÓGICA ---
+            init: function() {
                 lucide.createIcons();
                 
                 const cachedQuestoes = this.getCache(this.CACHE_PREFIX + 'questoes');
@@ -560,153 +560,153 @@ body class=text-gray-800
                 this.initializeFirebase();
             },
 
-            initializeFirebase async function() {
+            initializeFirebase: async function() {
                 const firebaseConfig = {
-                    apiKey SUA_API_KEY_DO_FIREBASE,
-                    authDomain SEU_AUTH_DOMAIN,
-                    projectId SEU_PROJECT_ID,
-                    storageBucket SEU_STORAGE_BUCKET,
-                    messagingSenderId SEU_MESSAGING_SENDER_ID,
-                    appId SEU_APP_ID
+                    apiKey: "SUA_API_KEY_DO_FIREBASE",
+                    authDomain: "SEU_AUTH_DOMAIN",
+                    projectId: "SEU_PROJECT_ID",
+                    storageBucket: "SEU_STORAGE_BUCKET",
+                    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
+                    appId: "SEU_APP_ID"
                 };
 
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== SUA_API_KEY_DO_FIREBASE && firebaseConfig.projectId !== SEU_PROJECT_ID) {
+                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_DO_FIREBASE" && firebaseConfig.projectId !== "SEU_PROJECT_ID") {
                     try {
                         const firebaseApp = initializeApp(firebaseConfig);
                         this.firestoreDb = getFirestore(firebaseApp);
                         const auth = getAuth(firebaseApp);
                         await signInAnonymously(auth);
-                        console.log(Firebase conectado e usuário anônimo autenticado.);
+                        console.log("Firebase conectado e usuário anônimo autenticado.");
                     } catch (error) {
-                        console.error(Erro ao inicializar o Firebase. Verifique se suas chaves de configuração estão corretas., error);
+                        console.error("Erro ao inicializar o Firebase. Verifique se suas chaves de configuração estão corretas.", error);
                     }
                 } else {
-                    console.warn(Configuração do Firebase não encontrada ou incompleta. As funcionalidades de salvamento na nuvem estão desativadas.);
+                    console.warn("Configuração do Firebase não encontrada ou incompleta. As funcionalidades de salvamento na nuvem estão desativadas.");
                 }
             },
             
-             --- LÓGICA DE CACHE ---
-            getCache function(key) {
+            // --- LÓGICA DE CACHE ---
+            getCache: function(key) {
                 try {
                     const item = localStorage.getItem(key);
-                    return item  JSON.parse(item)  null;
+                    return item ? JSON.parse(item) : null;
                 } catch (error) {
-                    console.error(Erro ao ler do cache, error);
+                    console.error("Erro ao ler do cache:", error);
                     return null;
                 }
             },
 
-            setCache function(key, value) {
+            setCache: function(key, value) {
                 try {
                     localStorage.setItem(key, JSON.stringify(value));
                 } catch (error) {
-                    console.error(Erro ao salvar no cache, error);
+                    console.error("Erro ao salvar no cache:", error);
                 }
             },
 
-            clearCache function() {
+            clearCache: function() {
                 try {
                     let keysToRemove = [];
-                    for (let i = 0; i  localStorage.length; i++) {
+                    for (let i = 0; i < localStorage.length; i++) {
                         if (localStorage.key(i).startsWith(this.CACHE_PREFIX)) {
                             keysToRemove.push(localStorage.key(i));
                         }
                     }
-                    keysToRemove.forEach(key = localStorage.removeItem(key));
+                    keysToRemove.forEach(key => localStorage.removeItem(key));
                     alert('Cache limpo com sucesso! A página será recarregada.');
                     location.reload();
                 } catch (error) {
                      alert('Erro ao limpar o cache.');
-                     console.error(Erro ao limpar cache, error);
+                     console.error("Erro ao limpar cache:", error);
                 }
             },
             
-             --- FUNÇÕES DE CHAMADA DA API GEMINI ---
-            callGeminiAPI async function(prompt, isJson = false) {
-                if (this.GEMINI_API_KEY === SUA_CHAVE_API_AQUI) {
-                    throw new Error(Chave de API do Gemini não configurada.);
+            // --- FUNÇÕES DE CHAMADA DA API GEMINI ---
+            callGeminiAPI: async function(prompt, isJson = false) {
+                if (this.GEMINI_API_KEY === "SUA_CHAVE_API_AQUI") {
+                    throw new Error("Chave de API do Gemini não configurada.");
                 }
-                const apiUrl = `httpsgenerativelanguage.googleapis.comv1betamodelsgemini-1.5-flash-latestgenerateContentkey=${this.GEMINI_API_KEY}`;
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${this.GEMINI_API_KEY}`;
                 
                 const payload = {
-                    contents [{ parts [{ text prompt }] }],
-                     ...(isJson && { generationConfig { responseMimeType applicationjson } }),
-                    safetySettings [
-                        {category HARM_CATEGORY_HARASSMENT, threshold BLOCK_NONE},
-                        {category HARM_CATEGORY_HATE_SPEECH, threshold BLOCK_NONE},
-                        {category HARM_CATEGORY_SEXUALLY_EXPLICIT, threshold BLOCK_NONE},
-                        {category HARM_CATEGORY_DANGEROUS_CONTENT, threshold BLOCK_NONE}
+                    contents: [{ parts: [{ text: prompt }] }],
+                     ...(isJson && { generationConfig: { responseMimeType: "application/json" } }),
+                    "safetySettings": [
+                        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+                        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+                        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+                        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}
                     ]
                 };
 
                 let response;
                 const maxRetries = 3;
-                let delay = 1000;  1 second
+                let delay = 1000; // 1 second
 
-                for (let i = 0; i  maxRetries; i++) {
+                for (let i = 0; i < maxRetries; i++) {
                     response = await fetch(apiUrl, {
-                        method 'POST',
-                        headers { 'Content-Type' 'applicationjson' },
-                        body JSON.stringify(payload)
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
                     });
 
-                    if (response.status !== 503) {  503 Service Unavailable is the overloaded error
+                    if (response.status !== 503) { // 503 Service Unavailable is the "overloaded" error
                         break;
                     }
-                    if (i  maxRetries - 1) {
-                        console.warn(`API do Gemini sobrecarregada. Tentando novamente em ${delay  1000}s...`);
-                        await new Promise(resolve = setTimeout(resolve, delay));
-                        delay = 2;  Exponential backoff
+                    if (i < maxRetries - 1) {
+                        console.warn(`API do Gemini sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2; // Exponential backoff
                     }
                 }
 
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() = ({ error { message Erro desconhecido }}));
-                    console.error(Erro na API do Gemini, errorData);
-                    throw new Error(`Erro ao gerar conteúdo ${errorData.error.message}`);
+                    const errorData = await response.json().catch(() => ({ error: { message: "Erro desconhecido" }}));
+                    console.error("Erro na API do Gemini:", errorData);
+                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error.message}`);
                 }
 
                 const data = await response.json();
-                if (data.candidates && data.candidates.length  0) {
+                if (data.candidates && data.candidates.length > 0) {
                     return data.candidates[0].content.parts[0].text;
                 } else {
-                    throw new Error(A resposta da API estava vazia ou foi bloqueada por segurança.);
+                    throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
                 }
             },
 
-            generateContentWithGemini async function(prompt) {
+            generateContentWithGemini: async function(prompt) {
                  try {
                     let text = await this.callGeminiAPI(prompt, false);
-                    text = text.replace((.)g, 'strong$1strong'); 
-                    text = text.replace((.)g, 'em$1em');       
-                    text = text.replace(ng, 'br');
+                    text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
+                    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');       
+                    text = text.replace(/\n/g, '<br>');
                                          
                     return text;
                 } catch (error) {
-                    console.error(Erro ao gerar conteúdo de matéria, error);
-                    return `strongErro ao gerar conteúdostrong ${error.message}. Por favor, tente novamente mais tarde.`;
+                    console.error("Erro ao gerar conteúdo de matéria:", error);
+                    return `<strong>Erro ao gerar conteúdo:</strong> ${error.message}. Por favor, tente novamente mais tarde.`;
                 }
             },
             
-            fetchQuestoesFromGemini async function(materiaNome, assuntoNome) {
+            fetchQuestoesFromGemini: async function(materiaNome, assuntoNome) {
                 const prompt = `
-                    Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico ${assuntoNome} da matéria de ${materiaNome}.
-                    A precisão factual e gramatical é CRÍTICA. Antes de gerar a resposta final, você DEVE revisar internamente cada questão para garantir que
+                    Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
+                    A precisão factual e gramatical é CRÍTICA. Antes de gerar a resposta final, você DEVE revisar internamente cada questão para garantir que:
                     1. O enunciado seja claro, preciso e livre de ambiguidades.
                     2. Haja apenas UMA alternativa inquestionavelmente correta, baseada em conhecimento acadêmico consolidado.
                     3. As alternativas incorretas (distratores) sejam plausíveis, mas comprovadamente erradas.
                     4. A resolução explique detalhadamente o raciocínio para a resposta correta, citando os conceitos aplicados.
                     5. A justificativa para cada erro seja precisa, didática e aponte o erro conceitual específico na alternativa. Preste atenção especial a nuances da gramática normativa portuguesa em questões dessa matéria.
 
-                    Para cada uma das 10 questões, forneça um objeto JSON com a seguinte estrutura
-                    - banca Uma banca de vestibular brasileira aleatória.
-                    - enunciado O enunciado da questão.
-                    - alternativas Uma lista com exatamente 5 objetos. Cada objeto deve ter
-                        - texto O texto da alternativa.
-                        - correta um booleano (true para a única correta, false para as outras).
-                        - justificativa_erro Uma string explicando por que a alternativa está errada. Se a alternativa for a correta, esta string deve ser vazia.
-                    - resolucao Uma resolução comentada completa para a questão.
+                    Para cada uma das 10 questões, forneça um objeto JSON com a seguinte estrutura:
+                    - "banca": Uma banca de vestibular brasileira aleatória.
+                    - "enunciado": O enunciado da questão.
+                    - "alternativas": Uma lista com exatamente 5 objetos. Cada objeto deve ter:
+                        - "texto": O texto da alternativa.
+                        - "correta": um booleano (true para a única correta, false para as outras).
+                        - "justificativa_erro": Uma string explicando por que a alternativa está errada. Se a alternativa for a correta, esta string deve ser vazia.
+                    - "resolucao": Uma resolução comentada completa para a questão.
 
                     Retorne a resposta APENAS como um array de objetos JSON, seguindo estritamente este formato, sem nenhum texto ou formatação adicional.
                 `;
@@ -715,24 +715,24 @@ body class=text-gray-800
                     const jsonString = await this.callGeminiAPI(prompt, true);
                     const questoes = JSON.parse(jsonString);
                     
-                    questoes.forEach((q, index) = {
-                        q.id = `${materiaNome.replace(sg, '_')}-${assuntoNome.replace(sg, '_')}-${Date.now()}-${index}`;
+                    questoes.forEach((q, index) => {
+                        q.id = `${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}-${Date.now()}-${index}`;
                     });
                     
                     return questoes;
 
                 } catch(error) {
-                    console.error(Falha ao buscar ou parsear questões, error);
-                    throw new Error(Não foi possível gerar as questões. A resposta da API pode não estar no formato JSON esperado.);
+                    console.error("Falha ao buscar ou parsear questões:", error);
+                    throw new Error("Não foi possível gerar as questões. A resposta da API pode não estar no formato JSON esperado.");
                 }
             },
 
-             --- LÓGICA DE NAVEGAÇÃO E UI ---
-            setupNavigation function() {
-                this.navigateTo('inicio', document.querySelector('.nav-link[data-target=inicio]'));
+            // --- LÓGICA DE NAVEGAÇÃO E UI ---
+            setupNavigation: function() {
+                this.navigateTo('inicio', document.querySelector('.nav-link[data-target="inicio"]'));
             },
             
-            navigateTo function(targetId, clickedLink = null) {
+            navigateTo: function(targetId, clickedLink = null) {
                 const currentActive = document.querySelector('.content-section.active');
                 const nextActive = document.getElementById(targetId);
 
@@ -742,23 +742,23 @@ body class=text-gray-800
                     currentActive.classList.remove('active');
                 }
                 
-                setTimeout(() = {
+                setTimeout(() => {
                     if (currentActive) currentActive.style.display = 'none';
                     if (nextActive) {
                         nextActive.style.display = 'block';
-                        setTimeout(() = nextActive.classList.add('active'), 10); 
+                        setTimeout(() => nextActive.classList.add('active'), 10); 
                     }
                 }, 300);
 
 
-                document.querySelectorAll('.nav-link').forEach(link = {
+                document.querySelectorAll('.nav-link').forEach(link => {
                     link.classList.remove('active');
                 });
 
                 if (clickedLink) {
                     clickedLink.classList.add('active');
                 } else {
-                    const linkToActivate = document.querySelector(`.nav-link[data-target=${targetId}]`);
+                    const linkToActivate = document.querySelector(`.nav-link[data-target="${targetId}"]`);
                     if (linkToActivate) linkToActivate.classList.add('active');
                 }
                 
@@ -770,72 +770,72 @@ body class=text-gray-800
                 window.scrollTo(0, 0);
             },
 
-            setupMobileMenu function() {
+            setupMobileMenu: function() {
                 const mobileMenuButton = document.getElementById('mobile-menu-button');
                 const mobileMenu = document.getElementById('mobile-menu');
-                mobileMenuButton.addEventListener('click', () = {
+                mobileMenuButton.addEventListener('click', () => {
                     mobileMenu.classList.toggle('hidden');
                 });
             },
 
-            renderMateriasGrid function() {
+            renderMateriasGrid: function() {
                 const grid = document.getElementById('materias-grid');
-                grid.innerHTML = this.db.materias.map(materia = `
-                    div class=subject-card ${materia.cor} p-6 rounded-lg shadow-md cursor-pointer flex flex-col items-center text-center onclick=window.app.showMateriaDetalhe('${materia.id}')
-                        i data-lucide=${materia.icone} class=h-12 w-12 mb-4i
-                        h3 class=text-xl font-bold${materia.nome}h3
-                    div
+                grid.innerHTML = this.db.materias.map(materia => `
+                    <div class="subject-card ${materia.cor} p-6 rounded-lg shadow-md cursor-pointer flex flex-col items-center text-center" onclick="window.app.showMateriaDetalhe('${materia.id}')">
+                        <i data-lucide="${materia.icone}" class="h-12 w-12 mb-4"></i>
+                        <h3 class="text-xl font-bold">${materia.nome}</h3>
+                    </div>
                 `).join('');
                 lucide.createIcons();
             },
             
-            showMateriaDetalhe function(materiaId) {
-                const materia = this.db.materias.find(m = m.id === materiaId);
+            showMateriaDetalhe: function(materiaId) {
+                const materia = this.db.materias.find(m => m.id === materiaId);
                 const detalheDiv = document.getElementById('materia-detalhe');
 
                 if (materiaId === 'redacao') {
                     detalheDiv.innerHTML = `
-                        div class=max-w-4xl mx-auto
-                            button onclick=window.app.showMateriasHome() class=flex items-center gap-2 mb-6 text-blue-600 hoverunderline font-semibold
-                                i data-lucide=arrow-left class=h-4 w-4i
+                        <div class="max-w-4xl mx-auto">
+                            <button onclick="window.app.showMateriasHome()" class="flex items-center gap-2 mb-6 text-blue-600 hover:underline font-semibold">
+                                <i data-lucide="arrow-left" class="h-4 w-4"></i>
                                 Voltar para todas as matérias
-                            button
-                            h2 class=text-3xl font-bold mb-2Super-assistente de Redação ✨h2
-                            p class=text-gray-600 mb-6Insira um tema e deixe a IA te ajudar a construir uma redação nota 1000!p
+                            </button>
+                            <h2 class="text-3xl font-bold mb-2">Super-assistente de Redação ✨</h2>
+                            <p class="text-gray-600 mb-6">Insira um tema e deixe a IA te ajudar a construir uma redação nota 1000!</p>
 
-                            div class=bg-white p-6 rounded-lg shadow-md
-                                div class=mb-4
-                                    label for=redacao-theme class=block text-gray-700 font-medium mb-2Tema da Redaçãolabel
-                                    div class=flex gap-2
-                                        input type=text id=redacao-theme class=w-full px-4 py-2 border border-gray-300 rounded-lg focusoutline-none focusring-2 focusring-blue-500 placeholder=Ex Desafios da segurança hídrica no Brasil
-                                        button id=btn-random-theme title=Gerar Tema Aleatório class=bg-gray-200 text-gray-700 p-3 rounded-lg hoverbg-gray-300 transition duration-300 flex items-center justify-center
-                                            i data-lucide=sparkles class=w-5 h-5i
-                                        button
-                                    div
-                                div
+                            <div class="bg-white p-6 rounded-lg shadow-md">
+                                <div class="mb-4">
+                                    <label for="redacao-theme" class="block text-gray-700 font-medium mb-2">Tema da Redação</label>
+                                    <div class="flex gap-2">
+                                        <input type="text" id="redacao-theme" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Ex: Desafios da segurança hídrica no Brasil">
+                                        <button id="btn-random-theme" title="Gerar Tema Aleatório" class="bg-gray-200 text-gray-700 p-3 rounded-lg hover:bg-gray-300 transition duration-300 flex items-center justify-center">
+                                            <i data-lucide="sparkles" class="w-5 h-5"></i>
+                                        </button>
+                                    </div>
+                                </div>
 
-                                div class=grid grid-cols-1 mdgrid-cols-2 gap-4 mb-6
-                                    button id=btn-repertorio class=w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hoverbg-blue-700 transition duration-300 flex items-center justify-center gap-2
-                                        i data-lucide=brain-circuiti ✨ Gerar Repertório
-                                    button
-                                    button id=btn-esboco class=w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hoverbg-green-700 transition duration-300 flex items-center justify-center gap-2
-                                    i data-lucide=list-treei ✨ Esboçar Argumentos
-                                    button
-                                div
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                                    <button id="btn-repertorio" class="w-full bg-blue-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-blue-700 transition duration-300 flex items-center justify-center gap-2">
+                                        <i data-lucide="brain-circuit"></i> ✨ Gerar Repertório
+                                    </button>
+                                    <button id="btn-esboco" class="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center gap-2">
+                                    <i data-lucide="list-tree"></i> ✨ Esboçar Argumentos
+                                    </button>
+                                </div>
 
-                                div class=mb-4 border-t pt-6
-                                    label for=redacao-paragraph class=block text-gray-700 font-medium mb-2Analise um parágrafo que você escreveulabel
-                                    textarea id=redacao-paragraph rows=6 class=w-full px-4 py-2 border border-gray-300 rounded-lg focusoutline-none focusring-2 focusring-blue-500 placeholder=Cole aqui o seu parágrafo para receber uma análise construtiva...textarea
-                                    button id=btn-analise class=mt-2 w-full bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg hoverbg-purple-700 transition duration-300 flex items-center justify-center gap-2
-                                        i data-lucide=search-checki ✨ Analisar meu Parágrafo
-                                    button
-                                div
+                                <div class="mb-4 border-t pt-6">
+                                    <label for="redacao-paragraph" class="block text-gray-700 font-medium mb-2">Analise um parágrafo que você escreveu</label>
+                                    <textarea id="redacao-paragraph" rows="6" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" placeholder="Cole aqui o seu parágrafo para receber uma análise construtiva..."></textarea>
+                                    <button id="btn-analise" class="mt-2 w-full bg-purple-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-purple-700 transition duration-300 flex items-center justify-center gap-2">
+                                        <i data-lucide="search-check"></i> ✨ Analisar meu Parágrafo
+                                    </button>
+                                </div>
 
-                                div id=redacao-output class=mt-6 prose max-w-none min-h-[100px] bg-slate-50 p-4 rounded-lg
-                                    p class=text-slate-500O resultado da sua solicitação aparecerá aqui.p
-                                div
-                            div
-                        div
+                                <div id="redacao-output" class="mt-6 prose max-w-none min-h-[100px] bg-slate-50 p-4 rounded-lg">
+                                    <p class="text-slate-500">O resultado da sua solicitação aparecerá aqui.</p>
+                                </div>
+                            </div>
+                        </div>
                     `;
                     
                     document.getElementById('btn-random-theme').addEventListener('click', this.handleGerarTemaAleatorio.bind(this));
@@ -845,41 +845,41 @@ body class=text-gray-800
 
                 } else {
                      detalheDiv.innerHTML = `
-                        div class=max-w-7xl mx-auto
-                            button onclick=window.app.showMateriasHome() class=flex items-center gap-2 mb-6 text-blue-600 hoverunderline font-semibold
-                                i data-lucide=arrow-left class=h-4 w-4i
+                        <div class="max-w-7xl mx-auto">
+                            <button onclick="window.app.showMateriasHome()" class="flex items-center gap-2 mb-6 text-blue-600 hover:underline font-semibold">
+                                <i data-lucide="arrow-left" class="h-4 w-4"></i>
                                 Voltar para todas as matérias
-                            button
-                            h2 class=text-4xl font-bold mb-2${materia.nome}h2
-                            div class=flex flex-wrap gap-3 mb-8 border-b border-slate-200 pb-6
-                                ${materia.frentes.flatMap(f = f.modulos.flatMap(m = m.assuntos)).map(assunto = `a href=#assunto-${assunto.id} onclick=event.preventDefault(); document.getElementById('assunto-${assunto.id}').scrollIntoView({behavior 'smooth', block 'center'}); class=bg-slate-200 text-slate-800 px-4 py-2 rounded-full text-sm font-medium hoverbg-blue-600 hovertext-white transition duration-300${assunto.nome}a`).join('')}
-                            div
+                            </button>
+                            <h2 class="text-4xl font-bold mb-2">${materia.nome}</h2>
+                            <div class="flex flex-wrap gap-3 mb-8 border-b border-slate-200 pb-6">
+                                ${materia.frentes.flatMap(f => f.modulos.flatMap(m => m.assuntos)).map(assunto => `<a href="#assunto-${assunto.id}" onclick="event.preventDefault(); document.getElementById('assunto-${assunto.id}').scrollIntoView({behavior: 'smooth', block: 'center'});" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-600 hover:text-white transition duration-300">${assunto.nome}</a>`).join('')}
+                            </div>
 
-                            ${materia.frentes.map(frente = `
-                                div class=mb-8
-                                    h3 class=text-2xl font-semibold mb-4 border-b border-slate-300 pb-2${frente.nome}h3
-                                    div id=assuntos-container-${frente.nome.replace(sg, '-')} class=space-y-8
-                                        ${frente.modulos.map(modulo = `
-                                            div class=bg-white p-6 rounded-lg shadow-md scroll-mt-24
-                                                h4 class=text-xl font-bold mb-4 text-indigo-600${modulo.nome}h4
-                                                ${modulo.assuntos.map(assunto = `
-                                                    div id=assunto-${assunto.id} class=p-4 border-t border-slate-100
-                                                        h5 class=text-lg font-semibold mb-3${assunto.nome}h5
-                                                        div class=flex flex-wrap gap-2 mb-2
-                                                            button class=tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hoverbg-slate-300 transition onclick=window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'resumo')Resumobutton
-                                                            button class=tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hoverbg-slate-300 transition onclick=window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'completo')Explicação Completabutton
-                                                            button class=tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hoverbg-slate-300 transition onclick=window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'aprofundado')Explicação Aprofundadabutton
-                                                        div
-                                                        div class=conteudo-display prose max-w-none min-h-[50px] text-slate-600 leading-relaxed transition-all duration-300
-                                                        div
-                                                    div
+                            ${materia.frentes.map(frente => `
+                                <div class="mb-8">
+                                    <h3 class="text-2xl font-semibold mb-4 border-b border-slate-300 pb-2">${frente.nome}</h3>
+                                    <div id="assuntos-container-${frente.nome.replace(/\s/g, '-')}" class="space-y-8">
+                                        ${frente.modulos.map(modulo => `
+                                            <div class="bg-white p-6 rounded-lg shadow-md scroll-mt-24">
+                                                <h4 class="text-xl font-bold mb-4 text-indigo-600">${modulo.nome}</h4>
+                                                ${modulo.assuntos.map(assunto => `
+                                                    <div id="assunto-${assunto.id}" class="p-4 border-t border-slate-100">
+                                                        <h5 class="text-lg font-semibold mb-3">${assunto.nome}</h5>
+                                                        <div class="flex flex-wrap gap-2 mb-2">
+                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'resumo')">Resumo</button>
+                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'completo')">Explicação Completa</button>
+                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'aprofundado')">Explicação Aprofundada</button>
+                                                        </div>
+                                                        <div class="conteudo-display prose max-w-none min-h-[50px] text-slate-600 leading-relaxed transition-all duration-300">
+                                                        </div>
+                                                    </div>
                                                 `).join('')}
-                                            div
+                                            </div>
                                         `).join('')}
-                                    div
-                                div
+                                    </div>
+                                </div>
                             `).join('')}
-                        div
+                        </div>
                     `;
                 }
                 
@@ -888,20 +888,20 @@ body class=text-gray-800
                 lucide.createIcons();
             },
 
-            showMateriasHome function() {
+            showMateriasHome: function() {
                 document.getElementById('materia-detalhe').classList.add('hidden');
                 document.getElementById('materias-home').classList.remove('hidden');
             },
 
-            showConteudo async function(button, materiaId, assuntoId, tipo) {
+            showConteudo: async function(button, materiaId, assuntoId, tipo) {
                 const cacheKey = `${this.CACHE_PREFIX}content-${materiaId}-${assuntoId}-${tipo}`;
                 const cachedContent = this.getCache(cacheKey);
 
-                const materia = this.db.materias.find(m = m.id === materiaId);
+                const materia = this.db.materias.find(m => m.id === materiaId);
                 let assunto;
                 for(const frente of materia.frentes) {
                     for(const modulo of frente.modulos) {
-                        const found = modulo.assuntos.find(a = a.id === assuntoId);
+                        const found = modulo.assuntos.find(a => a.id === assuntoId);
                         if (found) {
                             assunto = found;
                             break;
@@ -913,23 +913,23 @@ body class=text-gray-800
                 const container = button.closest('.p-4');
                 const displayDiv = container.querySelector('.conteudo-display');
                 
-                container.parentElement.querySelectorAll('.tab-button').forEach(btn = btn.classList.remove('active'));
+                container.parentElement.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
                 
-                displayDiv.innerHTML = `div class=flex items-center justify-center space-x-2div class=animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600divpCarregando...pdiv`;
+                displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Carregando...</p></div>`;
                 displayDiv.style.opacity = 1;
 
                 if (cachedContent) {
-                    setTimeout(() = {
+                    setTimeout(() => {
                         displayDiv.innerHTML = cachedContent;
                     }, 200);
                     return;
                 }
                 
                 const promptMapping = {
-                    resumo `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de ${assunto.nome} em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    completo `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre ${assunto.nome} em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir 1. Teoria Essencial Explique os conceitos fundamentais de forma clara. 2. Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química) Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. Exemplos Práticos Resolvidos Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. Dicas para a Prova Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    aprofundado `Gere uma explicação aprofundada e muito extensa sobre ${assunto.nome} em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
+                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${assunto.nome}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${assunto.nome}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
                 };
                 const promptText = promptMapping[tipo];
                 
@@ -938,8 +938,8 @@ body class=text-gray-800
                 displayDiv.innerHTML = generatedContent;
             },
 
-             --- LÓGICA PARA REDAÇÃO ---
-            handleGerarTemaAleatorio async function(event) {
+            // --- LÓGICA PARA REDAÇÃO ---
+            handleGerarTemaAleatorio: async function(event) {
                 const button = event.currentTarget;
                 const input = document.getElementById('redacao-theme');
                 const icon = button.querySelector('i');
@@ -957,11 +957,11 @@ body class=text-gray-800
                     return;
                 }
                 
-                const prompt = `Aja como um especialista em formular temas de redação para o ENEM, com profundo conhecimento das problemáticas atuais do Brasil. Crie um único tema de redação dissertativo-argumentativo. O tema deve refletir um desafio social, cultural, ambiental ou político relevante no Brasil contemporâneo. A resposta deve conter APENAS o texto do tema, sem aspas, introduções ou qualquer texto adicional. Por exemplo 'A persistência da violência contra a mulher na sociedade brasileira'.`;
+                const prompt = `Aja como um especialista em formular temas de redação para o ENEM, com profundo conhecimento das problemáticas atuais do Brasil. Crie um único tema de redação dissertativo-argumentativo. O tema deve refletir um desafio social, cultural, ambiental ou político relevante no Brasil contemporâneo. A resposta deve conter APENAS o texto do tema, sem aspas, introduções ou qualquer texto adicional. Por exemplo: 'A persistência da violência contra a mulher na sociedade brasileira'.`;
 
                 try {
                     const theme = await this.callGeminiAPI(prompt, false);
-                    const cleanTheme = theme.replace(g, '');
+                    const cleanTheme = theme.replace(/"/g, '');
                     input.value = cleanTheme;
                     this.setCache(cacheKey, cleanTheme);
                 } catch (error) {
@@ -973,71 +973,71 @@ body class=text-gray-800
                 }
             },
             
-            handleGerarRepertorio async function() {
+            handleGerarRepertorio: async function() {
                 const theme = document.getElementById('redacao-theme').value;
                 const outputDiv = document.getElementById('redacao-output');
                 if (!theme) {
-                    outputDiv.innerHTML = `p class=text-red-600Por favor, insira um tema para a redação.p`;
+                    outputDiv.innerHTML = `<p class="text-red-600">Por favor, insira um tema para a redação.</p>`;
                     return;
                 }
                 
-                outputDiv.innerHTML = `div class=flex items-center justify-center space-x-2div class=animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600divpBuscando repertório...pdiv`;
-                const cacheKey = `${this.CACHE_PREFIX}repertorio-${theme.replace(sg, '_')}`;
+                outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Buscando repertório...</p></div>`;
+                const cacheKey = `${this.CACHE_PREFIX}repertorio-${theme.replace(/\s/g, '_')}`;
                 const cachedData = this.getCache(cacheKey);
                 if(cachedData) {
                     outputDiv.innerHTML = cachedData;
                     return;
                 }
 
-                const prompt = `Aja como um professor de cursinho especialista em redação para o ENEM. Para o tema ${theme}, gere um repertório sociocultural rico e variado. Organize a resposta em seções claras usando H3 para títulos (###) 'Contexto Histórico', 'Filosofia e Sociologia', 'Livros e Filmes', e 'Dados e Estatísticas'. Para cada item, forneça uma breve explicação de como ele pode ser usado na argumentação. Seja criativo e forneça referências que ajudem o aluno a se destacar.`;
+                const prompt = `Aja como um professor de cursinho especialista em redação para o ENEM. Para o tema "${theme}", gere um repertório sociocultural rico e variado. Organize a resposta em seções claras usando H3 para títulos (###): 'Contexto Histórico', 'Filosofia e Sociologia', 'Livros e Filmes', e 'Dados e Estatísticas'. Para cada item, forneça uma breve explicação de como ele pode ser usado na argumentação. Seja criativo e forneça referências que ajudem o aluno a se destacar.`;
                 
                 const result = await this.generateContentWithGemini(prompt);
                 this.setCache(cacheKey, result);
                 outputDiv.innerHTML = result;
             },
 
-            handleEsbocarArgumentos async function() {
+            handleEsbocarArgumentos: async function() {
                 const theme = document.getElementById('redacao-theme').value;
                 const outputDiv = document.getElementById('redacao-output');
                 if (!theme) {
-                    outputDiv.innerHTML = `p class=text-red-600Por favor, insira um tema para a redação.p`;
+                    outputDiv.innerHTML = `<p class="text-red-600">Por favor, insira um tema para a redação.</p>`;
                     return;
                 }
 
-                outputDiv.innerHTML = `div class=flex items-center justify-center space-x-2div class=animate-spin rounded-full h-8 w-8 border-b-2 border-green-600divpMontando o esboço...pdiv`;
-                 const cacheKey = `${this.CACHE_PREFIX}esboco-${theme.replace(sg, '_')}`;
+                outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div><p>Montando o esboço...</p></div>`;
+                 const cacheKey = `${this.CACHE_PREFIX}esboco-${theme.replace(/\s/g, '_')}`;
                 const cachedData = this.getCache(cacheKey);
                 if(cachedData) {
                     outputDiv.innerHTML = cachedData;
                     return;
                 }
 
-                const prompt = `Aja como um corretor de redação nota 1000 do ENEM. Para o tema ${theme}, crie um esboço de projeto de texto dissertativo-argumentativo. A estrutura deve ser 1. Introdução (com tese clara). 2. Desenvolvimento 1 (tópico frasal e argumentos). 3. Desenvolvimento 2 (tópico frasal e argumentos). 4. Conclusão (com uma Proposta de Intervenção completa, detalhando Agente, Ação, MeioModo, Finalidade e Detalhamento). Use títulos H3 (###) para cada seção.`;
+                const prompt = `Aja como um corretor de redação nota 1000 do ENEM. Para o tema "${theme}", crie um esboço de projeto de texto dissertativo-argumentativo. A estrutura deve ser: 1. Introdução (com tese clara). 2. Desenvolvimento 1 (tópico frasal e argumentos). 3. Desenvolvimento 2 (tópico frasal e argumentos). 4. Conclusão (com uma Proposta de Intervenção completa, detalhando Agente, Ação, Meio/Modo, Finalidade e Detalhamento). Use títulos H3 (###) para cada seção.`;
                 
                 const result = await this.generateContentWithGemini(prompt);
                 this.setCache(cacheKey, result);
                 outputDiv.innerHTML = result;
             },
 
-            handleAnalisarParagrafo async function() {
+            handleAnalisarParagrafo: async function() {
                 const theme = document.getElementById('redacao-theme').value;
                 const paragraph = document.getElementById('redacao-paragraph').value;
                 const outputDiv = document.getElementById('redacao-output');
 
-                if (!theme  !paragraph) {
-                    outputDiv.innerHTML = `p class=text-red-600Por favor, insira o tema e o parágrafo que você deseja analisar.p`;
+                if (!theme || !paragraph) {
+                    outputDiv.innerHTML = `<p class="text-red-600">Por favor, insira o tema e o parágrafo que você deseja analisar.</p>`;
                     return;
                 }
 
-                outputDiv.innerHTML = `div class=flex items-center justify-center space-x-2div class=animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600divpAnalisando seu parágrafo...pdiv`;
-                const cacheKey = `${this.CACHE_PREFIX}analise-${theme.replace(sg, '_')}-${paragraph.substring(0, 30)}`;
+                outputDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div><p>Analisando seu parágrafo...</p></div>`;
+                const cacheKey = `${this.CACHE_PREFIX}analise-${theme.replace(/\s/g, '_')}-${paragraph.substring(0, 30)}`;
                 const cachedData = this.getCache(cacheKey);
                 if(cachedData) {
                     outputDiv.innerHTML = cachedData;
                     return;
                 }
 
-                const prompt = `Aja como um professor de redação atencioso e construtivo. O tema da redação é ${theme}. Analise o seguinte parágrafo escrito por um aluno ${paragraph}. Forneça um feedback em tópicos, focando em 1. Coesão e Coerência. 2. Força da Argumentação. 3. Correção Gramatical. 4. Uso do Repertório. IMPORTANTE Não reescreva o parágrafo para o aluno. Apenas aponte os pontos fortes e as áreas que podem ser melhoradas, sugerindo o que o aluno deve pensar para aprimorar o texto.`;
+                const prompt = `Aja como um professor de redação atencioso e construtivo. O tema da redação é "${theme}". Analise o seguinte parágrafo escrito por um aluno: "${paragraph}". Forneça um feedback em tópicos, focando em: 1. Coesão e Coerência. 2. Força da Argumentação. 3. Correção Gramatical. 4. Uso do Repertório. IMPORTANTE: Não reescreva o parágrafo para o aluno. Apenas aponte os pontos fortes e as áreas que podem ser melhoradas, sugerindo o que o aluno deve pensar para aprimorar o texto.`;
                 
                 const result = await this.generateContentWithGemini(prompt);
                 this.setCache(cacheKey, result);
@@ -1045,32 +1045,32 @@ body class=text-gray-800
             },
 
 
-             --- LÓGICA PARA QUESTÕES ---
-            setInitialQuestaoState function() {
+            // --- LÓGICA PARA QUESTÕES ---
+            setInitialQuestaoState: function() {
                 const questoesList = document.getElementById('questoes-list');
-                questoesList.innerHTML = `p class=text-center text-slate-500Selecione uma disciplina e um assunto para gerar questões.p`;
+                questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um assunto para gerar questões.</p>`;
                 document.getElementById('generate-questions-btn').disabled = true;
             },
 
-            populateFilters function() {
+            populateFilters: function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
-                disciplinaSelect.innerHTML = 'option value=todosSelecione uma Disciplinaoption';
-                this.db.materias.forEach(m = {
-                    disciplinaSelect.innerHTML += `option value=${m.id}${m.nome}option`;
+                disciplinaSelect.innerHTML = '<option value="todos">Selecione uma Disciplina</option>';
+                this.db.materias.forEach(m => {
+                    disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
             },
             
-            updateAssuntoFilter function(disciplinaId) {
+            updateAssuntoFilter: function(disciplinaId) {
                 const assuntoSelect = document.getElementById('filtro-assunto');
-                assuntoSelect.innerHTML = 'option value=todosSelecione um Assuntooption';
+                assuntoSelect.innerHTML = '<option value="todos">Selecione um Assunto</option>';
                 if (disciplinaId !== 'todos') {
-                    const materia = this.db.materias.find(m = m.id === disciplinaId);
+                    const materia = this.db.materias.find(m => m.id === disciplinaId);
                     if(materia && materia.frentes) {
-                        materia.frentes.forEach(frente = {
+                        materia.frentes.forEach(frente => {
                             const optgroup = document.createElement('optgroup');
                             optgroup.label = frente.nome;
-                            frente.modulos.forEach(modulo = {
-                                modulo.assuntos.forEach(assunto = {
+                            frente.modulos.forEach(modulo => {
+                                modulo.assuntos.forEach(assunto => {
                                     const option = document.createElement('option');
                                     option.value = assunto.id;
                                     option.textContent = assunto.nome;
@@ -1084,17 +1084,17 @@ body class=text-gray-800
                 this.renderQuestoes();
             },
 
-            addFilterListeners function() {
+            addFilterListeners: function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
                 const assuntoSelect = document.getElementById('filtro-assunto');
                 const generateBtn = document.getElementById('generate-questions-btn');
 
-                disciplinaSelect.addEventListener('change', (e) = {
+                disciplinaSelect.addEventListener('change', (e) => {
                     this.updateAssuntoFilter(e.target.value);
                     this.checkIfCanGenerate();
                 });
 
-                assuntoSelect.addEventListener('change', () = {
+                assuntoSelect.addEventListener('change', () => {
                     this.renderQuestoes();
                     this.checkIfCanGenerate();
                 });
@@ -1102,22 +1102,22 @@ body class=text-gray-800
                 generateBtn.addEventListener('click', this.handleGenerateQuestionsClick.bind(this));
             },
 
-            checkIfCanGenerate function() {
+            checkIfCanGenerate: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
                 const assunto = document.getElementById('filtro-assunto').value;
                 const btn = document.getElementById('generate-questions-btn');
                 
-                btn.disabled = (disciplina === 'todos'  assunto === 'todos');
+                btn.disabled = (disciplina === 'todos' || assunto === 'todos');
                 
-                const filtered = this.db.questoes.filter(q = q.disciplina === disciplina && q.assunto === assunto);
-                if(filtered.length  0) {
+                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === assunto);
+                if(filtered.length > 0) {
                      btn.innerHTML = 'Gerar Mais 10 Questões';
                 } else {
                      btn.innerHTML = 'Gerar Questões';
                 }
             },
 
-            handleGenerateQuestionsClick async function() {
+            handleGenerateQuestionsClick: async function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
                 const assuntoSelect = document.getElementById('filtro-assunto');
                 const btn = document.getElementById('generate-questions-btn');
@@ -1126,11 +1126,11 @@ body class=text-gray-800
                 const disciplinaId = disciplinaSelect.value;
                 const assuntoId = assuntoSelect.value;
 
-                const materia = this.db.materias.find(m = m.id === disciplinaId);
+                const materia = this.db.materias.find(m => m.id === disciplinaId);
                 let assunto;
                 for(const frente of materia.frentes) {
                     for(const modulo of frente.modulos) {
-                        const found = modulo.assuntos.find(a = a.id === assuntoId);
+                        const found = modulo.assuntos.find(a => a.id === assuntoId);
                         if (found) {
                             assunto = found;
                             break;
@@ -1140,12 +1140,12 @@ body class=text-gray-800
                 }
                 
                 btn.disabled = true;
-                btn.innerHTML = `div class=flex items-center justify-centerdiv class=animate-spin rounded-full h-5 w-5 border-b-2 border-whitedivdiv`;
+                btn.innerHTML = `<div class="flex items-center justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div></div>`;
 
                 try {
                     const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, assunto.nome);
                     
-                    newQuestoes.forEach(q = {
+                    newQuestoes.forEach(q => {
                         q.disciplina = disciplinaId;
                         q.assunto = assuntoId;
                     });
@@ -1155,76 +1155,76 @@ body class=text-gray-800
                     this.renderQuestoes();
 
                 } catch (error) {
-                    if(questoesList.children.length === 0  questoesList.children[0].tagName === 'P') {
-                        questoesList.innerHTML = `div class=bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative role=alert
-                                                      strong class=font-boldErro!strong
-                                                      span class=block sminline${error.message}span
-                                                    div`;
+                    if(questoesList.children.length === 0 || questoesList.children[0].tagName === 'P') {
+                        questoesList.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                                                      <strong class="font-bold">Erro!</strong>
+                                                      <span class="block sm:inline">${error.message}</span>
+                                                    </div>`;
                     } else {
-                        alert(`Erro ao gerar mais questões ${error.message}`);
+                        alert(`Erro ao gerar mais questões: ${error.message}`);
                     }
                 } finally {
                     this.checkIfCanGenerate();
                 }
             },
 
-            renderQuestoes function() {
+            renderQuestoes: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
                 const assunto = document.getElementById('filtro-assunto').value;
                 const questoesList = document.getElementById('questoes-list');
 
-                const filteredQuestoes = this.db.questoes.filter(q = {
-                    return (disciplina === 'todos'  q.disciplina === disciplina) &&
-                           (assunto === 'todos'  q.assunto === assunto);
+                const filteredQuestoes = this.db.questoes.filter(q => {
+                    return (disciplina === 'todos' || q.disciplina === disciplina) &&
+                           (assunto === 'todos' || q.assunto === assunto);
                 });
                 
                 if (filteredQuestoes.length === 0) {
                     this.setInitialQuestaoState();
                      if (disciplina !== 'todos' && assunto !== 'todos') {
-                        questoesList.innerHTML = 'p class=text-center text-slate-500Ainda não há questões para este tópico. Clique em Gerar Questões para criá-las.p';
+                        questoesList.innerHTML = '<p class="text-center text-slate-500">Ainda não há questões para este tópico. Clique em "Gerar Questões" para criá-las.</p>';
                     }
                     return;
                 }
 
-                questoesList.innerHTML = filteredQuestoes.map((q) = `
-                    div class=bg-white p-6 rounded-lg shadow-md
-                        p class=text-sm font-semibold text-blue-600 mb-2${q.banca}p
-                        p class=mb-4 text-slate-700${q.enunciado}p
-                        div id=alternativas-${q.id} class=space-y-3
-                            ${(q.alternativas  []).map((alt, altIndex) = `
-                                div class=alternative-item flex items-start
-                                    button class=eliminate-btn p-1 mr-2 text-slate-400 hovertext-red-500 flex-shrink-0 title=Eliminar alternativa onclick=this.nextElementSibling.classList.toggle('line-through'); this.nextElementSibling.classList.toggle('opacity-50')
-                                        i data-lucide=x-circle class=w-4 h-4i
-                                    button
-                                    label class=flex items-start w-full cursor-pointer
-                                        input type=radio name=questao-${q.id} value=${altIndex} class=mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focusring-blue-500 flex-shrink-0
-                                        div class=flex-grow
-                                            span${String.fromCharCode(65 + altIndex)}) ${alt.texto}span
-                                            div id=incorrect-explanation-${q.id}-${altIndex} class=hidden mt-2div
-                                        div
-                                     label
-                                div
+                questoesList.innerHTML = filteredQuestoes.map((q) => `
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <p class="text-sm font-semibold text-blue-600 mb-2">${q.banca}</p>
+                        <p class="mb-4 text-slate-700">${q.enunciado}</p>
+                        <div id="alternativas-${q.id}" class="space-y-3">
+                            ${(q.alternativas || []).map((alt, altIndex) => `
+                                <div class="alternative-item flex items-start">
+                                    <button class="eliminate-btn p-1 mr-2 text-slate-400 hover:text-red-500 flex-shrink-0" title="Eliminar alternativa" onclick="this.nextElementSibling.classList.toggle('line-through'); this.nextElementSibling.classList.toggle('opacity-50')">
+                                        <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                    </button>
+                                    <label class="flex items-start w-full cursor-pointer">
+                                        <input type="radio" name="questao-${q.id}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
+                                        <div class="flex-grow">
+                                            <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto}</span>
+                                            <div id="incorrect-explanation-${q.id}-${altIndex}" class="hidden mt-2"></div>
+                                        </div>
+                                     </label>
+                                </div>
                             `).join('')}
-                        div
-                        button class=mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hoverbg-blue-700 transition onclick=window.app.checkAnswer('${q.id}')Confirmar Respostabutton
-                        div id=resultado-${q.id} class=hidden mt-4 p-4 rounded-mddiv
-                    div
+                        </div>
+                        <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="window.app.checkAnswer('${q.id}')">Confirmar Resposta</button>
+                        <div id="resultado-${q.id}" class="hidden mt-4 p-4 rounded-md"></div>
+                    </div>
                 `).join('');
                 lucide.createIcons();
             },
 
-            checkAnswer function(questaoId) {
-                const questao = this.db.questoes.find(q = q.id === questaoId);
+            checkAnswer: function(questaoId) {
+                const questao = this.db.questoes.find(q => q.id === questaoId);
                 if (!questao) return;
                 
-                const selectedRadio = document.querySelector(`input[name=questao-${questaoId}]checked`);
+                const selectedRadio = document.querySelector(`input[name="questao-${questaoId}"]:checked`);
                 const resultadoDiv = document.getElementById(`resultado-${questao.id}`);
                 resultadoDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
 
                 if (!selectedRadio) {
                     resultadoDiv.classList.remove('hidden');
                     resultadoDiv.classList.add('bg-yellow-100', 'text-yellow-800');
-                    resultadoDiv.innerHTML = `strongAtençãostrong Por favor, selecione uma alternativa.`;
+                    resultadoDiv.innerHTML = `<strong>Atenção:</strong> Por favor, selecione uma alternativa.`;
                     return;
                 }
                 
@@ -1233,49 +1233,50 @@ body class=text-gray-800
                 
                 resultadoDiv.classList.remove('hidden');
 
-                const correctMessages = [Excelente! Você acertou., Correto! Ótimo raciocínio., Mandou bem! Resposta correta., Isso aí! A resposta está correta.];
+                const correctMessages = ["Excelente! Você acertou.", "Correto! Ótimo raciocínio.", "Mandou bem! Resposta correta.", "Isso aí! A resposta está correta."];
                 if (isCorrect) {
-                    const randomMessage = correctMessages[Math.floor(Math.random()  correctMessages.length)];
+                    const randomMessage = correctMessages[Math.floor(Math.random() * correctMessages.length)];
                     resultadoDiv.classList.add('bg-green-100', 'text-green-800');
-                    resultadoDiv.innerHTML = `strong${randomMessage}strongbrbr${questao.resolucao}`;
+                    resultadoDiv.innerHTML = `<strong>${randomMessage}</strong><br><br>${questao.resolucao}`;
                 } else {
                     resultadoDiv.classList.add('bg-red-100', 'text-red-800');
-                    const correctAlternativeIndex = questao.alternativas.findIndex(a = a.correta);
+                    const correctAlternativeIndex = questao.alternativas.findIndex(a => a.correta);
                     const correctLetter = String.fromCharCode(65 + correctAlternativeIndex);
-                    resultadoDiv.innerHTML = `strongQuase lá!strong A resposta correta é a alternativa ${correctLetter}.brbrstrongResoluçãostrongbr${questao.resolucao}`;
+                    resultadoDiv.innerHTML = `<strong>Quase lá!</strong> A resposta correta é a alternativa ${correctLetter}.<br><br><strong>Resolução:</strong><br>${questao.resolucao}`;
                 }
                 
-                 Adiciona botões para explicar alternativas incorretas
-                questao.alternativas.forEach((alt, index) = {
+                // Adiciona botões para explicar alternativas incorretas
+                questao.alternativas.forEach((alt, index) => {
                     if (!alt.correta) {
                         const altContainer = document.getElementById(`incorrect-explanation-${questao.id}-${index}`);
-                        altContainer.innerHTML = `button class=text-xs text-blue-600 hoverunderline font-semibold onclick=window.app.explainIncorrectAlternative(this, '${questao.id}', ${index})Por que está erradabutton`;
+                        altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="window.app.explainIncorrectAlternative(this, '${questao.id}', ${index})">Por que está errada?</button>`;
                         altContainer.classList.remove('hidden');
                     }
                 });
             },
 
-            explainIncorrectAlternative function(button, questaoId, alternativeIndex) {
+            explainIncorrectAlternative: function(button, questaoId, alternativeIndex) {
                 button.disabled = true;
                 const explanationDiv = document.getElementById(`incorrect-explanation-${questaoId}-${alternativeIndex}`);
                 
-                const questao = this.db.questoes.find(q = q.id === questaoId);
+                const questao = this.db.questoes.find(q => q.id === questaoId);
                 const alternativa = questao.alternativas[alternativeIndex];
 
-                 Usa a justificativa pré-gerada
-                const explanation = alternativa.justificativa_erro  Não foi possível carregar a justificativa para este erro.;
+                // Usa a justificativa pré-gerada
+                const explanation = alternativa.justificativa_erro || "Não foi possível carregar a justificativa para este erro.";
                 
-                explanationDiv.innerHTML = `p class=text-xs text-red-700 mt-1 p-2 bg-red-50 rounded-md border-l-2 border-red-500${explanation}p`;
+                explanationDiv.innerHTML = `<p class="text-xs text-red-700 mt-1 p-2 bg-red-50 rounded-md border-l-2 border-red-500">${explanation}</p>`;
             },
         };
 
-         Torna o objeto 'app' global para que os 'onclick' no HTML possam acessá-lo
+        // Torna o objeto 'app' global para que os 'onclick' no HTML possam acessá-lo
         window.app = app;
-         Inicia a aplicação
+        // Inicia a aplicação
         app.init();
 
-    script
+    </script>
 
-body
-html
+</body>
+</html>
+
 
