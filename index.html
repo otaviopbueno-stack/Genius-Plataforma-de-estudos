@@ -549,32 +549,6 @@
                 this.addFilterListeners();
                 this.setInitialQuestaoState();
                 
-                this.initializeFirebase();
-            },
-
-            initializeFirebase: async function() {
-                const firebaseConfig = {
-                    apiKey: "SUA_API_KEY_DO_FIREBASE",
-                    authDomain: "SEU_AUTH_DOMAIN",
-                    projectId: "SEU_PROJECT_ID",
-                    storageBucket: "SEU_STORAGE_BUCKET",
-                    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-                    appId: "SEU_APP_ID"
-                };
-
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_DO_FIREBASE" && firebaseConfig.projectId !== "SEU_PROJECT_ID") {
-                    try {
-                        const firebaseApp = initializeApp(firebaseConfig);
-                        this.firestoreDb = getFirestore(firebaseApp);
-                        const auth = getAuth(firebaseApp);
-                        await signInAnonymously(auth);
-                        console.log("Firebase conectado e usuário anônimo autenticado.");
-                    } catch (error) {
-                        console.error("Erro ao inicializar o Firebase. Verifique se suas chaves de configuração estão corretas.", error);
-                    }
-                } else {
-                    console.warn("Configuração do Firebase não encontrada ou incompleta. As funcionalidades de salvamento na nuvem estão desativadas.");
-                }
             },
             
             // --- LÓGICA DE CACHE ---
@@ -615,7 +589,7 @@
             
             // --- FUNÇÕES DE CHAMADA DA API GEMINI ---
             callGeminiAPI: async function(prompt, isJson = false) {
-                if (this.GEMINI_API_KEY === "SUA_CHAVE_API_AQUI") {
+                if (this.GEMINI_API_KEY === "AIzaSyApfgrF2mN0PGqoBOOn3AD6unH0BUqLDig") {
                     throw new Error("Chave de API do Gemini não configurada.");
                 }
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${this.GEMINI_API_KEY}`;
@@ -1270,5 +1244,6 @@
 
 </body>
 </html>
+
 
 
