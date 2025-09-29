@@ -245,7 +245,7 @@
                             { 
                                 nome: 'Matemática Básica e Álgebra',
                                 modulos: [
-                                    { nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações numéricas'},{id: 'razoes-proporcoes', nome: 'Razões, proporções e escalas'},{id: 'regra-de-tres', nome: 'Regra de três'},{id: 'porcentagem', nome: 'Porcentagem'}]},
+                                    { nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações numéricas', subconteudos: [{id: 'basicas', nome: '4 Operações Básicas'}, {id: 'pot-rad', nome: 'Potenciação e Radiciação'}]}, {id: 'razoes-proporcoes', nome: 'Razões e Proporções', subconteudos: [{id: 'razao-prop', nome: 'Razão e Proporção'}, {id: 'escalas', nome: 'Escalas e Grandezas'}]}, {id: 'regra-de-tres', nome: 'Regra de três'},{id: 'porcentagem', nome: 'Porcentagem'}]},
                                     { nome: 'Módulo 2: Funções', assuntos: [{id: 'funcao-afim', nome: 'Função afim (1º grau)'},{id: 'funcao-quadratica', nome: 'Função quadrática (2º grau)'},{id: 'funcao-modular', nome: 'Função modular'},{id: 'funcao-composta-inversa', nome: 'Função composta e inversa'}]},
                                     { nome: 'Módulo 3: Funções Transcendentais', assuntos: [{id: 'funcao-exponencial', nome: 'Função exponencial'},{id: 'funcao-logaritmica', nome: 'Função logarítmica'}]},
                                     { nome: 'Módulo 4: Álgebra Avançada', assuntos: [{id: 'polinomios', nome: 'Polinômios'},{id: 'equacoes', nome: 'Equações e inequações'},{id: 'sistemas-equacoes', nome: 'Sistemas de equações'},{id: 'numeros-complexos', nome: 'Números complexos'},{id: 'matrizes-determinantes', nome: 'Matrizes e determinantes'}]}
@@ -254,7 +254,7 @@
                             {
                                 nome: 'Geometria e Trigonometria',
                                 modulos: [
-                                    { nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e quadriláteros'},{id: 'circulo-circunferencia', nome: 'Círculo e circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de figuras planas'}]},
+                                    { nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e quadriláteros', subconteudos: [{id: 'semelhanca-tri', nome: 'Semelhança de Triângulos'}, {id: 'teo-pitagoras', nome: 'Teorema de Pitágoras'}]}, {id: 'circulo-circunferencia', nome: 'Círculo e circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de figuras planas'}]},
                                     { nome: 'Módulo 2: Geometria Espacial', assuntos: [{id: 'prismas-piramides', nome: 'Prismas e pirâmides'},{id: 'cilindros-cones', nome: 'Cilindros e cones'},{id: 'esferas', nome: 'Esferas'},{id: 'volumes-areas', nome: 'Volumes e áreas de superfície'}]},
                                     { nome: 'Módulo 3: Geometria Analítica', assuntos: [{id: 'ponto-reta-circunferencia', nome: 'Ponto, reta e circunferência'},{id: 'conicas', nome: 'Cônicas'}]},
                                     { nome: 'Módulo 4: Trigonometria', assuntos: [{id: 'razoes-trigonometricas', nome: 'Razões trigonométricas'},{id: 'ciclo-trigonometrico', nome: 'Ciclo e funções trigonométricas'},{id: 'leis-seno-cosseno', nome: 'Leis do seno e do cosseno'}]}
@@ -263,7 +263,7 @@
                             {
                                 nome: 'Estatística e Lógica',
                                 modulos: [
-                                    { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise combinatória'},{id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística descritiva'}]},
+                                    { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise combinatória'},{id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística descritiva', subconteudos: [{id: 'medidas-tend-central', nome: 'Medidas de Tendência Central'}, {id: 'medidas-dispersao', nome: 'Medidas de Dispersão'}]}]},
                                     { nome: 'Módulo 2: Matemática Financeira e Sequências', assuntos: [{id: 'juros', nome: 'Juros simples e compostos'},{id: 'pa-pg', nome: 'Progressões (PA e PG)'},{id: 'sequencias-numericas', nome: 'Sequências numéricas'},{id: 'raciocinio-logico', nome: 'Raciocínio lógico'}]}
                                 ]
                             }
@@ -278,28 +278,28 @@
                             {
                                 nome: 'Mecânica',
                                 modulos: [
-                                    { nome: 'Módulo 1: Cinemática', assuntos: [{id: 'cinematica', nome: 'Cinemática'}]},
-                                    { nome: 'Módulo 2: Leis de Newton e Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton e Dinâmica'}]},
-                                    { nome: 'Módulo 3: Trabalho, Energia e Potência', assuntos: [{id: 'trabalho-energia-potencia', nome: 'Trabalho, Energia e Potência'}]},
+                                    { nome: 'Módulo 1: Cinemática', assuntos: [{id: 'cinematica', nome: 'Cinemática', subconteudos: [{id: 'mru', nome: 'MRU'}, {id: 'mruv', nome: 'MRUV'}, {id: 'mov-circular', nome: 'Movimento Circular'}]}]},
+                                    { nome: 'Módulo 2: Leis de Newton e Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton e Dinâmica', subconteudos: [{id: 'primeira-lei', nome: '1ª Lei (Inércia)'}, {id: 'segunda-lei', nome: '2ª Lei (F=ma)'}, {id: 'terceira-lei', nome: '3ª Lei (Ação e Reação)'}, {id: 'forcas', nome: 'Tipos de Força (Peso, Normal, Atrito)'}]}]},
+                                    { nome: 'Módulo 3: Trabalho, Energia e Potência', assuntos: [{id: 'trabalho-energia-potencia', nome: 'Trabalho, Energia e Potência', subconteudos: [{id: 'trab-forca', nome: 'Trabalho de uma Força'}, {id: 'energia-cin-pot', nome: 'Energia Cinética e Potencial'}, {id: 'conservacao-energia', nome: 'Conservação de Energia'}]}]},
                                     { nome: 'Módulo 4: Impulso e Quantidade de Movimento', assuntos: [{id: 'impulso-quantidade-movimento', nome: 'Impulso e Colisões'}]},
-                                    { nome: 'Módulo 5: Estática e Hidrostática', assuntos: [{id: 'estatica-hidrostatica', nome: 'Estática e Hidrostática'}]},
-                                    { nome: 'Módulo 6: Gravitação Universal', assuntos: [{id: 'gravitacao-universal', nome: 'Gravitação Universal'}]}
+                                    { nome: 'Módulo 5: Estática e Hidrostática', assuntos: [{id: 'estatica-hidrostatica', nome: 'Estática e Hidrostática', subconteudos: [{id: 'equilibrio-corpos', nome: 'Equilíbrio de Corpos'}, {id: 'empuxo-pascal', nome: 'Teoremas de Pascal, Arquimedes e Stevin'}]}]},
+                                    { nome: 'Módulo 6: Gravitação Universal', assuntos: [{id: 'gravitacao-universal', nome: 'Gravitação Universal', subconteudos: [{id: 'leis-kepler', nome: 'Leis de Kepler'}, {id: 'lei-grav-newton', nome: 'Lei da Gravitação de Newton'}]}]}
                                 ]
                             },
                             {
                                 nome: 'Termologia e Óptica',
                                 modulos: [
-                                    { nome: 'Módulo 1: Termometria e Calorimetria', assuntos: [{id: 'termometria-calorimetria', nome: 'Termometria e Calorimetria'}]},
-                                    { nome: 'Módulo 2: Termodinâmica e Gases', assuntos: [{id: 'termodinamica-gases', nome: 'Termodinâmica e Gases'}]},
-                                    { nome: 'Módulo 3: Óptica Geométrica', assuntos: [{id: 'optica-geometrica', nome: 'Óptica Geométrica'}]}
+                                    { nome: 'Módulo 1: Termometria e Calorimetria', assuntos: [{id: 'termometria-calorimetria', nome: 'Termometria e Calorimetria', subconteudos: [{id: 'escalas-term', nome: 'Escalas Termométricas'}, {id: 'calor-sens-lat', nome: 'Calor Sensível e Latente'}, {id: 'transm-calor', nome: 'Transmissão de Calor'}]}]},
+                                    { nome: 'Módulo 2: Termodinâmica e Gases', assuntos: [{id: 'termodinamica-gases', nome: 'Termodinâmica e Gases', subconteudos: [{id: 'gases-ideais', nome: 'Gases Ideais'}, {id: 'leis-termo', nome: 'Leis da Termodinâmica'}]}]},
+                                    { nome: 'Módulo 3: Óptica Geométrica', assuntos: [{id: 'optica-geometrica', nome: 'Óptica Geométrica', subconteudos: [{id: 'reflexao-espelhos', nome: 'Reflexão e Espelhos'}, {id: 'refracao-lentes', nome: 'Refração e Lentes'}]}]}
                                 ]
                             },
                             {
                                 nome: 'Ondulatória e Eletromagnetismo',
                                 modulos: [
-                                    { nome: 'Módulo 1: Ondulatória', assuntos: [{id: 'ondulatoria', nome: 'Ondulatória'}]},
+                                    { nome: 'Módulo 1: Ondulatória', assuntos: [{id: 'ondulatoria', nome: 'Ondulatória', subconteudos: [{id: 'fen-ondul', nome: 'Fenômenos Ondulatórios'}, {id: 'acustica', nome: 'Acústica'}]}]},
                                     { nome: 'Módulo 2: Eletrostática', assuntos: [{id: 'eletrostatica', nome: 'Eletrostática'}]},
-                                    { nome: 'Módulo 3: Eletrodinâmica', assuntos: [{id: 'eletrodinamica', nome: 'Eletrodinâmica'}]},
+                                    { nome: 'Módulo 3: Eletrodinâmica', assuntos: [{id: 'eletrodinamica', nome: 'Eletrodinâmica', subconteudos: [{id: 'corrente-resist', nome: 'Corrente e Resistores'}, {id: 'circuitos', nome: 'Circuitos Elétricos'}, {id: 'pot-ele', nome: 'Potência Elétrica'}]}]},
                                     { nome: 'Módulo 4: Magnetismo e Eletromagnetismo', assuntos: [{id: 'magnetismo-eletromagnetismo', nome: 'Magnetismo'}]},
                                     { nome: 'Módulo 5: Física Moderna', assuntos: [{id: 'fisica-moderna', nome: 'Física Moderna'}]}
                                 ]
@@ -315,9 +315,9 @@
                              {
                                 nome: 'Química Geral',
                                 modulos: [
-                                    { nome: 'Módulo 1: Estrutura da Matéria', assuntos: [{id: 'estrutura-atomica', nome: 'Estrutura atômica'}]},
-                                    { nome: 'Módulo 2: Tabela Periódica e Propriedades', assuntos: [{id: 'tabela-periodica', nome: 'Tabela Periódica'}]},
-                                    { nome: 'Módulo 3: Ligações e Interações', assuntos: [{id: 'ligacoes-quimicas', nome: 'Ligações Químicas e Geometria Molecular'}]},
+                                    { nome: 'Módulo 1: Estrutura da Matéria', assuntos: [{id: 'estrutura-atomica', nome: 'Estrutura atômica', subconteudos: [{id: 'modelos-atom', nome: 'Modelos Atômicos'}, {id: 'dist-eletronica', nome: 'Distribuição Eletrônica'}]}]},
+                                    { nome: 'Módulo 2: Tabela Periódica e Propriedades', assuntos: [{id: 'tabela-periodica', nome: 'Tabela Periódica', subconteudos: [{id: 'org-tabela', nome: 'Organização da Tabela'}, {id: 'prop-period', nome: 'Propriedades Periódicas'}]}]},
+                                    { nome: 'Módulo 3: Ligações e Interações', assuntos: [{id: 'ligacoes-quimicas', nome: 'Ligações Químicas e Geometria Molecular', subconteudos: [{id: 'lig-ion-cov-met', nome: 'Iônica, Covalente e Metálica'}, {id: 'intermoleculares', nome: 'Forças Intermoleculares'}]}]},
                                     { nome: 'Módulo 4: Funções Inorgânicas', assuntos: [{id: 'funcoes-inorganicas', nome: 'Funções Inorgânicas'}]},
                                     { nome: 'Módulo 5: Radioatividade', assuntos: [{id: 'radioatividade', nome: 'Radioatividade'}]}
                                 ]
@@ -325,10 +325,10 @@
                             {
                                 nome: 'Físico-Química',
                                 modulos: [
-                                    { nome: 'Módulo 1: Cálculos e Soluções', assuntos: [{id: 'estequiometria', nome: 'Estequiometria'}, {id: 'solucoes', nome: 'Soluções'}]},
+                                    { nome: 'Módulo 1: Cálculos e Soluções', assuntos: [{id: 'estequiometria', nome: 'Estequiometria'}, {id: 'solucoes', nome: 'Soluções', subconteudos: [{id: 'concentracoes', nome: 'Concentrações'}, {id: 'prop-coligativas', nome: 'Propriedades Coligativas'}]}]},
                                     { nome: 'Módulo 2: Termoquímica', assuntos: [{id: 'termoquimica', nome: 'Termoquímica'}]},
-                                    { nome: 'Módulo 3: Cinética e Equilíbrio', assuntos: [{id: 'cinetica-quimica', nome: 'Cinética Química'}, {id: 'equilibrio-quimico', nome: 'Equilíbrio Químico e Iônico'}]},
-                                    { nome: 'Módulo 4: Eletroquímica', assuntos: [{id: 'eletroquimica', nome: 'Eletroquímica e Oxirredução'}]}
+                                    { nome: 'Módulo 3: Cinética e Equilíbrio', assuntos: [{id: 'cinetica-quimica', nome: 'Cinética Química'}, {id: 'equilibrio-quimico', nome: 'Equilíbrio Químico e Iônico', subconteudos: [{id: 'keq-ph-poh', nome: 'Keq, pH e pOH'}, {id: 'desloc-equilibrio', nome: 'Deslocamento de Equilíbrio'}]}]},
+                                    { nome: 'Módulo 4: Eletroquímica', assuntos: [{id: 'eletroquimica', nome: 'Eletroquímica e Oxirredução', subconteudos: [{id: 'pilhas', nome: 'Pilhas'}, {id: 'eletrolise', nome: 'Eletrólise'}]}]}
                                 ]
                             },
                             {
@@ -353,7 +353,7 @@
                                 nome: 'Base da Vida',
                                 modulos: [
                                     { nome: 'Módulo 1: Origem da Vida e Bioquímica', assuntos: [{id: 'origem-vida-bioquimica', nome: 'Origem da Vida e Bioquímica'}]},
-                                    { nome: 'Módulo 2: Citologia', assuntos: [{id: 'citologia', nome: 'Citologia'}]},
+                                    { nome: 'Módulo 2: Citologia', assuntos: [{id: 'citologia', nome: 'Citologia', subconteudos: [{id: 'organelas', nome: 'Organelas'}, {id: 'metabolismo-cel', nome: 'Metabolismo Celular'}, {id: 'divisao-cel', nome: 'Divisão Celular'}]}]},
                                     { nome: 'Módulo 3: Biologia Molecular', assuntos: [{id: 'biologia-molecular', nome: 'Biologia Molecular'}]},
                                     { nome: 'Módulo 4: Histologia e Embriologia', assuntos: [{id: 'histologia-embriologia', nome: 'Histologia e Embriologia'}]}
                                 ]
@@ -361,15 +361,15 @@
                             {
                                 nome: 'Genética e Evolução',
                                 modulos: [
-                                    { nome: 'Módulo 1: Genética', assuntos: [{id: 'genetica', nome: 'Genética Mendeliana e Pós-Mendeliana'}]},
-                                    { nome: 'Módulo 2: Evolução', assuntos: [{id: 'evolucao', nome: 'Evolução'}]},
+                                    { nome: 'Módulo 1: Genética', assuntos: [{id: 'genetica', nome: 'Genética Mendeliana e Pós-Mendeliana', subconteudos: [{id: 'leis-mendel', nome: 'Leis de Mendel'}, {id: 'heranca-sexual', nome: 'Herança Ligada ao Sexo'}]}]},
+                                    { nome: 'Módulo 2: Evolução', assuntos: [{id: 'evolucao', nome: 'Evolução', subconteudos: [{id: 'teorias-evol', nome: 'Teorias Evolutivas'}, {id: 'especiacao', nome: 'Especiação'}]}]},
                                     { nome: 'Módulo 3: Biotecnologia', assuntos: [{id: 'biotecnologia', nome: 'Biotecnologia'}]}
                                 ]
                             },
                             {
                                 nome: 'Fisiologia e Seres Vivos',
                                 modulos: [
-                                    { nome: 'Módulo 1: Fisiologia Humana', assuntos: [{id: 'fisiologia-humana', nome: 'Fisiologia Humana'}]},
+                                    { nome: 'Módulo 1: Fisiologia Humana', assuntos: [{id: 'fisiologia-humana', nome: 'Fisiologia Humana', subconteudos: [{id: 'sist-digest', nome: 'Sistema Digestório'}, {id: 'sist-resp', nome: 'Sistema Respiratório'}, {id: 'sist-circ', nome: 'Sistema Circulatório'}, {id: 'sist-nerv-endoc', nome: 'Sistemas Nervoso e Endócrino'}]}]},
                                     { nome: 'Módulo 2: Microbiologia e Parasitologia', assuntos: [{id: 'micro-parasito', nome: 'Microbiologia e Parasitologia'}]},
                                     { nome: 'Módulo 3: Zoologia', assuntos: [{id: 'zoologia', nome: 'Zoologia'}]},
                                     { nome: 'Módulo 4: Botânica', assuntos: [{id: 'botanica', nome: 'Botânica'}]}
@@ -395,17 +395,17 @@
                             {
                                 nome: 'História Geral',
                                 modulos: [
-                                    { nome: 'Módulo 1: Antiguidade e Idade Média', assuntos: [{id: 'antiguidade-media', nome: 'Antiguidade e Idade Média'}]},
-                                    { nome: 'Módulo 2: Idade Moderna', assuntos: [{id: 'idade-moderna', nome: 'Idade Moderna'}]},
-                                    { nome: 'Módulo 3: Idade Contemporânea (Séculos XIX e XX)', assuntos: [{id: 'idade-contemporanea', nome: 'Idade Contemporânea'}]}
+                                    { nome: 'Módulo 1: Antiguidade e Idade Média', assuntos: [{id: 'antiguidade-media', nome: 'Antiguidade e Idade Média', subconteudos: [{id: 'antiguidade-oriental', nome: 'Antiguidade Oriental'}, {id: 'antiguidade-classica', nome: 'Antiguidade Clássica (Grécia e Roma)'}, {id: 'alta-idade-media', nome: 'Alta Idade Média'}, {id: 'baixa-idade-media', nome: 'Baixa Idade Média'}]}]},
+                                    { nome: 'Módulo 2: Idade Moderna', assuntos: [{id: 'idade-moderna', nome: 'Idade Moderna', subconteudos: [{id: 'expansao-maritima', nome: 'Expansão Marítima'}, {id: 'renascimento-cultural', nome: 'Renascimento Cultural'}, {id: 'reformas-religiosas', nome: 'Reformas Religiosas'}, {id: 'absolutismo-mercantilismo', nome: 'Absolutismo e Mercantilismo'}, {id: 'iluminismo', nome: 'Iluminismo'}]}]},
+                                    { nome: 'Módulo 3: Idade Contemporânea', assuntos: [{id: 'idade-contemporanea', nome: 'Idade Contemporânea', subconteudos: [{id: 'rev-francesa-era-nap', nome: 'Revolução Francesa e Era Napoleônica'}, {id: 'revolucoes-industriais', nome: 'Revoluções Industriais'}, {id: 'imperialismo', nome: 'Imperialismo'}, {id: 'primeira-guerra', nome: 'Primeira Guerra Mundial'}, {id: 'crise-29-totalitarismo', nome: 'Crise de 1929 e Regimes Totalitários'}, {id: 'segunda-guerra', nome: 'Segunda Guerra Mundial'}, {id: 'guerra-fria', nome: 'Guerra Fria'}]}]}
                                 ]
                             },
                             {
                                 nome: 'História do Brasil',
                                 modulos: [
-                                    { nome: 'Módulo 1: Brasil Colônia', assuntos: [{id: 'brasil-colonia', nome: 'Brasil Colônia'}]},
-                                    { nome: 'Módulo 2: Brasil Império', assuntos: [{id: 'brasil-imperio', nome: 'Brasil Império'}]},
-                                    { nome: 'Módulo 3: Brasil República', assuntos: [{id: 'brasil-republica', nome: 'Brasil República'}]}
+                                    { nome: 'Módulo 1: Brasil Colônia', assuntos: [{id: 'brasil-colonia', nome: 'Brasil Colônia', subconteudos: [{id: 'periodo-pre-colonial', nome: 'Período Pré-Colonial'}, {id: 'administracao-colonial', nome: 'Administração Colonial'}, {id: 'economia-acucareira', nome: 'Economia Açucareira'}, {id: 'mineracao', nome: 'Mineração'}, {id: 'revoltas-coloniais', nome: 'Revoltas Coloniais'}]}]},
+                                    { nome: 'Módulo 2: Brasil Império', assuntos: [{id: 'brasil-imperio', nome: 'Brasil Império', subconteudos: [{id: 'processo-independencia', nome: 'Processo de Independência'}, {id: 'primeiro-reinado', nome: 'Primeiro Reinado'}, {id: 'periodo-regencial', nome: 'Período Regencial'}, {id: 'segundo-reinado', nome: 'Segundo Reinado'}, {id: 'crise-imperio', nome: 'Crise do Império'}]}]},
+                                    { nome: 'Módulo 3: Brasil República', assuntos: [{id: 'brasil-republica', nome: 'Brasil República', subconteudos: [{id: 'republica-velha', nome: 'República Velha'}, {id: 'era-vargas', nome: 'Era Vargas'}, {id: 'republica-populista', nome: 'República Populista (1945-1964)'}, {id: 'ditadura-militar', nome: 'Ditadura Militar (1964-1985)'}, {id: 'nova-republica', nome: 'Nova República'}]}]}
                                 ]
                             }
                         ]
@@ -533,9 +533,9 @@
                             {
                                 nome: 'Módulos',
                                 modulos: [
-                                    { nome: 'Módulo 1: Filosofia Antiga e Medieval', assuntos: [{id: 'filosofia-antiga-medieval', nome: 'Filosofia Antiga e Medieval'}]},
-                                    { nome: 'Módulo 2: Filosofia Moderna e Contemporânea', assuntos: [{id: 'filosofia-moderna-contemporanea', nome: 'Filosofia Moderna e Contemporânea'}]},
-                                    { nome: 'Módulo 3: Eixos Temáticos', assuntos: [{id: 'etica-politica-ciencia', nome: 'Ética, Política e Ciência'}]}
+                                    { nome: 'Módulo 1: Filosofia Antiga e Medieval', assuntos: [{id: 'filosofia-antiga-medieval', nome: 'Filosofia Antiga e Medieval', subconteudos: [{id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'socrates-platao-aristoteles', nome: 'Sócrates, Platão e Aristóteles'}, {id: 'helenistica-medieval', nome: 'Filosofia Helenística e Medieval'}]}]},
+                                    { nome: 'Módulo 2: Filosofia Moderna e Contemporânea', assuntos: [{id: 'filosofia-moderna-contemporanea', nome: 'Filosofia Moderna e Contemporânea', subconteudos: [{id: 'racionalismo-empirismo', nome: 'Racionalismo e Empirismo'}, {id: 'kant-hegel', nome: 'Kant e Hegel'}, {id: 'existencialismo-pos-modernismo', nome: 'Existencialismo e Pós-Modernismo'}]}]},
+                                    { nome: 'Módulo 3: Eixos Temáticos', assuntos: [{id: 'etica-politica-ciencia', nome: 'Ética, Política e Ciência', subconteudos: [{id: 'etica-moral', nome: 'Ética e Moral'}, {id: 'filosofia-politica', nome: 'Filosofia Política'}, {id: 'filosofia-ciencia', nome: 'Filosofia da Ciência'}]}]}
                                 ]
                             }
                         ]
@@ -549,9 +549,9 @@
                              {
                                 nome: 'Módulos',
                                 modulos: [
-                                    { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social'}]},
-                                    { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais'}]},
-                                    { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea'}]}
+                                    { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social', subconteudos: [{id: 'cultura-ideologia', nome: 'Cultura e Ideologia'}, {id: 'identidade-socializacao', nome: 'Identidade e Socialização'}, {id: 'estratificacao-desigualdade', nome: 'Estratificação e Desigualdade'}]}]},
+                                    { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais', subconteudos: [{id: 'sociologia-trabalho', nome: 'Sociologia do Trabalho'}, {id: 'estado-poder-politica', nome: 'Estado, Poder e Política'}, {id: 'movimentos-sociais', nome: 'Movimentos Sociais'}]}]},
+                                    { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea', subconteudos: [{id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}]}]}
                                 ]
                             }
                         ]
@@ -565,17 +565,17 @@
                             {
                                 nome: 'Gramática',
                                 modulos: [
-                                     { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia'}]},
-                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe do Período Simples e Composto'}]},
-                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase'}, {id: 'pontuacao', nome: 'Pontuação'}]}
+                                     { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia', subconteudos: [{id: 'classes-palavras-variaveis', nome: 'Classes de Palavras Variáveis'}, {id: 'classes-palavras-invariaveis', nome: 'Classes de Palavras Invariáveis'}, {id: 'formacao-palavras', nome: 'Processos de Formação de Palavras'}]}]},
+                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe', subconteudos: [{id: 'termos-essenciais-oracao', nome: 'Termos Essenciais da Oração (Sujeito e Predicado)'}, {id: 'termos-integrantes-oracao', nome: 'Termos Integrantes da Oração (Complementos Verbais, Nominais)'}, {id: 'termos-acessorios-oracao', nome: 'Termos Acessórios da Oração e Vocativo'}, {id: 'oracoes-coordenadas', nome: 'Orações Coordenadas'}, {id: 'oracoes-subordinadas-substantivas', nome: 'Orações Subordinadas Substantivas'}, {id: 'oracoes-subordinadas-adjetivas', nome: 'Orações Subordinadas Adjetivas'}, {id: 'oracoes-subordinadas-adverbiais', nome: 'Orações Subordinadas Adverbiais'}]}]},
+                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase', subconteudos: [{id: 'concordancia-verbal', nome: 'Concordância Verbal'}, {id: 'concordancia-nominal', nome: 'Concordância Nominal'}, {id: 'regencia-verbal', nome: 'Regência Verbal'}, {id: 'regencia-nominal', nome: 'Regência Nominal'}, {id: 'crase', nome: 'Crase'}]}, {id: 'pontuacao', nome: 'Pontuação'}]}
                                 ]
                             },
                             {
                                 nome: 'Texto e Interpretação',
                                 modulos: [
                                     { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
-                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais'}]},
-                                    { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística'}]}
+                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual (Narração, Descrição, Dissertação)'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
+                                    { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística', subconteudos: [{id: 'figuras-linguagem', nome: 'Figuras de Linguagem'}, {id: 'variacao-linguistica', nome: 'Variação Linguística'}, {id: 'funcoes-linguagem', nome: 'Funções da Linguagem'}]}]}
                                 ]
                             }
                         ]
@@ -589,9 +589,9 @@
                             {
                                 nome: 'Módulos',
                                 modulos: [
-                                    { nome: 'Módulo 1: Período Colonial', assuntos: [{id: 'literatura-colonial', nome: 'Trovadorismo, Classicismo, Barroco e Arcadismo'}]},
-                                    { nome: 'Módulo 2: Século XIX', assuntos: [{id: 'literatura-seculo-xix', nome: 'Romantismo, Realismo, Naturalismo, Parnasianismo e Simbolismo'}]},
-                                    { nome: 'Módulo 3: Século XX e XXI', assuntos: [{id: 'literatura-moderna', nome: 'Pré-Modernismo, Modernismo e Tendências Contemporâneas'}]}
+                                    { nome: 'Módulo 1: Período Colonial', assuntos: [{id: 'literatura-colonial', nome: 'Trovadorismo, Classicismo, Barroco e Arcadismo', subconteudos: [{id: 'trovadorismo-classicismo', nome: 'Trovadorismo e Classicismo'}, {id: 'barroco-arcadismo', nome: 'Barroco e Arcadismo'}]}]},
+                                    { nome: 'Módulo 2: Século XIX', assuntos: [{id: 'literatura-seculo-xix', nome: 'Romantismo, Realismo, Naturalismo, Parnasianismo e Simbolismo', subconteudos: [{id: 'romantismo', nome: 'Romantismo (Prosa e Poesia)'}, {id: 'realismo-naturalismo', nome: 'Realismo e Naturalismo'}, {id: 'parnasianismo-simbolismo', nome: 'Parnasianismo e Simbolismo'}]}]},
+                                    { nome: 'Módulo 3: Século XX e XXI', assuntos: [{id: 'literatura-moderna', nome: 'Pré-Modernismo, Modernismo e Tendências Contemporâneas', subconteudos: [{id: 'pre-modernismo', nome: 'Pré-Modernismo'}, {id: 'modernismo-br', nome: 'Modernismo no Brasil'}, {id: 'tendencias-contemp', nome: 'Tendências Contemporâneas'}]}]}
                                 ]
                             }
                         ]
@@ -1188,7 +1188,7 @@
                 const prompt = `Aja como um especialista em formular temas de redação para o ENEM, com profundo conhecimento das problemáticas atuais do Brasil. Crie um único tema de redação dissertativo-argumentativo. O tema deve refletir um desafio social, cultural, ambiental ou político relevante no Brasil contemporâneo. A resposta deve conter APENAS o texto do tema, sem aspas, introduções ou qualquer texto adicional. Por exemplo: 'A persistência da violência contra a mulher na sociedade brasileira'.`;
 
                 try {
-                    const theme = await this.callGeminiAPI(prompt, false);
+                    const theme = await this.callOpenAIProxy(prompt, false);
                     const cleanTheme = theme.replace(/"/g, '');
                     input.value = cleanTheme;
                     this.setCache(cacheKey, cleanTheme);
@@ -1277,6 +1277,7 @@
             setInitialQuestaoState: function() {
                 const questoesList = document.getElementById('questoes-list');
                 questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
+                this.checkIfCanGenerate();
             },
 
             populateFilters: function() {
@@ -1285,7 +1286,7 @@
                 this.db.materias.forEach(m => {
                     disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
-                this.updateConteudoFilter('todos'); // Corrigido
+                this.updateConteudoFilter('todos');
             },
             
             updateConteudoFilter: function(disciplinaId) {
@@ -1360,7 +1361,6 @@
 
                 disciplinaSelect.addEventListener('change', (e) => {
                     this.updateConteudoFilter(e.target.value);
-                    this.checkIfCanGenerate();
                 });
 
                 conteudoSelect.addEventListener('change', (e) => {
@@ -1575,5 +1575,4 @@
 
 </body>
 </html>
-
 
