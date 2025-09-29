@@ -233,7 +233,6 @@
     <script type="module">
         const app = {
             // --- CONFIGURAÇÃO ---
-            OPENAI_API_KEY: "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",
             CACHE_PREFIX: 'genius-cache-',
             db: {
                 materias: [
@@ -811,17 +810,10 @@
             },
             
             // --- FUNÇÕES DE CHAMADA DA API ---
-            callGeminiAPI: async function(prompt, isJson = false) {
-                if (this.OPENAI_API_KEY === "SUA_CHAVE_API_DA_OPENAI_AQUI") {
-                    throw new Error("Chave de API da OpenAI não configurada.");
-                }
-                const apiUrl = `https://api.openai.com/v1/chat/completions`;
+            callOpenAIProxy: async function(prompt, isJson = false) {
+                const apiUrl = `/api/proxy`;
                 
-                const payload = {
-                    model: "gpt-4o",
-                    messages: [{"role": "user", "content": prompt}],
-                    ...(isJson && { response_format: { "type": "json_object" } }),
-                };
+                const payload = { prompt, isJson };
 
                 let response;
                 const maxRetries = 3;
@@ -832,25 +824,24 @@
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${this.OPENAI_API_KEY}`
                         },
                         body: JSON.stringify(payload)
                     });
 
-                    if (response.status !== 429) { // 429 is OpenAI's rate limit error
+                    if (response.status !== 429) { // 429 is Rate limit error
                         break;
                     }
                     if (i < maxRetries - 1) {
-                        console.warn(`API da OpenAI sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
+                        console.warn(`API sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
                         delay *= 2;
                     }
                 }
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: { message: "Erro desconhecido" }}));
-                    console.error("Erro na API da OpenAI:", errorData);
-                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error.message}`);
+                    const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
+                    console.error("Erro na chamada ao proxy:", errorData);
+                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error}`);
                 }
 
                 const data = await response.json();
@@ -863,7 +854,7 @@
 
             generateContentWithGemini: async function(prompt) {
                  try {
-                    let text = await this.callGeminiAPI(prompt, false);
+                    let text = await this.callOpenAIProxy(prompt, false);
                     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
                     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');      
                     text = text.replace(/\n/g, '<br>');
@@ -905,7 +896,7 @@
                 `;
 
                 try {
-                    const jsonString = await this.callGeminiAPI(prompt, true);
+                    const jsonString = await this.callOpenAIProxy(prompt, true);
                     const parsedData = JSON.parse(jsonString);
                     
                     if (!parsedData || !Array.isArray(parsedData.questoes)) {
@@ -1584,7 +1575,5 @@
 
 </body>
 </html>
-
-
 
 
