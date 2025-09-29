@@ -163,23 +163,24 @@
                 <h2 class="text-4xl font-bold mb-8 text-center text-gray-800">Questões de Vestibular</h2>
                 <div class="bg-white p-6 rounded-xl shadow-lg mb-8">
                     <h3 class="text-xl font-bold text-gray-800 mb-4">Filtros</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                         <div>
                             <label for="filtro-disciplina" class="block text-sm font-medium text-gray-700">Disciplina</label>
                             <select id="filtro-disciplina" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                         </div>
                         <div>
-                            <label for="filtro-assunto" class="block text-sm font-medium text-gray-700">Assunto</label>
-                            <select id="filtro-assunto" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
+                            <label for="filtro-conteudo" class="block text-sm font-medium text-gray-700">Conteúdo</label>
+                            <select id="filtro-conteudo" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                         </div>
-                         <div>
-                            <label for="generate-questions-btn" class="block text-sm font-medium text-gray-700 invisible">Ação</label>
-                            <button id="generate-questions-btn" class="mt-1 w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">Gerar Questões</button>
+                        <div id="subconteudo-container" class="hidden md:col-span-2">
+                            <label for="filtro-subconteudo" class="block text-sm font-medium text-gray-700">Sub-conteúdo (Opcional)</label>
+                            <select id="filtro-subconteudo" class="mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></select>
                         </div>
                     </div>
+                    <button id="generate-questions-btn" class="w-full bg-indigo-600 text-white font-semibold py-2 px-4 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300 disabled:bg-gray-400 disabled:cursor-not-allowed">Gerar Questões</button>
                 </div>
                 <div id="questoes-list" class="space-y-6">
-                     <!-- Mensagem inicial ou questões geradas -->
+                        <!-- Mensagem inicial ou questões geradas -->
                 </div>
             </div>
         </section>
@@ -230,16 +231,10 @@
     </main>
     
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, arrayUnion } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-        import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        
         const app = {
             // --- CONFIGURAÇÃO ---
-            GEMINI_API_KEY: "AIzaSyBrSjz9TsaZ4dCE8vRrVtjXmaJ807SAX30",
-            PEXELS_API_KEY: "YppLItQT82ImRBs5QFnoG8gPzQgTgdqjiShqFhCc3mOKYlYfluPPn2WK",
+            OPENAI_API_KEY: "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",
             CACHE_PREFIX: 'genius-cache-',
-            firestoreDb: null,
             db: {
                 materias: [
                     {
@@ -425,19 +420,107 @@
                              {
                                 nome: 'Geografia Geral',
                                 modulos: [
-                                    { nome: 'Módulo 1: Introdução e Natureza', assuntos: [{id: 'geografia-fisica-cartografia', nome: 'Geografia Física e Cartografia'}]},
-                                    { nome: 'Módulo 2: População e Urbanização', assuntos: [{id: 'demografia-urbanizacao-mundial', nome: 'Demografia e Urbanização Mundial'}]},
-                                    { nome: 'Módulo 3: Economia e Globalização', assuntos: [{id: 'economia-globalizacao', nome: 'Economia, Indústria e Globalização'}]},
-                                    { nome: 'Módulo 4: Geopolítica', assuntos: [{id: 'geopolitica', nome: 'Geopolítica e Conflitos Atuais'}]}
+                                    { 
+                                        nome: 'Módulo 1: Introdução e Natureza', 
+                                        assuntos: [{
+                                            id: 'geografia-fisica-cartografia', nome: 'Geografia Física e Cartografia',
+                                            subconteudos: [
+                                                { id: 'cartografia', nome: 'Cartografia (Projeções, Escalas, Convenções)'},
+                                                { id: 'estrutura-geologica', nome: 'Estrutura Geológica e Relevo'},
+                                                { id: 'clima-vegetacao', nome: 'Clima e Formações Vegetais'},
+                                                { id: 'hidrografia-geral', nome: 'Hidrografia'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 2: População e Urbanização', 
+                                        assuntos: [{
+                                            id: 'demografia-urbanizacao-mundial', nome: 'Demografia e Urbanização Mundial',
+                                            subconteudos: [
+                                                { id: 'teorias-demograficas', nome: 'Teorias Demográficas e Indicadores'},
+                                                { id: 'migracoes-internacionais', nome: 'Migrações Internacionais'},
+                                                { id: 'processo-urbanizacao', nome: 'Processo de Urbanização'},
+                                                { id: 'problemas-urbanos-geral', nome: 'Problemas Urbanos (Sociais e Ambientais)'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 3: Economia e Globalização', 
+                                        assuntos: [{
+                                            id: 'economia-globalizacao', nome: 'Economia, Indústria e Globalização',
+                                            subconteudos: [
+                                                { id: 'fontes-energia', nome: 'Fontes de Energia e Recursos Minerais'},
+                                                { id: 'modelos-producao', nome: 'Modelos de Produção (Fordismo, Toyotismo)'},
+                                                { id: 'globalizacao-blocos', nome: 'Globalização e Blocos Econômicos'},
+                                                { id: 'transportes-comercio', nome: 'Transportes e Comércio Mundial'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 4: Geopolítica', 
+                                        assuntos: [{
+                                            id: 'geopolitica', nome: 'Geopolítica e Conflitos Atuais',
+                                            subconteudos: [
+                                                { id: 'ordem-mundial', nome: 'Ordem Mundial (Bipolar, Multipolar)'},
+                                                { id: 'focos-tensao', nome: 'Principais Focos de Tensão'},
+                                                { id: 'organismos-internacionais', nome: 'Organismos Internacionais (ONU, OTAN)'},
+                                                { id: 'nova-ordem-mundial', nome: 'Nova Ordem Mundial e Globalização'}
+                                            ]
+                                        }]
+                                    }
                                 ]
                             },
                             {
                                 nome: 'Geografia do Brasil',
                                 modulos: [
-                                    { nome: 'Módulo 1: Aspectos Naturais', assuntos: [{id: 'aspectos-naturais-brasil', nome: 'Aspectos Naturais do Brasil'}]},
-                                    { nome: 'Módulo 2: População e Urbanização', assuntos: [{id: 'populacao-urbanizacao-br', nome: 'População e Urbanização Brasileira'}]},
-                                    { nome: 'Módulo 3: Economia e Espaço Rural/Industrial', assuntos: [{id: 'economia-brasil', nome: 'Economia, Agricultura e Indústria'}]},
-                                    { nome: 'Módulo 4: Questões Ambientais e Regionais', assuntos: [{id: 'questoes-ambientais-br', nome: 'Questões Ambientais e Regionais'}]}
+                                    { 
+                                        nome: 'Módulo 1: Aspectos Naturais', 
+                                        assuntos: [{
+                                            id: 'aspectos-naturais-brasil', nome: 'Aspectos Naturais do Brasil',
+                                            subconteudos: [
+                                                { id: 'relevo-brasil', nome: 'Relevo Brasileiro'},
+                                                { id: 'climas-brasil', nome: 'Climas do Brasil'},
+                                                { id: 'dominios-morfoclimaticos', nome: 'Domínios Morfoclimáticos e Biomas'},
+                                                { id: 'hidrografia-brasil', nome: 'Bacias Hidrográficas Brasileiras'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 2: População e Urbanização', 
+                                        assuntos: [{
+                                            id: 'populacao-urbanizacao-br', nome: 'População e Urbanização Brasileira',
+                                            subconteudos: [
+                                                { id: 'formacao-populacao-br', nome: 'Formação da População Brasileira'},
+                                                { id: 'dinamica-demografica-br', nome: 'Dinâmica Demográfica (Crescimento, Transição)'},
+                                                { id: 'urbanizacao-metropolizacao-br', nome: 'Urbanização e Metropolização no Brasil'},
+                                                { id: 'problemas-urbanos-br', nome: 'Problemas Urbanos Brasileiros'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 3: Economia e Espaço Rural/Industrial', 
+                                        assuntos: [{
+                                            id: 'economia-brasil', nome: 'Economia, Agricultura e Indústria',
+                                            subconteudos: [
+                                                { id: 'estrutura-fundiaria-br', nome: 'Estrutura Fundiária e Reforma Agrária'},
+                                                { id: 'modernizacao-agricultura-br', nome: 'Modernização da Agricultura (Agronegócio)'},
+                                                { id: 'industrializacao-br', nome: 'Processo de Industrialização Brasileiro'},
+                                                { id: 'fontes-energia-br', nome: 'Fontes de Energia no Brasil'}
+                                            ]
+                                        }]
+                                    },
+                                    { 
+                                        nome: 'Módulo 4: Questões Ambientais e Regionais', 
+                                        assuntos: [{
+                                            id: 'questoes-ambientais-br', nome: 'Questões Ambientais e Regionais',
+                                            subconteudos: [
+                                                { id: 'problemas-ambientais-br', nome: 'Principais Problemas Ambientais no Brasil'},
+                                                { id: 'politicas-preservacao-br', nome: 'Políticas de Preservação (Unidades de Conservação)'},
+                                                { id: 'divisao-regional-br', nome: 'Divisão Regional (IBGE)'},
+                                                { id: 'desigualdades-regionais-br', nome: 'Desigualdades Regionais'}
+                                            ]
+                                        }]
+                                    }
                                 ]
                             }
                         ]
@@ -515,6 +598,147 @@
                         ]
                     },
                     {
+                        id: 'ingles',
+                        nome: 'Inglês',
+                        icone: 'languages',
+                        cor: 'bg-pink-100 text-pink-800',
+                        frentes: [
+                            {
+                                nome: 'Gramática (Grammar)',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Tempos Verbais',
+                                        assuntos: [
+                                            {
+                                                id: 'verb-tenses', nome: 'Tempos Verbais (Verb Tenses)',
+                                                subconteudos: [
+                                                    { id: 'simple-tenses', nome: 'Simple Tenses (Present, Past, Future)' },
+                                                    { id: 'continuous-tenses', nome: 'Continuous Tenses' },
+                                                    { id: 'perfect-tenses', nome: 'Perfect Tenses' },
+                                                    { id: 'tenses-comparison', nome: 'Comparativo entre Tempos Verbais' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Estrutura da Frase',
+                                        assuntos: [
+                                            { 
+                                                id: 'prepositions-conjunctions', nome: 'Prepositions and Conjunctions',
+                                                subconteudos: [
+                                                    { id: 'prepositions-time', nome: 'Prepositions of Time (in, on, at)' },
+                                                    { id: 'prepositions-place', nome: 'Prepositions of Place (in, on, at)' },
+                                                    { id: 'coordinating-conjunctions', nome: 'Coordinating Conjunctions (FANBOYS)' },
+                                                    { id: 'subordinating-conjunctions', nome: 'Subordinating Conjunctions' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'pronouns-articles', nome: 'Pronouns and Articles',
+                                                subconteudos: [
+                                                    { id: 'subject-object-pronouns', nome: 'Subject & Object Pronouns' },
+                                                    { id: 'possessive-pronouns-adjectives', nome: 'Possessive Pronouns & Adjectives' },
+                                                    { id: 'definite-indefinite-articles', nome: 'Definite & Indefinite Articles' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'reported-speech', nome: 'Reported Speech',
+                                                subconteudos: [
+                                                    { id: 'reported-statements', nome: 'Reported Statements' },
+                                                    { id: 'reported-questions', nome: 'Reported Questions' },
+                                                    { id: 'reporting-verbs', nome: 'Reporting Verbs (say, tell, ask)' },
+                                                    { id: 'tense-pronoun-changes', nome: 'Changes in Tense, Pronouns, and Time' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 3: Verbos Modais e Condicionais',
+                                        assuntos: [
+                                            { 
+                                                id: 'modal-verbs', nome: 'Modal Verbs',
+                                                subconteudos: [
+                                                    { id: 'modals-ability', nome: 'Modals of Ability (can, could)' },
+                                                    { id: 'modals-obligation', nome: 'Modals of Obligation (must, have to)' },
+                                                    { id: 'modals-possibility', nome: 'Modals of Possibility (may, might, could)' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'conditionals', nome: 'Conditionals (If Clauses)',
+                                                subconteudos: [
+                                                    { id: 'zero-first-conditional', nome: 'Zero & First Conditional' },
+                                                    { id: 'second-conditional', nome: 'Second Conditional' },
+                                                    { id: 'third-conditional', nome: 'Third Conditional' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'passive-voice', nome: 'Passive Voice',
+                                                subconteudos: [
+                                                    { id: 'passive-voice-tenses', nome: 'Passive Voice in Different Tenses' },
+                                                    { id: 'passive-with-by', nome: 'Using "by" in the Passive Voice' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                nome: 'Vocabulário e Interpretação',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Habilidades de Leitura',
+                                        assuntos: [
+                                            { 
+                                                id: 'skimming-scanning', nome: 'Skimming and Scanning',
+                                                subconteudos: [
+                                                    { id: 'skimming-techniques', nome: 'Techniques for Skimming' },
+                                                    { id: 'scanning-techniques', nome: 'Techniques for Scanning' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'main-idea-inference', nome: 'Main Idea and Inference',
+                                                subconteudos: [
+                                                    { id: 'identifying-main-idea', nome: 'Identifying the Main Idea' },
+                                                    { id: 'making-inferences', nome: 'Making Inferences from Text' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'text-comprehension', nome: 'Interpretação de Textos',
+                                                subconteudos: [
+                                                    { id: 'understanding-context', nome: 'Understanding Context and Tone' },
+                                                    { id: 'identifying-purpose', nome: 'Identifying Author\'s Purpose' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Construção de Vocabulário',
+                                        assuntos: [
+                                            { 
+                                                id: 'phrasal-verbs', nome: 'Phrasal Verbs',
+                                                subconteudos: [
+                                                    { id: 'common-phrasal-verbs', nome: 'Common Phrasal Verbs (Get, Take, Put)' },
+                                                    { id: 'separable-inseparable', nome: 'Separable vs. Inseparable' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'idioms', nome: 'Idiomatic Expressions',
+                                                subconteudos: [
+                                                    { id: 'common-idioms', nome: 'Common English Idioms' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'false-cognates', nome: 'False Cognates',
+                                                subconteudos: [
+                                                    { id: 'common-false-friends', nome: 'Common False Friends (English-Portuguese)' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
                         id: 'redacao',
                         nome: 'Redação',
                         icone: 'file-pen-line',
@@ -547,34 +771,7 @@
                 
                 this.populateFilters();
                 this.addFilterListeners();
-                this.setInitialQuestaoState();
-                
-                this.initializeFirebase();
-            },
-
-            initializeFirebase: async function() {
-                const firebaseConfig = {
-                    apiKey: "SUA_API_KEY_DO_FIREBASE",
-                    authDomain: "SEU_AUTH_DOMAIN",
-                    projectId: "SEU_PROJECT_ID",
-                    storageBucket: "SEU_STORAGE_BUCKET",
-                    messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-                    appId: "SEU_APP_ID"
-                };
-
-                if (firebaseConfig.apiKey && firebaseConfig.apiKey !== "SUA_API_KEY_DO_FIREBASE" && firebaseConfig.projectId !== "SEU_PROJECT_ID") {
-                    try {
-                        const firebaseApp = initializeApp(firebaseConfig);
-                        this.firestoreDb = getFirestore(firebaseApp);
-                        const auth = getAuth(firebaseApp);
-                        await signInAnonymously(auth);
-                        console.log("Firebase conectado e usuário anônimo autenticado.");
-                    } catch (error) {
-                        console.error("Erro ao inicializar o Firebase. Verifique se suas chaves de configuração estão corretas.", error);
-                    }
-                } else {
-                    console.warn("Configuração do Firebase não encontrada ou incompleta. As funcionalidades de salvamento na nuvem estão desativadas.");
-                }
+                this.renderQuestoes();
             },
             
             // --- LÓGICA DE CACHE ---
@@ -613,55 +810,52 @@
                 }
             },
             
-            // --- FUNÇÕES DE CHAMADA DA API GEMINI ---
+            // --- FUNÇÕES DE CHAMADA DA API ---
             callGeminiAPI: async function(prompt, isJson = false) {
-                if (this.GEMINI_API_KEY === "SUA_CHAVE_API_AQUI") {
-                    throw new Error("Chave de API do Gemini não configurada.");
+                if (this.OPENAI_API_KEY === "SUA_CHAVE_API_DA_OPENAI_AQUI") {
+                    throw new Error("Chave de API da OpenAI não configurada.");
                 }
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent?key=${this.GEMINI_API_KEY}`;
+                const apiUrl = `https://api.openai.com/v1/chat/completions`;
                 
                 const payload = {
-                    contents: [{ parts: [{ text: prompt }] }],
-                     ...(isJson && { generationConfig: { responseMimeType: "application/json" } }),
-                    "safetySettings": [
-                        {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
-                        {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"}
-                    ]
+                    model: "gpt-4o",
+                    messages: [{"role": "user", "content": prompt}],
+                    ...(isJson && { response_format: { "type": "json_object" } }),
                 };
 
                 let response;
                 const maxRetries = 3;
-                let delay = 1000; // 1 second
+                let delay = 1000;
 
                 for (let i = 0; i < maxRetries; i++) {
                     response = await fetch(apiUrl, {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${this.OPENAI_API_KEY}`
+                        },
                         body: JSON.stringify(payload)
                     });
 
-                    if (response.status !== 503) { // 503 Service Unavailable is the "overloaded" error
+                    if (response.status !== 429) { // 429 is OpenAI's rate limit error
                         break;
                     }
                     if (i < maxRetries - 1) {
-                        console.warn(`API do Gemini sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
+                        console.warn(`API da OpenAI sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
                         await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2; // Exponential backoff
+                        delay *= 2;
                     }
                 }
 
-
                 if (!response.ok) {
                     const errorData = await response.json().catch(() => ({ error: { message: "Erro desconhecido" }}));
-                    console.error("Erro na API do Gemini:", errorData);
+                    console.error("Erro na API da OpenAI:", errorData);
                     throw new Error(`Erro ao gerar conteúdo: ${errorData.error.message}`);
                 }
 
                 const data = await response.json();
-                if (data.candidates && data.candidates.length > 0) {
-                    return data.candidates[0].content.parts[0].text;
+                if (data.choices && data.choices.length > 0) {
+                    return data.choices[0].message.content;
                 } else {
                     throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
                 }
@@ -671,9 +865,9 @@
                  try {
                     let text = await this.callGeminiAPI(prompt, false);
                     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
-                    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');       
+                    text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');      
                     text = text.replace(/\n/g, '<br>');
-                                         
+                                            
                     return text;
                 } catch (error) {
                     console.error("Erro ao gerar conteúdo de matéria:", error);
@@ -683,29 +877,42 @@
             
             fetchQuestoesFromGemini: async function(materiaNome, assuntoNome) {
                 const prompt = `
-                    Aja como uma banca examinadora de vestibular de alto nível (ENEM, FUVEST, UNICAMP) com um rigoroso processo de revisão. Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}".
-                    A precisão factual e gramatical é CRÍTICA. Antes de gerar a resposta final, você DEVE revisar internamente cada questão para garantir que:
-                    1. O enunciado seja claro, preciso e livre de ambiguidades.
-                    2. Haja apenas UMA alternativa inquestionavelmente correta, baseada em conhecimento acadêmico consolidado.
-                    3. As alternativas incorretas (distratores) sejam plausíveis, mas comprovadamente erradas.
-                    4. A resolução explique detalhadamente o raciocínio para a resposta correta, citando os conceitos aplicados.
-                    5. A justificativa para cada erro seja precisa, didática e aponte o erro conceitual específico na alternativa. Preste atenção especial a nuances da gramática normativa portuguesa em questões dessa matéria.
+                    Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}", no estilo de vestibulares brasileiros como ENEM e FUVEST.
 
-                    Para cada uma das 10 questões, forneça um objeto JSON com a seguinte estrutura:
-                    - "banca": Uma banca de vestibular brasileira aleatória.
-                    - "enunciado": O enunciado da questão.
-                    - "alternativas": Uma lista com exatamente 5 objetos. Cada objeto deve ter:
-                        - "texto": O texto da alternativa.
-                        - "correta": um booleano (true para a única correta, false para as outras).
-                        - "justificativa_erro": Uma string explicando por que a alternativa está errada. Se a alternativa for a correta, esta string deve ser vazia.
-                    - "resolucao": Uma resolução comentada completa para a questão.
+                    A resposta DEVE ser um objeto JSON contendo uma única chave chamada "questoes", que é um array de 10 objetos.
+                    Cada objeto no array deve seguir ESTRITAMENTE a seguinte estrutura:
+                    {
+                        "banca": "Nome da Banca (ex: FUVEST 2023)",
+                        "enunciado": "O texto completo da pergunta.",
+                        "alternativas": [
+                            { "texto": "Texto da alternativa A.", "correta": false, "justificativa_erro": "Explicação do porquê esta alternativa está errada." },
+                            { "texto": "Texto da alternativa B.", "correta": true, "justificativa_erro": "" },
+                            { "texto": "Texto da alternativa C.", "correta": false, "justificativa_erro": "Explicação do porquê esta alternativa está errada." },
+                            { "texto": "Texto da alternativa D.", "correta": false, "justificativa_erro": "Explicação do porquê esta alternativa está errada." },
+                            { "texto": "Texto da alternativa E.", "correta": false, "justificativa_erro": "Explicação do porquê esta alternativa está errada." }
+                        ],
+                        "resolucao": "Uma explicação detalhada e completa de como chegar à resposta correta."
+                    }
 
-                    Retorne a resposta APENAS como um array de objetos JSON, seguindo estritamente este formato, sem nenhum texto ou formatação adicional.
+                    REGRAS IMPORTANTES:
+                    1. O JSON deve ser perfeitamente válido.
+                    2. Deve haver EXATAMENTE 5 alternativas por questão.
+                    3. Apenas UMA alternativa pode ter "correta": true.
+                    4. A "justificativa_erro" deve estar vazia ("") para a alternativa correta.
+                    5. O conteúdo deve ser preciso e de alta qualidade acadêmica.
+
+                    Gere o JSON completo agora.
                 `;
 
                 try {
                     const jsonString = await this.callGeminiAPI(prompt, true);
-                    const questoes = JSON.parse(jsonString);
+                    const parsedData = JSON.parse(jsonString);
+                    
+                    if (!parsedData || !Array.isArray(parsedData.questoes)) {
+                        throw new Error("A resposta da API não continha um array de 'questoes' válido.");
+                    }
+
+                    const questoes = parsedData.questoes;
                     
                     questoes.forEach((q, index) => {
                         q.id = `${materiaNome.replace(/\s/g, '_')}-${assuntoNome.replace(/\s/g, '_')}-${Date.now()}-${index}`;
@@ -811,7 +1018,7 @@
                                         <i data-lucide="brain-circuit"></i> ✨ Gerar Repertório
                                     </button>
                                     <button id="btn-esboco" class="w-full bg-green-600 text-white font-semibold py-3 px-4 rounded-lg hover:bg-green-700 transition duration-300 flex items-center justify-center gap-2">
-                                    <i data-lucide="list-tree"></i> ✨ Esboçar Argumentos
+                                        <i data-lucide="list-tree"></i> ✨ Esboçar Argumentos
                                     </button>
                                 </div>
 
@@ -856,14 +1063,39 @@
                                                 <h4 class="text-xl font-bold mb-4 text-indigo-600">${modulo.nome}</h4>
                                                 ${modulo.assuntos.map(assunto => `
                                                     <div id="assunto-${assunto.id}" class="p-4 border-t border-slate-100">
-                                                        <h5 class="text-lg font-semibold mb-3">${assunto.nome}</h5>
-                                                        <div class="flex flex-wrap gap-2 mb-2">
-                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'resumo')">Resumo</button>
-                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'completo')">Explicação Completa</button>
-                                                            <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', 'aprofundado')">Explicação Aprofundada</button>
-                                                        </div>
-                                                        <div class="conteudo-display prose max-w-none min-h-[50px] text-slate-600 leading-relaxed transition-all duration-300">
-                                                        </div>
+                                                        ${(assunto.subconteudos && assunto.subconteudos.length > 0)
+                                                            ? `
+                                                                <div 
+                                                                    class="flex justify-between items-center cursor-pointer group" 
+                                                                    onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('i').classList.toggle('rotate-90')"
+                                                                >
+                                                                    <h5 class="text-lg font-semibold group-hover:text-indigo-600 transition">${assunto.nome}</h5>
+                                                                    <i data-lucide="chevron-right" class="h-5 w-5 transition-transform"></i>
+                                                                </div>
+                                                                <div class="pl-4 mt-4 border-l-2 border-slate-200 space-y-4 hidden">
+                                                                    ${assunto.subconteudos.map(sub => `
+                                                                        <div id="subconteudo-${sub.id}">
+                                                                            <h6 class="font-medium text-slate-700">${sub.nome}</h6>
+                                                                            <div class="flex flex-wrap gap-2 my-2">
+                                                                                <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', '${sub.id}', 'resumo')">Resumo</button>
+                                                                                <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', '${sub.id}', 'completo')">Explicação Completa</button>
+                                                                                <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', '${sub.id}', 'aprofundado')">Explicação Aprofundada</button>
+                                                                            </div>
+                                                                            <div class="conteudo-display prose max-w-none min-h-[50px] text-slate-600 leading-relaxed transition-all duration-300"></div>
+                                                                        </div>
+                                                                    `).join('')}
+                                                                </div>
+                                                            `
+                                                            : `
+                                                                <h5 class="text-lg font-semibold mb-3">${assunto.nome}</h5>
+                                                                <div class="flex flex-wrap gap-2 mb-2">
+                                                                    <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', null, 'resumo')">Resumo</button>
+                                                                    <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', null, 'completo')">Explicação Completa</button>
+                                                                    <button class="tab-button px-3 py-1 text-xs font-medium rounded-md bg-slate-200 hover:bg-slate-300 transition" onclick="window.app.showConteudo(this, '${materia.id}', '${assunto.id}', null, 'aprofundado')">Explicação Aprofundada</button>
+                                                                </div>
+                                                                <div class="conteudo-display prose max-w-none min-h-[50px] text-slate-600 leading-relaxed transition-all duration-300"></div>
+                                                            `
+                                                        }
                                                     </div>
                                                 `).join('')}
                                             </div>
@@ -885,29 +1117,42 @@
                 document.getElementById('materias-home').classList.remove('hidden');
             },
 
-            showConteudo: async function(button, materiaId, assuntoId, tipo) {
-                const cacheKey = `${this.CACHE_PREFIX}content-${materiaId}-${assuntoId}-${tipo}`;
+            showConteudo: async function(button, materiaId, assuntoId, subconteudoId, tipo) {
+                const cacheKey = subconteudoId 
+                    ? `${this.CACHE_PREFIX}content-${materiaId}-${assuntoId}-${subconteudoId}-${tipo}`
+                    : `${this.CACHE_PREFIX}content-${materiaId}-${assuntoId}-${tipo}`;
                 const cachedContent = this.getCache(cacheKey);
 
                 const materia = this.db.materias.find(m => m.id === materiaId);
-                let assunto;
-                for(const frente of materia.frentes) {
-                    for(const modulo of frente.modulos) {
-                        const found = modulo.assuntos.find(a => a.id === assuntoId);
-                        if (found) {
-                            assunto = found;
+                let assunto, subconteudo, nomeConteudo;
+
+                for (const frente of materia.frentes) {
+                    for (const modulo of frente.modulos) {
+                        const foundAssunto = modulo.assuntos.find(a => a.id === assuntoId);
+                        if (foundAssunto) {
+                            assunto = foundAssunto;
+                            if (subconteudoId && assunto.subconteudos) {
+                                subconteudo = assunto.subconteudos.find(s => s.id === subconteudoId);
+                            }
                             break;
                         }
                     }
                     if (assunto) break;
                 }
+
+                if (subconteudo) {
+                    nomeConteudo = `${subconteudo.nome} (dentro de ${assunto.nome})`;
+                } else {
+                    nomeConteudo = assunto.nome;
+                }
                 
-                const container = button.closest('.p-4');
-                const displayDiv = container.querySelector('.conteudo-display');
-                
-                container.parentElement.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+                const displayDiv = button.closest('#subconteudo-' + subconteudoId + ', .p-4').querySelector('.conteudo-display');
+
+                // Clear active state from other buttons in the same group
+                const buttonContainer = button.parentElement;
+                buttonContainer.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
-                
+
                 displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Carregando...</p></div>`;
                 displayDiv.style.opacity = 1;
 
@@ -919,9 +1164,9 @@
                 }
                 
                 const promptMapping = {
-                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${assunto.nome}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${assunto.nome}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${assunto.nome}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
+                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${nomeConteudo}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${nomeConteudo}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${nomeConteudo}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
                 };
                 const promptText = promptMapping[tipo];
                 
@@ -1040,8 +1285,7 @@
             // --- LÓGICA PARA QUESTÕES ---
             setInitialQuestaoState: function() {
                 const questoesList = document.getElementById('questoes-list');
-                questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um assunto para gerar questões.</p>`;
-                document.getElementById('generate-questions-btn').disabled = true;
+                questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
             },
 
             populateFilters: function() {
@@ -1050,14 +1294,20 @@
                 this.db.materias.forEach(m => {
                     disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
+                this.updateConteudoFilter('todos'); // Corrigido
             },
             
-            updateAssuntoFilter: function(disciplinaId) {
-                const assuntoSelect = document.getElementById('filtro-assunto');
-                assuntoSelect.innerHTML = '<option value="todos">Selecione um Assunto</option>';
+            updateConteudoFilter: function(disciplinaId) {
+                const conteudoSelect = document.getElementById('filtro-conteudo');
+                conteudoSelect.innerHTML = '<option value="todos">Selecione um Conteúdo</option>';
+                
+                document.getElementById('subconteudo-container').classList.add('hidden');
+                document.getElementById('filtro-subconteudo').innerHTML = '';
+
+
                 if (disciplinaId !== 'todos') {
                     const materia = this.db.materias.find(m => m.id === disciplinaId);
-                    if(materia && materia.frentes) {
+                    if (materia && materia.frentes) {
                         materia.frentes.forEach(frente => {
                             const optgroup = document.createElement('optgroup');
                             optgroup.label = frente.nome;
@@ -1069,26 +1319,66 @@
                                     optgroup.appendChild(option);
                                 });
                             });
-                            assuntoSelect.appendChild(optgroup);
+                            conteudoSelect.appendChild(optgroup);
                         });
                     }
                 }
                 this.renderQuestoes();
             },
 
+            updateSubconteudoFilter: function(disciplinaId, conteudoId) {
+                const subconteudoContainer = document.getElementById('subconteudo-container');
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                subconteudoSelect.innerHTML = '';
+                
+                const materia = this.db.materias.find(m => m.id === disciplinaId);
+                let assunto;
+                if(materia){
+                    for(const frente of materia.frentes){
+                        for(const modulo of frente.modulos){
+                            const found = modulo.assuntos.find(a => a.id === conteudoId);
+                            if(found){
+                                assunto = found;
+                                break;
+                            }
+                        }
+                        if(assunto) break;
+                    }
+                }
+
+                if (assunto && assunto.subconteudos && assunto.subconteudos.length > 0) {
+                    subconteudoContainer.classList.remove('hidden');
+                    subconteudoSelect.innerHTML = '<option value="todos">Geral (todos os sub-tópicos)</option>';
+                    assunto.subconteudos.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub.id;
+                        option.textContent = sub.nome;
+                        subconteudoSelect.appendChild(option);
+                    });
+                } else {
+                    subconteudoContainer.classList.add('hidden');
+                }
+                this.renderQuestoes();
+            },
+
             addFilterListeners: function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
-                const assuntoSelect = document.getElementById('filtro-assunto');
+                const conteudoSelect = document.getElementById('filtro-conteudo');
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
                 const generateBtn = document.getElementById('generate-questions-btn');
 
                 disciplinaSelect.addEventListener('change', (e) => {
-                    this.updateAssuntoFilter(e.target.value);
+                    this.updateConteudoFilter(e.target.value);
                     this.checkIfCanGenerate();
                 });
 
-                assuntoSelect.addEventListener('change', () => {
+                conteudoSelect.addEventListener('change', (e) => {
+                    const disciplinaId = disciplinaSelect.value;
+                    this.updateSubconteudoFilter(disciplinaId, e.target.value);
+                });
+
+                 subconteudoSelect.addEventListener('change', () => {
                     this.renderQuestoes();
-                    this.checkIfCanGenerate();
                 });
                 
                 generateBtn.addEventListener('click', this.handleGenerateQuestionsClick.bind(this));
@@ -1096,12 +1386,17 @@
 
             checkIfCanGenerate: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const assunto = document.getElementById('filtro-assunto').value;
+                const conteudo = document.getElementById('filtro-conteudo').value;
                 const btn = document.getElementById('generate-questions-btn');
                 
-                btn.disabled = (disciplina === 'todos' || assunto === 'todos');
+                btn.disabled = (disciplina === 'todos' || conteudo === 'todos');
                 
-                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === assunto);
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+                const topicoFiltrado = (subconteudo && subconteudo !== 'todos') ? subconteudo : conteudo;
+                
+                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topicoFiltrado);
+
                 if(filtered.length > 0) {
                      btn.innerHTML = 'Gerar Mais 10 Questões';
                 } else {
@@ -1111,35 +1406,46 @@
 
             handleGenerateQuestionsClick: async function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
-                const assuntoSelect = document.getElementById('filtro-assunto');
+                const conteudoSelect = document.getElementById('filtro-conteudo');
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
                 const btn = document.getElementById('generate-questions-btn');
-                const questoesList = document.getElementById('questoes-list');
                 
                 const disciplinaId = disciplinaSelect.value;
-                const assuntoId = assuntoSelect.value;
+                const conteudoId = conteudoSelect.value;
+                const subconteudoId = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
 
+                const topicoIdParaSalvar = (subconteudoId !== 'todos') ? subconteudoId : conteudoId;
+                
                 const materia = this.db.materias.find(m => m.id === disciplinaId);
-                let assunto;
-                for(const frente of materia.frentes) {
-                    for(const modulo of frente.modulos) {
-                        const found = modulo.assuntos.find(a => a.id === assuntoId);
-                        if (found) {
-                            assunto = found;
-                            break;
+                let nomeTopico;
+                
+                for (const frente of materia.frentes) {
+                    for (const modulo of frente.modulos) {
+                        for (const assunto of modulo.assuntos) {
+                            if (assunto.id === conteudoId) {
+                                if (subconteudoId !== 'todos' && assunto.subconteudos) {
+                                    const sub = assunto.subconteudos.find(s => s.id === subconteudoId);
+                                    if(sub) nomeTopico = `${assunto.nome}: ${sub.nome}`;
+                                } else {
+                                    nomeTopico = assunto.nome;
+                                }
+                                break;
+                            }
                         }
+                        if (nomeTopico) break;
                     }
-                    if (assunto) break;
+                    if (nomeTopico) break;
                 }
                 
                 btn.disabled = true;
                 btn.innerHTML = `<div class="flex items-center justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div></div>`;
 
                 try {
-                    const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, assunto.nome);
+                    const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, nomeTopico);
                     
                     newQuestoes.forEach(q => {
                         q.disciplina = disciplinaId;
-                        q.assunto = assuntoId;
+                        q.assunto = topicoIdParaSalvar;
                     });
                     
                     this.db.questoes.push(...newQuestoes);
@@ -1147,11 +1453,12 @@
                     this.renderQuestoes();
 
                 } catch (error) {
+                    const questoesList = document.getElementById('questoes-list');
                     if(questoesList.children.length === 0 || questoesList.children[0].tagName === 'P') {
                         questoesList.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                                                      <strong class="font-bold">Erro!</strong>
-                                                      <span class="block sm:inline">${error.message}</span>
-                                                    </div>`;
+                                                    <strong class="font-bold">Erro!</strong>
+                                                    <span class="block sm:inline">${error.message}</span>
+                                                  </div>`;
                     } else {
                         alert(`Erro ao gerar mais questões: ${error.message}`);
                     }
@@ -1162,19 +1469,26 @@
 
             renderQuestoes: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const assunto = document.getElementById('filtro-assunto').value;
+                const conteudo = document.getElementById('filtro-conteudo').value;
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
                 const questoesList = document.getElementById('questoes-list');
 
+                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo;
+                
+                this.checkIfCanGenerate();
+
+                if(disciplina === 'todos' || conteudo === 'todos'){
+                     questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
+                     return;
+                }
+
                 const filteredQuestoes = this.db.questoes.filter(q => {
-                    return (disciplina === 'todos' || q.disciplina === disciplina) &&
-                           (assunto === 'todos' || q.assunto === assunto);
+                    return q.disciplina === disciplina && q.assunto === topicoFiltrado;
                 });
                 
                 if (filteredQuestoes.length === 0) {
-                    this.setInitialQuestaoState();
-                     if (disciplina !== 'todos' && assunto !== 'todos') {
-                        questoesList.innerHTML = '<p class="text-center text-slate-500">Ainda não há questões para este tópico. Clique em "Gerar Questões" para criá-las.</p>';
-                    }
+                    questoesList.innerHTML = '<p class="text-center text-slate-500">Ainda não há questões para este tópico. Clique em "Gerar Questões" para criá-las.</p>';
                     return;
                 }
 
@@ -1191,7 +1505,7 @@
                                     <label class="flex items-start w-full cursor-pointer">
                                         <input type="radio" name="questao-${q.id}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
                                         <div class="flex-grow">
-                                            <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto}</span>
+                                            <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto || alt.text}</span>
                                             <div id="incorrect-explanation-${q.id}-${altIndex}" class="hidden mt-2"></div>
                                         </div>
                                      </label>
@@ -1240,8 +1554,8 @@
                 // Adiciona botões para explicar alternativas incorretas
                 questao.alternativas.forEach((alt, index) => {
                     if (!alt.correta) {
-                        const altContainer = document.getElementById(`incorrect-explanation-${questao.id}-${index}`);
-                        altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="window.app.explainIncorrectAlternative(this, '${questao.id}', ${index})">Por que está errada?</button>`;
+                        const altContainer = document.getElementById(`incorrect-explanation-${q.id}-${index}`);
+                        altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="window.app.explainIncorrectAlternative(this, '${q.id}', ${index})">Por que está errada?</button>`;
                         altContainer.classList.remove('hidden');
                     }
                 });
@@ -1270,3 +1584,4 @@
 
 </body>
 </html>
+
