@@ -7,6 +7,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" xintegrity="sha384-n8MVd4RsNIU0tAv4ct0nTaAbDJwPJzDEaqSD1odI+WdtXRGWt2kTvGFasHpSy3NU" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js" xintegrity="sha384-XjKyOOlVjOTgjOdkEWouEOEkGbSFudGPEBGoS5GGvpUziVcdranCHOYClRKfNImP" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" xintegrity="sha384-+VBxd3r6XgURycqtZ117nYw44OOcIax56Z4dCRWbxyPt0Koah1uHoK0o4+/RRE05" crossorigin="anonymous"></script>
     <style>
         :root {
             --background: #f8f9fa;
@@ -245,26 +248,26 @@
                             { 
                                 nome: 'Matemática Básica e Álgebra',
                                 modulos: [
-                                    { nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações numéricas', subconteudos: [{id: 'basicas', nome: '4 Operações Básicas'}, {id: 'pot-rad', nome: 'Potenciação e Radiciação'}]}, {id: 'razoes-proporcoes', nome: 'Razões e Proporções', subconteudos: [{id: 'razao-prop', nome: 'Razão e Proporção'}, {id: 'escalas', nome: 'Escalas e Grandezas'}]}, {id: 'regra-de-tres', nome: 'Regra de três'},{id: 'porcentagem', nome: 'Porcentagem'}]},
-                                    { nome: 'Módulo 2: Funções', assuntos: [{id: 'funcao-afim', nome: 'Função afim (1º grau)'},{id: 'funcao-quadratica', nome: 'Função quadrática (2º grau)'},{id: 'funcao-modular', nome: 'Função modular'},{id: 'funcao-composta-inversa', nome: 'Função composta e inversa'}]},
-                                    { nome: 'Módulo 3: Funções Transcendentais', assuntos: [{id: 'funcao-exponencial', nome: 'Função exponencial'},{id: 'funcao-logaritmica', nome: 'Função logarítmica'}]},
-                                    { nome: 'Módulo 4: Álgebra Avançada', assuntos: [{id: 'polinomios', nome: 'Polinômios'},{id: 'equacoes', nome: 'Equações e inequações'},{id: 'sistemas-equacoes', nome: 'Sistemas de equações'},{id: 'numeros-complexos', nome: 'Números complexos'},{id: 'matrizes-determinantes', nome: 'Matrizes e determinantes'}]}
+                                    { nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações Numéricas', subconteudos: [{id: 'basicas', nome: '4 Operações Básicas'}, {id: 'pot-rad', nome: 'Potenciação e Radiciação'}]}, {id: 'razoes-proporcoes', nome: 'Razões e Proporções', subconteudos: [{id: 'razao-prop', nome: 'Razão e Proporção'}, {id: 'escalas', nome: 'Escalas e Grandezas'}]}, {id: 'regra-de-tres', nome: 'Regra de Três', subconteudos: [{id: 'regra-tres-simples', nome: 'Simples'}, {id: 'regra-tres-composta', nome: 'Composta'}]}, {id: 'porcentagem', nome: 'Porcentagem', subconteudos: [{id: 'calc-porcentagem', nome: 'Cálculos Básicos'}, {id: 'acresc-descontos', nome: 'Acréscimos e Descontos'}]}]},
+                                    { nome: 'Módulo 2: Funções', assuntos: [{id: 'funcao-afim', nome: 'Função Afim (1º grau)'},{id: 'funcao-quadratica', nome: 'Função Quadrática (2º grau)', subconteudos: [{id: 'graf-parabola', nome: 'Gráfico (Parábola)'}, {id: 'vertice-max-min', nome: 'Vértice (Máximos e Mínimos)'}, {id: 'raizes-bhaskara', nome: 'Raízes (Bhaskara)'}]}, {id: 'funcao-modular', nome: 'Função Modular'},{id: 'funcao-composta-inversa', nome: 'Função Composta e Inversa'}]},
+                                    { nome: 'Módulo 3: Funções Transcendentais', assuntos: [{id: 'funcao-exponencial', nome: 'Função Exponencial', subconteudos: [{id: 'eq-exp', nome: 'Equações Exponenciais'}, {id: 'ineq-exp', nome: 'Inequações Exponenciais'}]}, {id: 'funcao-logaritmica', nome: 'Função Logarítmica', subconteudos: [{id: 'prop-log', nome: 'Propriedades dos Logaritmos'}, {id: 'eq-log', nome: 'Equações Logarítmicas'}]}]},
+                                    { nome: 'Módulo 4: Álgebra Avançada', assuntos: [{id: 'polinomios', nome: 'Polinômios'},{id: 'equacoes', nome: 'Equações Algébricas'},{id: 'sistemas-equacoes', nome: 'Sistemas Lineares'},{id: 'numeros-complexos', nome: 'Números Complexos'},{id: 'matrizes-determinantes', nome: 'Matrizes e Determinantes', subconteudos: [{id: 'op-matrizes', nome: 'Operações com Matrizes'}, {id: 'calc-determinantes', nome: 'Cálculo de Determinantes'}]}]}
                                 ]
                             },
                             {
                                 nome: 'Geometria e Trigonometria',
                                 modulos: [
-                                    { nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e quadriláteros', subconteudos: [{id: 'semelhanca-tri', nome: 'Semelhança de Triângulos'}, {id: 'teo-pitagoras', nome: 'Teorema de Pitágoras'}]}, {id: 'circulo-circunferencia', nome: 'Círculo e circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de figuras planas'}]},
-                                    { nome: 'Módulo 2: Geometria Espacial', assuntos: [{id: 'prismas-piramides', nome: 'Prismas e pirâmides'},{id: 'cilindros-cones', nome: 'Cilindros e cones'},{id: 'esferas', nome: 'Esferas'},{id: 'volumes-areas', nome: 'Volumes e áreas de superfície'}]},
-                                    { nome: 'Módulo 3: Geometria Analítica', assuntos: [{id: 'ponto-reta-circunferencia', nome: 'Ponto, reta e circunferência'},{id: 'conicas', nome: 'Cônicas'}]},
-                                    { nome: 'Módulo 4: Trigonometria', assuntos: [{id: 'razoes-trigonometricas', nome: 'Razões trigonométricas'},{id: 'ciclo-trigonometrico', nome: 'Ciclo e funções trigonométricas'},{id: 'leis-seno-cosseno', nome: 'Leis do seno e do cosseno'}]}
+                                    { nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e Polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e Quadriláteros', subconteudos: [{id: 'semelhanca-tri', nome: 'Semelhança de Triângulos'}, {id: 'rel-met-tri-ret', nome: 'Relações Métricas no Triângulo Retângulo'}]}, {id: 'circulo-circunferencia', nome: 'Círculo e Circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de Figuras Planas'}]},
+                                    { nome: 'Módulo 2: Geometria Espacial', assuntos: [{id: 'prismas-piramides', nome: 'Prismas e Pirâmides', subconteudos: [{id: 'areas-prismas-piramides', nome: 'Áreas de Prismas e Pirâmides'}, {id: 'volumes-prismas-piramides', nome: 'Volumes de Prismas e Pirâmides'}]}, {id: 'cilindros-cones', nome: 'Cilindros e Cones', subconteudos: [{id: 'areas-cilindros-cones', nome: 'Áreas de Cilindros e Cones'}, {id: 'volumes-cilindros-cones', nome: 'Volumes de Cilindros e Cones'}]}, {id: 'esferas', nome: 'Esferas', subconteudos: [{id: 'area-volume-esfera', nome: 'Área e Volume da Esfera'}]}]},
+                                    { nome: 'Módulo 3: Geometria Analítica', assuntos: [{id: 'ponto-reta-circunferencia', nome: 'Ponto, Reta e Circunferência', subconteudos: [{id: 'estudo-ponto', nome: 'Estudo do Ponto'}, {id: 'estudo-reta', nome: 'Estudo da Reta'}, {id: 'estudo-circunferencia', nome: 'Estudo da Circunferência'}]}, {id: 'conicas', nome: 'Cônicas'}]},
+                                    { nome: 'Módulo 4: Trigonometria', assuntos: [{id: 'razoes-trigonometricas', nome: 'Razões Trigonométricas no Triângulo Retângulo'},{id: 'ciclo-funcoes-trig', nome: 'Ciclo e Funções Trigonométricas', subconteudos: [{id: 'ciclo-trig', nome: 'Ciclo Trigonométrico'}, {id: 'funcoes-sen-cos-tan', nome: 'Funções (Seno, Cosseno, Tangente)'}]}, {id: 'leis-seno-cosseno', nome: 'Leis do Seno e do Cosseno'}]}
                                 ]
                             },
                             {
                                 nome: 'Estatística e Lógica',
                                 modulos: [
-                                    { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise combinatória'},{id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística descritiva', subconteudos: [{id: 'medidas-tend-central', nome: 'Medidas de Tendência Central'}, {id: 'medidas-dispersao', nome: 'Medidas de Dispersão'}]}]},
-                                    { nome: 'Módulo 2: Matemática Financeira e Sequências', assuntos: [{id: 'juros', nome: 'Juros simples e compostos'},{id: 'pa-pg', nome: 'Progressões (PA e PG)'},{id: 'sequencias-numericas', nome: 'Sequências numéricas'},{id: 'raciocinio-logico', nome: 'Raciocínio lógico'}]}
+                                    { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise Combinatória', subconteudos: [{id: 'pfc', nome: 'Princípio Fundamental da Contagem'}, {id: 'arr-perm-comb', nome: 'Arranjo, Permutação e Combinação'}]}, {id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística Descritiva', subconteudos: [{id: 'medidas-tend-central', nome: 'Medidas de Tendência Central'}, {id: 'medidas-dispersao', nome: 'Medidas de Dispersão'}]}]},
+                                    { nome: 'Módulo 2: Matemática Financeira e Sequências', assuntos: [{id: 'juros', nome: 'Juros Simples e Compostos'},{id: 'pa-pg', nome: 'Progressões (PA e PG)'},{id: 'sequencias-numericas', nome: 'Sequências Numéricas'},{id: 'raciocinio-logico', nome: 'Raciocínio Lógico'}]}
                                 ]
                             }
                         ]
@@ -318,27 +321,27 @@
                                     { nome: 'Módulo 1: Estrutura da Matéria', assuntos: [{id: 'estrutura-atomica', nome: 'Estrutura atômica', subconteudos: [{id: 'modelos-atom', nome: 'Modelos Atômicos'}, {id: 'dist-eletronica', nome: 'Distribuição Eletrônica'}]}]},
                                     { nome: 'Módulo 2: Tabela Periódica e Propriedades', assuntos: [{id: 'tabela-periodica', nome: 'Tabela Periódica', subconteudos: [{id: 'org-tabela', nome: 'Organização da Tabela'}, {id: 'prop-period', nome: 'Propriedades Periódicas'}]}]},
                                     { nome: 'Módulo 3: Ligações e Interações', assuntos: [{id: 'ligacoes-quimicas', nome: 'Ligações Químicas e Geometria Molecular', subconteudos: [{id: 'lig-ion-cov-met', nome: 'Iônica, Covalente e Metálica'}, {id: 'intermoleculares', nome: 'Forças Intermoleculares'}]}]},
-                                    { nome: 'Módulo 4: Funções Inorgânicas', assuntos: [{id: 'funcoes-inorganicas', nome: 'Funções Inorgânicas'}]},
-                                    { nome: 'Módulo 5: Radioatividade', assuntos: [{id: 'radioatividade', nome: 'Radioatividade'}]}
+                                    { nome: 'Módulo 4: Funções Inorgânicas', assuntos: [{id: 'funcoes-inorganicas', nome: 'Funções Inorgânicas', subconteudos: [{id: 'acidos', nome: 'Ácidos'}, {id: 'bases', nome: 'Bases'}, {id: 'sais', nome: 'Sais'}, {id: 'oxidos', nome: 'Óxidos'}]}]},
+                                    { nome: 'Módulo 5: Radioatividade', assuntos: [{id: 'radioatividade', nome: 'Radioatividade', subconteudos: [{id: 'leis-radioatividade', nome: 'Leis da Radioatividade'}, {id: 'meia-vida', nome: 'Meia-vida'}]}]}
                                 ]
                             },
                             {
                                 nome: 'Físico-Química',
                                 modulos: [
-                                    { nome: 'Módulo 1: Cálculos e Soluções', assuntos: [{id: 'estequiometria', nome: 'Estequiometria'}, {id: 'solucoes', nome: 'Soluções', subconteudos: [{id: 'concentracoes', nome: 'Concentrações'}, {id: 'prop-coligativas', nome: 'Propriedades Coligativas'}]}]},
-                                    { nome: 'Módulo 2: Termoquímica', assuntos: [{id: 'termoquimica', nome: 'Termoquímica'}]},
-                                    { nome: 'Módulo 3: Cinética e Equilíbrio', assuntos: [{id: 'cinetica-quimica', nome: 'Cinética Química'}, {id: 'equilibrio-quimico', nome: 'Equilíbrio Químico e Iônico', subconteudos: [{id: 'keq-ph-poh', nome: 'Keq, pH e pOH'}, {id: 'desloc-equilibrio', nome: 'Deslocamento de Equilíbrio'}]}]},
+                                    { nome: 'Módulo 1: Cálculos e Soluções', assuntos: [{id: 'estequiometria', nome: 'Estequiometria', subconteudos: [{id: 'leis-ponderais', nome: 'Leis Ponderais'}, {id: 'calculos-esteq', nome: 'Cálculos Estequiométricos'}]}, {id: 'solucoes', nome: 'Soluções', subconteudos: [{id: 'concentracoes', nome: 'Concentrações'}, {id: 'prop-coligativas', nome: 'Propriedades Coligativas'}]}]},
+                                    { nome: 'Módulo 2: Termoquímica', assuntos: [{id: 'termoquimica', nome: 'Termoquímica', subconteudos: [{id: 'entalpia', nome: 'Entalpia'}, {id: 'lei-hess', nome: 'Lei de Hess'}]}]},
+                                    { nome: 'Módulo 3: Cinética e Equilíbrio', assuntos: [{id: 'cinetica-quimica', nome: 'Cinética Química', subconteudos: [{id: 'velocidade-reacoes', nome: 'Velocidade das Reações'}, {id: 'fatores-velocidade', nome: 'Fatores que afetam a velocidade'}]}, {id: 'equilibrio-quimico', nome: 'Equilíbrio Químico e Iônico', subconteudos: [{id: 'keq-ph-poh', nome: 'Keq, pH e pOH'}, {id: 'desloc-equilibrio', nome: 'Deslocamento de Equilíbrio'}]}]},
                                     { nome: 'Módulo 4: Eletroquímica', assuntos: [{id: 'eletroquimica', nome: 'Eletroquímica e Oxirredução', subconteudos: [{id: 'pilhas', nome: 'Pilhas'}, {id: 'eletrolise', nome: 'Eletrólise'}]}]}
                                 ]
                             },
                             {
                                 nome: 'Química Orgânica',
                                 modulos: [
-                                    { nome: 'Módulo 1: Introdução e Hidrocarbonetos', assuntos: [{id: 'intro-organica', nome: 'Introdução à Química Orgânica'}]},
-                                    { nome: 'Módulo 2: Funções Orgânicas', assuntos: [{id: 'funcoes-organicas', nome: 'Funções Orgânicas'}]},
-                                    { nome: 'Módulo 3: Isomeria', assuntos: [{id: 'isomeria', nome: 'Isomeria'}]},
-                                    { nome: 'Módulo 4: Reações Orgânicas', assuntos: [{id: 'reacoes-organicas', nome: 'Reações Orgânicas'}]},
-                                    { nome: 'Módulo 5: Macromoléculas', assuntos: [{id: 'polimeros-bioquimica', nome: 'Polímeros e Bioquímica'}]}
+                                    { nome: 'Módulo 1: Introdução e Hidrocarbonetos', assuntos: [{id: 'intro-organica', nome: 'Introdução à Química Orgânica', subconteudos: [{id: 'class-carbono', nome: 'Classificação do Carbono'}, {id: 'class-cadeias', nome: 'Classificação de Cadeias'}]}]},
+                                    { nome: 'Módulo 2: Funções Orgânicas', assuntos: [{id: 'funcoes-organicas', nome: 'Funções Orgânicas', subconteudos: [{id: 'funcoes-oxigenadas', nome: 'Funções Oxigenadas'}, {id: 'funcoes-nitrogenadas', nome: 'Funções Nitrogenadas'}]}]},
+                                    { nome: 'Módulo 3: Isomeria', assuntos: [{id: 'isomeria', nome: 'Isomeria', subconteudos: [{id: 'isomeria-plana', nome: 'Isomeria Plana'}, {id: 'isomeria-espacial', nome: 'Isomeria Espacial'}]}]},
+                                    { nome: 'Módulo 4: Reações Orgânicas', assuntos: [{id: 'reacoes-organicas', nome: 'Reações Orgânicas', subconteudos: [{id: 'reacoes-adicao', nome: 'Reações de Adição'}, {id: 'reacoes-substituicao', nome: 'Reações de Substituição'}, {id: 'reacoes-eliminacao', nome: 'Reações de Eliminação'}]}]},
+                                    { nome: 'Módulo 5: Macromoléculas', assuntos: [{id: 'polimeros-bioquimica', nome: 'Polímeros e Bioquímica', subconteudos: [{id: 'polimeros', nome: 'Polímeros'}, {id: 'biomoleculas', nome: 'Carboidratos, Lipídios e Proteínas'}]}]}
                                 ]
                             }
                         ]
@@ -533,7 +536,7 @@
                             {
                                 nome: 'Módulos',
                                 modulos: [
-                                    { nome: 'Módulo 1: Filosofia Antiga e Medieval', assuntos: [{id: 'filosofia-antiga-medieval', nome: 'Filosofia Antiga e Medieval', subconteudos: [{id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'socrates-platao-aristoteles', nome: 'Sócrates, Platão e Aristóteles'}, {id: 'helenistica-medieval', nome: 'Filosofia Helenística e Medieval'}]}]},
+                                    { nome: 'Módulo 1: Filosofia Antiga e Medieval', assuntos: [{id: 'filosofia-antiga-media', nome: 'Filosofia Antiga e Medieval', subconteudos: [{id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'socrates-platao-aristoteles', nome: 'Sócrates, Platão e Aristóteles'}, {id: 'helenistica-medieval', nome: 'Filosofia Helenística e Medieval'}]}]},
                                     { nome: 'Módulo 2: Filosofia Moderna e Contemporânea', assuntos: [{id: 'filosofia-moderna-contemporanea', nome: 'Filosofia Moderna e Contemporânea', subconteudos: [{id: 'racionalismo-empirismo', nome: 'Racionalismo e Empirismo'}, {id: 'kant-hegel', nome: 'Kant e Hegel'}, {id: 'existencialismo-pos-modernismo', nome: 'Existencialismo e Pós-Modernismo'}]}]},
                                     { nome: 'Módulo 3: Eixos Temáticos', assuntos: [{id: 'etica-politica-ciencia', nome: 'Ética, Política e Ciência', subconteudos: [{id: 'etica-moral', nome: 'Ética e Moral'}, {id: 'filosofia-politica', nome: 'Filosofia Política'}, {id: 'filosofia-ciencia', nome: 'Filosofia da Ciência'}]}]}
                                 ]
@@ -566,15 +569,15 @@
                                 nome: 'Gramática',
                                 modulos: [
                                      { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia', subconteudos: [{id: 'classes-palavras-variaveis', nome: 'Classes de Palavras Variáveis'}, {id: 'classes-palavras-invariaveis', nome: 'Classes de Palavras Invariáveis'}, {id: 'formacao-palavras', nome: 'Processos de Formação de Palavras'}]}]},
-                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe', subconteudos: [{id: 'termos-essenciais-oracao', nome: 'Termos Essenciais da Oração (Sujeito e Predicado)'}, {id: 'termos-integrantes-oracao', nome: 'Termos Integrantes da Oração (Complementos Verbais, Nominais)'}, {id: 'termos-acessorios-oracao', nome: 'Termos Acessórios da Oração e Vocativo'}, {id: 'oracoes-coordenadas', nome: 'Orações Coordenadas'}, {id: 'oracoes-subordinadas-substantivas', nome: 'Orações Subordinadas Substantivas'}, {id: 'oracoes-subordinadas-adjetivas', nome: 'Orações Subordinadas Adjetivas'}, {id: 'oracoes-subordinadas-adverbiais', nome: 'Orações Subordinadas Adverbiais'}]}]},
-                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase', subconteudos: [{id: 'concordancia-verbal', nome: 'Concordância Verbal'}, {id: 'concordancia-nominal', nome: 'Concordância Nominal'}, {id: 'regencia-verbal', nome: 'Regência Verbal'}, {id: 'regencia-nominal', nome: 'Regência Nominal'}, {id: 'crase', nome: 'Crase'}]}, {id: 'pontuacao', nome: 'Pontuação'}]}
+                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe', subconteudos: [{id: 'periodo-simples', nome: 'Período Simples: Termos da Oração'}, {id: 'oracoes-coordenadas', nome: 'Período Composto: Orações Coordenadas'}, {id: 'oracoes-subordinadas-substantivas', nome: 'Orações Subordinadas Substantivas'}, {id: 'oracoes-subordinadas-adjetivas', nome: 'Orações Subordinadas Adjetivas'}, {id: 'oracoes-subordinadas-adverbiais', nome: 'Orações Subordinadas Adverbiais'}]}]},
+                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase', subconteudos: [{id: 'concordancia-verbal', nome: 'Concordância Verbal'}, {id: 'concordancia-nominal', nome: 'Concordância Nominal'}, {id: 'regencia-verbal-nominal', nome: 'Regência Verbal e Nominal'}, {id: 'crase', nome: 'Crase'}]}, {id: 'pontuacao', nome: 'Pontuação'}]}
                                 ]
                             },
                             {
                                 nome: 'Texto e Interpretação',
                                 modulos: [
                                     { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
-                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual (Narração, Descrição, Dissertação)'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
+                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual (Narração, Descrição, etc.)'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
                                     { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística', subconteudos: [{id: 'figuras-linguagem', nome: 'Figuras de Linguagem'}, {id: 'variacao-linguistica', nome: 'Variação Linguística'}, {id: 'funcoes-linguagem', nome: 'Funções da Linguagem'}]}]}
                                 ]
                             }
@@ -887,10 +890,11 @@
 
                     REGRAS IMPORTANTES:
                     1. O JSON deve ser perfeitamente válido.
-                    2. Deve haver EXATAMENTE 5 alternativas por questão.
-                    3. Apenas UMA alternativa pode ter "correta": true.
-                    4. A "justificativa_erro" deve estar vazia ("") para a alternativa correta.
-                    5. O conteúdo deve ser preciso e de alta qualidade acadêmica.
+                    2. Todas as fórmulas matemáticas no enunciado, alternativas e resolução devem ser formatadas em LaTeX (usando $...$ para fórmulas em linha e $$...$$ para fórmulas em bloco).
+                    3. Deve haver EXATAMENTE 5 alternativas por questão.
+                    4. Apenas UMA alternativa pode ter "correta": true.
+                    5. A "justificativa_erro" deve estar vazia ("") para a alternativa correta.
+                    6. O conteúdo deve ser preciso e de alta qualidade acadêmica.
 
                     Gere o JSON completo agora.
                 `;
@@ -1150,20 +1154,22 @@
                 if (cachedContent) {
                     setTimeout(() => {
                         displayDiv.innerHTML = cachedContent;
+                        renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
                     }, 200);
                     return;
                 }
                 
                 const promptMapping = {
-                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${nomeConteudo}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${nomeConteudo}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. Para cada uma, explique o que cada variável representa e em que tipo de problema a fórmula deve ser aplicada. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${nomeConteudo}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
+                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${nomeConteudo}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${nomeConteudo}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${nomeConteudo}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
                 };
                 const promptText = promptMapping[tipo];
                 
                 const generatedContent = await this.generateContentWithGemini(promptText);
                 this.setCache(cacheKey, generatedContent);
                 displayDiv.innerHTML = generatedContent;
+                renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
             },
 
             // --- LÓGICA PARA REDAÇÃO ---
@@ -1316,6 +1322,7 @@
                     }
                 }
                 this.renderQuestoes();
+                this.checkIfCanGenerate();
             },
 
             updateSubconteudoFilter: function(disciplinaId, conteudoId) {
@@ -1541,6 +1548,7 @@
                     const correctLetter = String.fromCharCode(65 + correctAlternativeIndex);
                     resultadoDiv.innerHTML = `<strong>Quase lá!</strong> A resposta correta é a alternativa ${correctLetter}.<br><br><strong>Resolução:</strong><br>${questao.resolucao}`;
                 }
+                renderMathInElement(resultadoDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
                 
                 // Adiciona botões para explicar alternativas incorretas
                 questao.alternativas.forEach((alt, index) => {
@@ -1563,6 +1571,7 @@
                 const explanation = alternativa.justificativa_erro || "Não foi possível carregar a justificativa para este erro.";
                 
                 explanationDiv.innerHTML = `<p class="text-xs text-red-700 mt-1 p-2 bg-red-50 rounded-md border-l-2 border-red-500">${explanation}</p>`;
+                renderMathInElement(explanationDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
             },
         };
 
@@ -1575,4 +1584,9 @@
 
 </body>
 </html>
+
+
+
+
+
 
