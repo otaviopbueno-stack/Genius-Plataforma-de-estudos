@@ -193,7 +193,7 @@
              <div class="max-w-4xl mx-auto bg-white p-8 rounded-xl shadow-lg">
                 <h2 class="text-4xl font-bold mb-4 text-center text-indigo-600">Nossa Missão</h2>
                 <p class="text-gray-600 text-center leading-relaxed text-lg">
-                    Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O Genius nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
+                    Acreditamos que a educação de qualidade é a principal ferramenta de transformação. O InsFlow nasceu do desejo de criar um ambiente de estudos onde aprender é um ato de descoberta, não de memorização. Nossa missão é facilitar o acesso ao conhecimento profundo e bem estruturado, capacitando cada estudante a não apenas passar no vestibular, mas a construir uma base sólida para o futuro. Queremos ser o seu parceiro na jornada para alcançar o ponto mais alto do seu potencial.
                 </p>
 
                 <div class="mt-8 border-t pt-6 text-center">
@@ -1272,7 +1272,6 @@
             setInitialQuestaoState: function() {
                 const questoesList = document.getElementById('questoes-list');
                 questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
-                this.checkIfCanGenerate();
             },
 
             populateFilters: function() {
@@ -1282,6 +1281,7 @@
                     disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
                 this.updateConteudoFilter('todos');
+                this.checkIfCanGenerate(); 
             },
             
             updateConteudoFilter: function(disciplinaId) {
@@ -1311,7 +1311,6 @@
                     }
                 }
                 this.renderQuestoes();
-                this.checkIfCanGenerate();
             },
 
             updateSubconteudoFilter: function(disciplinaId, conteudoId) {
@@ -1357,15 +1356,18 @@
 
                 disciplinaSelect.addEventListener('change', (e) => {
                     this.updateConteudoFilter(e.target.value);
+                    this.checkIfCanGenerate();
                 });
 
                 conteudoSelect.addEventListener('change', (e) => {
                     const disciplinaId = disciplinaSelect.value;
                     this.updateSubconteudoFilter(disciplinaId, e.target.value);
+                    this.checkIfCanGenerate();
                 });
 
                  subconteudoSelect.addEventListener('change', () => {
                     this.renderQuestoes();
+                    this.checkIfCanGenerate();
                 });
                 
                 generateBtn.addEventListener('click', this.handleGenerateQuestionsClick.bind(this));
@@ -1504,6 +1506,9 @@
                     </div>
                 `).join('');
                 lucide.createIcons();
+                document.querySelectorAll('#questoes-list').forEach(el => {
+                    renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+                });
             },
 
             checkAnswer: function(questaoId) {
@@ -1542,8 +1547,8 @@
                 // Adiciona botões para explicar alternativas incorretas
                 questao.alternativas.forEach((alt, index) => {
                     if (!alt.correta) {
-                        const altContainer = document.getElementById(`incorrect-explanation-${q.id}-${index}`);
-                        altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="window.app.explainIncorrectAlternative(this, '${q.id}', ${index})">Por que está errada?</button>`;
+                        const altContainer = document.getElementById(`incorrect-explanation-${questao.id}-${index}`);
+                        altContainer.innerHTML = `<button class="text-xs text-blue-600 hover:underline font-semibold" onclick="window.app.explainIncorrectAlternative(this, '${questao.id}', ${index})">Por que está errada?</button>`;
                         altContainer.classList.remove('hidden');
                     }
                 });
@@ -1573,3 +1578,4 @@
 
 </body>
 </html>
+
