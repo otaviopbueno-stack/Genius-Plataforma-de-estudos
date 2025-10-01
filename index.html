@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Genius - Plataforma de Estudos</title>
+    <title>InsFlow - Plataforma de Estudos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -104,7 +104,7 @@
             <div class="flex items-center justify-between h-16">
                 <a href="#" class="flex items-center space-x-2 text-2xl font-bold text-gray-800" onclick="window.app.navigateTo('inicio')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-indigo-600"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
-                    <span class="text-indigo-600">Genius</span>
+                    <span class="text-indigo-600">InsFlow</span>
                 </a>
                 <div class="hidden md:flex space-x-8">
                     <a href="#" class="nav-link active" data-target="inicio" onclick="window.app.navigateTo('inicio', this)">Início</a>
@@ -136,7 +136,7 @@
         <section id="inicio" class="content-section">
             <div class="hero-container rounded-xl p-8 md:p-12 min-h-[calc(100vh-8rem)] flex items-center justify-center">
                 <div class="relative z-10 text-center max-w-3xl mx-auto">
-                    <h1 class="text-4xl md:text-5xl font-bold text-indigo-600 mb-4">Bem-vindo ao Genius!</h1>
+                    <h1 class="text-4xl md:text-5xl font-bold text-indigo-600 mb-4">Bem-vindo ao InsFlow!</h1>
                     <p class="text-lg md:text-xl text-gray-600 mb-8">Nossa missão é transformar sua jornada de estudos. Aqui, você não apenas decora, mas compreende profundamente cada conteúdo. Oferecemos ferramentas interativas e explicações em diferentes níveis para que você possa se preparar de forma eficiente e completa para os maiores vestibulares do país.</p>
                     <div class="flex flex-col sm:flex-row justify-center gap-4">
                         <button class="bg-indigo-600 text-white font-semibold py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 transition duration-300" onclick="window.app.navigateTo('materias')">Explore as Matérias</button>
@@ -1180,16 +1180,6 @@
 
                 button.disabled = true;
                 icon.classList.add('animate-spin');
-
-                const cacheKey = `${this.CACHE_PREFIX}random-theme-${new Date().toDateString()}`;
-                let cachedTheme = this.getCache(cacheKey);
-
-                if (cachedTheme) {
-                    input.value = cachedTheme;
-                    button.disabled = false;
-                    icon.classList.remove('animate-spin');
-                    return;
-                }
                 
                 const prompt = `Aja como um especialista em formular temas de redação para o ENEM, com profundo conhecimento das problemáticas atuais do Brasil. Crie um único tema de redação dissertativo-argumentativo. O tema deve refletir um desafio social, cultural, ambiental ou político relevante no Brasil contemporâneo. A resposta deve conter APENAS o texto do tema, sem aspas, introduções ou qualquer texto adicional. Por exemplo: 'A persistência da violência contra a mulher na sociedade brasileira'.`;
 
@@ -1197,7 +1187,6 @@
                     const theme = await this.callOpenAIProxy(prompt, false);
                     const cleanTheme = theme.replace(/"/g, '');
                     input.value = cleanTheme;
-                    this.setCache(cacheKey, cleanTheme);
                 } catch (error) {
                     alert('Não foi possível gerar um tema. Tente novamente.');
                     console.error(error);
@@ -1584,9 +1573,3 @@
 
 </body>
 </html>
-
-
-
-
-
-
