@@ -1212,7 +1212,7 @@
                     return;
                 }
 
-                const prompt = `Aja como um professor de cursinho especialista em redação para o ENEM. Para o tema "${theme}", gere um repertório sociocultural rico e variado. Organize a resposta em seções claras usando H3 para títulos (###): 'Contexto Histórico', 'Filosofia e Sociologia', 'Livros e Filmes', e 'Dados e Estatísticas'. Para cada item, forneça uma breve explicação de como ele pode ser usado na argumentação. Seja criativo e forneça referências que ajudem o aluno a se destacar.`;
+                const prompt = `Aja como um professor de cursinho especialista em redação para o ENEM. Para o tema "${theme}", gere um repertório sociocultural rico e variado. Organize a resposta em seções claras usando H3 para títulos (###): 'Contexto Histórico', 'Filosofia e Sociologia', 'Livros e Filmes', e 'Dados e Estatísticas'. Para cada item, forneça uma breve explicação de como ele pode ser usado na argumentação. Seja criativo, forneça referências que ajudem o aluno a se destacar e inclua, ao final, uma seção "### Repertório Coringa", com uma ou duas citações ou conceitos mais amplos que podem ser adaptados para vários temas.`;
                 
                 const result = await this.generateContentWithGemini(prompt);
                 this.setCache(cacheKey, result);
@@ -1260,7 +1260,17 @@
                     return;
                 }
 
-                const prompt = `Aja como um professor de redação atencioso e construtivo. O tema da redação é "${theme}". Analise o seguinte parágrafo escrito por um aluno: "${paragraph}". Forneça um feedback em tópicos, focando em: 1. Coesão e Coerência. 2. Força da Argumentação. 3. Correção Gramatical. 4. Uso do Repertório. IMPORTANTE: Não reescreva o parágrafo para o aluno. Apenas aponte os pontos fortes e as áreas que podem ser melhoradas, sugerindo o que o aluno deve pensar para aprimorar o texto.`;
+                const prompt = `Aja como um corretor de redação do ENEM. O tema da redação é "${theme}". Analise o seguinte parágrafo: "${paragraph}". Forneça um feedback construtivo e detalhado, avaliando o parágrafo com base nas 5 competências do ENEM. Estruture sua resposta da seguinte forma:
+### Análise por Competências do ENEM
+- **Competência 1 (Domínio da norma culta):** Avalie a gramática, pontuação e ortografia.
+- **Competência 2 (Compreensão do tema e uso de repertório):** Verifique se o parágrafo aborda o tema e se utiliza repertório sociocultural de forma pertinente.
+- **Competência 3 (Seleção e organização de informações):** Analise a clareza, a organização das ideias e a força da argumentação.
+- **Competência 4 (Coesão e Coerência):** Verifique o uso de conectivos e a ligação lógica entre as frases.
+- **Competência 5 (Proposta de Intervenção - se for um parágrafo de conclusão):** Se for uma conclusão, avalie se os 5 elementos (agente, ação, meio/modo, finalidade, detalhamento) estão presentes. Se não for, mencione que esta competência se aplica à conclusão.
+### Pontos Fortes
+Liste os aspetos positivos do parágrafo.
+### Sugestões de Melhoria
+Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem reescrever o parágrafo por ele.`;
                 
                 const result = await this.generateContentWithGemini(prompt);
                 this.setCache(cacheKey, result);
@@ -1281,7 +1291,6 @@
                     disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
                 this.updateConteudoFilter('todos');
-                this.checkIfCanGenerate(); 
             },
             
             updateConteudoFilter: function(disciplinaId) {
@@ -1311,6 +1320,7 @@
                     }
                 }
                 this.renderQuestoes();
+                this.checkIfCanGenerate();
             },
 
             updateSubconteudoFilter: function(disciplinaId, conteudoId) {
@@ -1356,18 +1366,15 @@
 
                 disciplinaSelect.addEventListener('change', (e) => {
                     this.updateConteudoFilter(e.target.value);
-                    this.checkIfCanGenerate();
                 });
 
                 conteudoSelect.addEventListener('change', (e) => {
                     const disciplinaId = disciplinaSelect.value;
                     this.updateSubconteudoFilter(disciplinaId, e.target.value);
-                    this.checkIfCanGenerate();
                 });
 
                  subconteudoSelect.addEventListener('change', () => {
                     this.renderQuestoes();
-                    this.checkIfCanGenerate();
                 });
                 
                 generateBtn.addEventListener('click', this.handleGenerateQuestionsClick.bind(this));
@@ -1578,4 +1585,3 @@
 
 </body>
 </html>
-
