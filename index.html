@@ -850,18 +850,11 @@
                 }
             },
             
-            // --- FUNÇÕES DE CHAMADA DA API (Versão de Teste Local) ---
-            callOpenAIAPI: async function(prompt, isJson = false) {
-                if (OPENAI_API_KEY === "SUA_CHAVE_API_DA_OPENAI_AQUI") {
-                    throw new Error("Chave de API da OpenAI não configurada. Insira a sua chave na variável OPENAI_API_KEY.");
-                }
-                const apiUrl = `https://api.openai.com/v1/chat/completions`;
+            // --- FUNÇÕES DE CHAMADA DA API ---
+            callOpenAIProxy: async function(prompt, isJson = false) {
+                const apiUrl = `/api/proxy`;
                 
-                const payload = {
-                    model: "gpt-4o",
-                    messages: [{"role": "user", "content": prompt}],
-                    ...(isJson && { response_format: { "type": "json_object" } }),
-                };
+                const payload = { prompt, isJson };
 
                 let response;
                 const maxRetries = 3;
@@ -872,12 +865,11 @@
                         method: 'POST',
                         headers: { 
                             'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${OPENAI_API_KEY}`
                         },
                         body: JSON.stringify(payload)
                     });
 
-                    if (response.status !== 429) { // 429 is OpenAI's rate limit error
+                    if (response.status !== 429) { // 429 is Rate limit error
                         break;
                     }
                     if (i < maxRetries - 1) {
@@ -888,9 +880,9 @@
                 }
 
                 if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: { message: "Erro desconhecido" }}));
-                    console.error("Erro na API da OpenAI:", errorData);
-                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error.message}`);
+                    const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
+                    console.error("Erro na chamada ao proxy:", errorData);
+                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error}`);
                 }
 
                 const data = await response.json();
@@ -903,7 +895,7 @@
 
             generateContentWithGemini: async function(prompt) {
                  try {
-                    let text = await this.callOpenAIAPI(prompt, false);
+                    let text = await this.callOpenAIProxy(prompt, false);
                     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); 
                     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');      
                     text = text.replace(/\n/g, '<br>');
@@ -946,7 +938,7 @@
                 `;
 
                 try {
-                    const jsonString = await this.callOpenAIAPI(prompt, true);
+                    const jsonString = await this.callOpenAIProxy(prompt, true);
                     const parsedData = JSON.parse(jsonString);
                     
                     if (!parsedData || !Array.isArray(parsedData.questoes)) {
@@ -1207,7 +1199,7 @@
                             const content = snapshot.val();
                             displayDiv.innerHTML = content;
                             renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
-                            this.setCache(cacheKey, content);
+                            this.setCache(cacheKey, content); // Atualiza o cache local
                             console.log("Conteúdo carregado do Firebase!");
                             return;
                         }
@@ -1262,7 +1254,7 @@
                 const prompt = `Aja como um especialista em formular temas de redação para o ENEM, com profundo conhecimento das problemáticas atuais do Brasil. Crie um único tema de redação dissertativo-argumentativo. O tema deve refletir um desafio social, cultural, ambiental ou político relevante no Brasil contemporâneo. A resposta deve conter APENAS o texto do tema, sem aspas, introduções ou qualquer texto adicional. Por exemplo: 'A persistência da violência contra a mulher na sociedade brasileira'.`;
 
                 try {
-                    const theme = await this.callOpenAIAPI(prompt, false);
+                    const theme = await this.callOpenAIProxy(prompt, false);
                     const cleanTheme = theme.replace(/"/g, '');
                     input.value = cleanTheme;
                 } catch (error) {
@@ -1602,30 +1594,32 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     return;
                 }
 
-                questoesList.innerHTML = filteredQuestoes.map((q) => `
+                questoesList.innerHTML = filteredQuestoes.map((q, qIndex) => {
+                    const uniqueId = `${q.disciplina}-${q.assunto}-${qIndex}`; // Criar um ID único para cada questão renderizada
+                    return `
                     <div class="bg-white p-6 rounded-lg shadow-md">
                         <p class="text-sm font-semibold text-blue-600 mb-2">${q.banca}</p>
                         <p class="mb-4 text-slate-700">${q.enunciado}</p>
-                        <div id="alternativas-${q.id}" class="space-y-3">
+                        <div id="alternativas-${uniqueId}" class="space-y-3">
                             ${(q.alternativas || []).map((alt, altIndex) => `
                                 <div class="alternative-item flex items-start">
                                     <button class="eliminate-btn p-1 mr-2 text-slate-400 hover:text-red-500 flex-shrink-0" title="Eliminar alternativa" onclick="this.nextElementSibling.classList.toggle('line-through'); this.nextElementSibling.classList.toggle('opacity-50')">
                                         <i data-lucide="x-circle" class="w-4 h-4"></i>
                                     </button>
                                     <label class="flex items-start w-full cursor-pointer">
-                                        <input type="radio" name="questao-${q.id}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
+                                        <input type="radio" name="questao-${uniqueId}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
                                         <div class="flex-grow">
                                             <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto || alt.text}</span>
-                                            <div id="incorrect-explanation-${q.id}-${altIndex}" class="hidden mt-2"></div>
+                                            <div id="incorrect-explanation-${uniqueId}-${altIndex}" class="hidden mt-2"></div>
                                         </div>
                                      </label>
                                 </div>
                             `).join('')}
                         </div>
-                        <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="window.app.checkAnswer('${q.id}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">Confirmar Resposta</button>
-                        <div id="resultado-${q.id}" class="hidden mt-4 p-4 rounded-md"></div>
+                        <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="window.app.checkAnswer('${uniqueId}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">Confirmar Resposta</button>
+                        <div id="resultado-${uniqueId}" class="hidden mt-4 p-4 rounded-md"></div>
                     </div>
-                `).join('');
+                `}).join('');
                 lucide.createIcons();
                 document.querySelectorAll('#questoes-list').forEach(el => {
                     renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
@@ -1637,7 +1631,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 if (!questao) return;
                 
                 const selectedRadio = document.querySelector(`input[name="questao-${questaoId}"]:checked`);
-                const resultadoDiv = document.getElementById(`resultado-${questao.id}`);
+                const resultadoDiv = document.getElementById(`resultado-${questaoId}`);
                 resultadoDiv.classList.remove('hidden', 'bg-green-100', 'text-green-800', 'bg-red-100', 'text-red-800', 'bg-yellow-100', 'text-yellow-800');
 
                 if (!selectedRadio) {
@@ -1648,7 +1642,6 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 }
                 
                 const selectedIndex = parseInt(selectedRadio.value);
-                // A questão vinda do Firebase pode não ter o 'id' que usamos localmente, mas o resto da lógica funciona
                 const isCorrect = questao.alternativas[selectedIndex].correta;
                 
                 resultadoDiv.classList.remove('hidden');
@@ -1699,7 +1692,4 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
-
-
-
 
