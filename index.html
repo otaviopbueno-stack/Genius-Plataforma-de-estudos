@@ -810,6 +810,7 @@
                     console.log("Firebase conectado com sucesso!");
                 } catch (error) {
                     console.error("Erro ao inicializar o Firebase:", error);
+                    alert("Não foi possível conectar à base de dados. Verifique a sua configuração do Firebase no código.");
                 }
             },
             
@@ -1196,48 +1197,57 @@
                 displayDiv.innerHTML = `<div class="flex items-center justify-center space-x-2"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div><p>Carregando...</p></div>`;
                 displayDiv.style.opacity = 1;
 
-                // 1. Tentar buscar no Firebase
-                if (database) {
-                    const dbPath = `conteudos/${materiaId}/${assunto.id}/${subconteudo ? subconteudo.id + '/' : ''}${tipo}`;
-                    const snapshot = await get(ref(database, dbPath));
-                    if (snapshot.exists()) {
-                        const content = snapshot.val();
-                        displayDiv.innerHTML = content;
-                        renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
-                        this.setCache(cacheKey, content); // Atualiza o cache local
-                        console.log("Conteúdo carregado do Firebase!");
-                        return;
+                try {
+                    // 1. Tentar buscar no Firebase
+                    if (database) {
+                        const dbPath = `conteudos/${materiaId}/${assunto.id}/${subconteudo ? subconteudo.id + '/' : ''}${tipo}`;
+                        console.log(`Verificando Firebase em: ${dbPath}`);
+                        const snapshot = await get(ref(database, dbPath));
+                        if (snapshot.exists()) {
+                            const content = snapshot.val();
+                            displayDiv.innerHTML = content;
+                            renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+                            this.setCache(cacheKey, content);
+                            console.log("Conteúdo carregado do Firebase!");
+                            return;
+                        }
                     }
-                }
 
-                // 2. Se não existir, buscar no cache local
-                if (cachedContent) {
-                    setTimeout(() => {
+                    // 2. Se não existir, buscar no cache local
+                    console.log("Não encontrado no Firebase, verificando cache local...");
+                    if (cachedContent) {
                         displayDiv.innerHTML = cachedContent;
                         renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
-                    }, 200);
-                    return;
-                }
-                
-                // 3. Se não existir em nenhum, gerar com IA
-                const promptMapping = {
-                    resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${nomeConteudo}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${nomeConteudo}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
-                    aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${nomeConteudo}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
-                };
-                const promptText = promptMapping[tipo];
-                
-                const generatedContent = await this.generateContentWithGemini(promptText);
-                
-                // 4. Salvar o conteúdo gerado no Firebase e no cache local
-                if (database) {
-                    const dbPath = `conteudos/${materiaId}/${assunto.id}/${subconteudo ? subconteudo.id + '/' : ''}${tipo}`;
-                    set(ref(database, dbPath), generatedContent);
-                }
-                this.setCache(cacheKey, generatedContent);
+                        console.log("Conteúdo carregado do cache local!");
+                        return;
+                    }
+                    
+                    // 3. Se não existir em nenhum, gerar com IA
+                    console.log("Não encontrado no cache, chamando IA...");
+                    const promptMapping = {
+                        resumo: `Aja como um professor de cursinho focado em revisão de véspera de prova. Para o tópico de "${nomeConteudo}" em ${materia.nome}, crie um resumo extremamente objetivo. O foco é o essencial para acertar questões. Liste os conceitos-chave, as definições mais importantes e, se aplicável (especialmente para matemática e física), apresente as fórmulas essenciais com uma breve descrição de cada variável. Use negrito para destacar termos cruciais. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                        completo: `Aja como um professor especialista em preparar alunos para o ENEM e vestibulares. Crie uma explicação completa e didática sobre "${nomeConteudo}" em ${materia.nome}. O objetivo é capacitar o aluno a resolver qualquer questão sobre este tópico. A explicação DEVE incluir: 1. **Teoria Essencial:** Explique os conceitos fundamentais de forma clara. 2. **Fórmulas e Aplicações (apenas se for uma matéria de cálculo como Matemática, Física ou Química):** Apresente TODAS as fórmulas relevantes. 3. **Exemplos Práticos Resolvidos:** Mostre um ou dois exemplos de problemas resolvidos passo a passo. 4. **Dicas para a Prova:** Inclua uma seção com erros comuns a serem evitados e estratégias para identificar o que a questão pede. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`,
+                        aprofundado: `Gere uma explicação aprofundada e muito extensa sobre "${nomeConteudo}" em português do Brasil, como se fosse um capítulo de um livro didático acadêmico. Vá muito além do que é cobrado no vestibular. Aborde a história do conceito, os principais teóricos e suas contribuições, as fórmulas e suas derivações, conexões com outras áreas do conhecimento, aplicações práticas e tecnológicas, e os limites ou paradoxos da teoria. IMPORTANTE: Todas as fórmulas matemáticas DEVEM ser formatadas em LaTeX. Use $...$ para fórmulas em linha (inline) e $$...$$ para fórmulas em bloco (display). Comece a resposta diretamente com o conteúdo, sem saudações ou introduções.`
+                    };
+                    const promptText = promptMapping[tipo];
+                    
+                    const generatedContent = await this.generateContentWithGemini(promptText);
+                    
+                    // 4. Salvar o conteúdo gerado no Firebase e no cache local
+                    if (database) {
+                        const dbPath = `conteudos/${materiaId}/${assunto.id}/${subconteudo ? subconteudo.id + '/' : ''}${tipo}`;
+                        set(ref(database, dbPath), generatedContent);
+                        console.log("Conteúdo salvo no Firebase.");
+                    }
+                    this.setCache(cacheKey, generatedContent);
 
-                displayDiv.innerHTML = generatedContent;
-                renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+                    displayDiv.innerHTML = generatedContent;
+                    renderMathInElement(displayDiv, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+
+                } catch (error) {
+                    console.error("Erro detalhado no showConteudo:", error);
+                    displayDiv.innerHTML = `<p class="text-red-600">Ocorreu um erro ao carregar o conteúdo. Tente novamente mais tarde. Detalhes no console.</p>`;
+                }
             },
 
             // --- LÓGICA PARA REDAÇÃO ---
@@ -1509,18 +1519,21 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     // 1. Tentar buscar no Firebase
                     if (database) {
                         const dbPath = `questoes/${disciplinaId}/${topicoIdParaSalvar}`;
+                        console.log(`Verificando Firebase em: ${dbPath}`);
                         const snapshot = await get(ref(database, dbPath));
                         if (snapshot.exists()) {
-                            const questoesDoFirebase = Object.values(snapshot.val()); // Converte o objeto do Firebase para array
+                            const questoesDoFirebase = Object.values(snapshot.val());
                             
-                            // Adicionar ao this.db.questoes para renderização
-                            questoesDoFirebase.forEach(q => q.disciplina = disciplinaId);
+                            questoesDoFirebase.forEach(q => {
+                                q.disciplina = disciplinaId;
+                                q.assunto = topicoIdParaSalvar; 
+                            });
                             this.db.questoes.push(...questoesDoFirebase);
                             
                             this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                             this.renderQuestoes();
                             console.log("Questões carregadas do Firebase!");
-                            return; // Encerra a função aqui
+                            return; 
                         }
                     }
 
@@ -1533,7 +1546,6 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         const dbPath = `questoes/${disciplinaId}/${topicoIdParaSalvar}`;
                         const questoesParaSalvar = {};
                         newQuestoes.forEach((q, index) => {
-                            // Remove o ID temporário antes de salvar, para não poluir o DB
                             const { id, ...rest } = q;
                             questoesParaSalvar[index] = rest;
                         });
@@ -1541,12 +1553,16 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         console.log("Novas questões salvas no Firebase!");
                     }
                     
-                    newQuestoes.forEach(q => q.disciplina = disciplinaId);
+                    newQuestoes.forEach(q => {
+                        q.disciplina = disciplinaId;
+                        q.assunto = topicoIdParaSalvar;
+                    });
                     this.db.questoes.push(...newQuestoes);
                     this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                     this.renderQuestoes();
 
                 } catch (error) {
+                    console.error("Erro detalhado no handleGenerateQuestionsClick:", error);
                     const questoesList = document.getElementById('questoes-list');
                     if(questoesList.children.length === 0 || questoesList.children[0].tagName === 'P') {
                         questoesList.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -1683,3 +1699,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
+
+
+
+
