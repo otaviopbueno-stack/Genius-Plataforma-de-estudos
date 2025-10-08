@@ -1463,11 +1463,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 
                 btn.disabled = (disciplina === 'todos' || conteudo === 'todos');
                 
-                const subconteudoSelect = document.getElementById('filtro-subconteudo');
-                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
-                const topicoFiltrado = (subconteudo && subconteudo !== 'todos') ? subconteudo : conteudo;
-                
-                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topicoFiltrado);
+                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === conteudo);
 
                 if(filtered.length > 0) {
                      btn.innerHTML = 'Gerar Mais 10 Questões';
@@ -1481,25 +1477,26 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 const conteudoSelect = document.getElementById('filtro-conteudo');
                 const subconteudoSelect = document.getElementById('filtro-subconteudo');
                 const btn = document.getElementById('generate-questions-btn');
-                
-                const disciplinaId = disciplinaSelect.value;
-                const conteudoId = conteudoSelect.value;
-                const subconteudoId = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
-
-                const topicoIdParaSalvar = (subconteudoId !== 'todos') ? subconteudoId : conteudoId;
-                
-                const materia = this.db.materias.find(m => m.id === disciplinaId);
-                let nomeTopico = this.findTopicNameById(disciplinaId, topicoIdParaSalvar);
-
-                if (!nomeTopico) {
-                    alert("Erro: Tópico selecionado não foi encontrado na estrutura de dados.");
-                    return;
-                }
+                const questoesList = document.getElementById('questoes-list');
                 
                 btn.disabled = true;
                 btn.innerHTML = `<div class="flex items-center justify-center"><div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div></div>`;
+                questoesList.innerHTML = ''; // Limpa a lista para nova busca
 
                 try {
+                    const disciplinaId = disciplinaSelect.value;
+                    const conteudoId = conteudoSelect.value;
+                    const subconteudoId = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+
+                    const topicoIdParaSalvar = (subconteudoId !== 'todos') ? subconteudoId : conteudoId;
+                    
+                    const materia = this.db.materias.find(m => m.id === disciplinaId);
+                    const nomeTopico = this.findTopicNameById(disciplinaId, topicoIdParaSalvar);
+
+                    if (!nomeTopico) {
+                        throw new Error("Tópico selecionado não foi encontrado na estrutura de dados.");
+                    }
+                    
                     // 1. Tentar buscar no Firebase
                     if (database) {
                         const dbPath = `questoes/${disciplinaId}/${topicoIdParaSalvar}`;
@@ -1508,11 +1505,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         if (snapshot.exists()) {
                             const questoesDoFirebase = Object.values(snapshot.val());
                             
-                            questoesDoFirebase.forEach(q => {
-                                q.disciplina = disciplinaId;
-                                q.assunto = topicoIdParaSalvar; 
-                            });
-                            this.db.questoes.push(...questoesDoFirebase);
+                            this.db.questoes = questoesDoFirebase.map(q => ({...q, disciplina: disciplinaId, assunto: topicoIdParaSalvar}));
                             
                             this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                             this.renderQuestoes();
@@ -1521,8 +1514,8 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         }
                     }
 
-                    // 2. Se não existir no Firebase, gerar com IA
-                    console.log("Nenhuma questão no Firebase. Gerando com a IA...");
+                    // 2. Se não existir, gerar com IA
+                    console.log("Nenhuma questão no Firebase/Cache. Gerando com a IA...");
                     const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, nomeTopico);
                     
                     // 3. Salvar o novo lote no Firebase
@@ -1537,25 +1530,16 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         console.log("Novas questões salvas no Firebase!");
                     }
                     
-                    newQuestoes.forEach(q => {
-                        q.disciplina = disciplinaId;
-                        q.assunto = topicoIdParaSalvar;
-                    });
-                    this.db.questoes.push(...newQuestoes);
+                    this.db.questoes = newQuestoes.map(q => ({...q, disciplina: disciplinaId, assunto: topicoIdParaSalvar}));
                     this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                     this.renderQuestoes();
 
                 } catch (error) {
                     console.error("Erro detalhado no handleGenerateQuestionsClick:", error);
-                    const questoesList = document.getElementById('questoes-list');
-                    if(questoesList.children.length === 0 || questoesList.children[0].tagName === 'P') {
-                        questoesList.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    questoesList.innerHTML = `<div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
                                                     <strong class="font-bold">Erro!</strong>
                                                     <span class="block sm:inline">${error.message}</span>
                                                   </div>`;
-                    } else {
-                        alert(`Erro ao gerar mais questões: ${error.message}`);
-                    }
                 } finally {
                     this.checkIfCanGenerate();
                 }
@@ -1563,59 +1547,65 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
             renderQuestoes: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const conteudo = document.getElementById('filtro-conteudo').value;
+                const conteudo = document.getElementById('filtro-conteudo');
                 const subconteudoSelect = document.getElementById('filtro-subconteudo');
-                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
                 const questoesList = document.getElementById('questoes-list');
 
-                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo;
+                // Limpa a lista de questões atual antes de renderizar
+                this.db.questoes = [];
                 
-                this.checkIfCanGenerate();
-
-                if(disciplina === 'todos' || conteudo === 'todos'){
-                     questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
-                     return;
-                }
-
-                const filteredQuestoes = this.db.questoes.filter(q => {
-                    return q.disciplina === disciplina && q.assunto === topicoFiltrado;
-                });
-                
-                if (filteredQuestoes.length === 0) {
-                    questoesList.innerHTML = '<p class="text-center text-slate-500">Ainda não há questões para este tópico. Clique em "Gerar Questões" para criá-las.</p>';
+                if (!conteudo || conteudo.value === 'todos' || disciplina === 'todos') {
+                    questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
+                    this.checkIfCanGenerate();
                     return;
                 }
 
-                questoesList.innerHTML = filteredQuestoes.map((q, qIndex) => {
-                    const uniqueId = `${q.disciplina}-${q.assunto}-${qIndex}`; // Criar um ID único para cada questão renderizada
-                    return `
-                    <div class="bg-white p-6 rounded-lg shadow-md">
-                        <p class="text-sm font-semibold text-blue-600 mb-2">${q.banca}</p>
-                        <p class="mb-4 text-slate-700">${q.enunciado}</p>
-                        <div id="alternativas-${uniqueId}" class="space-y-3">
-                            ${(q.alternativas || []).map((alt, altIndex) => `
-                                <div class="alternative-item flex items-start">
-                                    <button class="eliminate-btn p-1 mr-2 text-slate-400 hover:text-red-500 flex-shrink-0" title="Eliminar alternativa" onclick="this.nextElementSibling.classList.toggle('line-through'); this.nextElementSibling.classList.toggle('opacity-50')">
-                                        <i data-lucide="x-circle" class="w-4 h-4"></i>
-                                    </button>
-                                    <label class="flex items-start w-full cursor-pointer">
-                                        <input type="radio" name="questao-${uniqueId}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
-                                        <div class="flex-grow">
-                                            <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto || alt.text}</span>
-                                            <div id="incorrect-explanation-${uniqueId}-${altIndex}" class="hidden mt-2"></div>
-                                        </div>
-                                     </label>
-                                </div>
-                            `).join('')}
-                        </div>
-                        <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="window.app.checkAnswer('${uniqueId}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">Confirmar Resposta</button>
-                        <div id="resultado-${uniqueId}" class="hidden mt-4 p-4 rounded-md"></div>
-                    </div>
-                `}).join('');
-                lucide.createIcons();
-                document.querySelectorAll('#questoes-list').forEach(el => {
-                    renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo.value;
+                
+                const cachedData = this.getCache(this.CACHE_PREFIX + 'questoes');
+                const filteredQuestoes = (cachedData || []).filter(q => {
+                    return q.disciplina === disciplina && q.assunto === topicoFiltrado;
                 });
+                
+                this.db.questoes = filteredQuestoes; // Atualiza a lista interna
+
+                if (filteredQuestoes.length === 0) {
+                    questoesList.innerHTML = '<p class="text-center text-slate-500">Ainda não há questões para este tópico. Clique em "Gerar Questões" para criá-las.</p>';
+                } else {
+                    questoesList.innerHTML = filteredQuestoes.map((q, qIndex) => {
+                        const uniqueId = `${q.disciplina}-${q.assunto}-${qIndex}`;
+                        return `
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <p class="text-sm font-semibold text-blue-600 mb-2">${q.banca}</p>
+                            <p class="mb-4 text-slate-700">${q.enunciado}</p>
+                            <div id="alternativas-${uniqueId}" class="space-y-3">
+                                ${(q.alternativas || []).map((alt, altIndex) => `
+                                    <div class="alternative-item flex items-start">
+                                        <button class="eliminate-btn p-1 mr-2 text-slate-400 hover:text-red-500 flex-shrink-0" title="Eliminar alternativa" onclick="this.nextElementSibling.classList.toggle('line-through'); this.nextElementSibling.classList.toggle('opacity-50')">
+                                            <i data-lucide="x-circle" class="w-4 h-4"></i>
+                                        </button>
+                                        <label class="flex items-start w-full cursor-pointer">
+                                            <input type="radio" name="questao-${uniqueId}" value="${altIndex}" class="mr-3 mt-1 h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 flex-shrink-0">
+                                            <div class="flex-grow">
+                                                <span>${String.fromCharCode(65 + altIndex)}) ${alt.texto || alt.text}</span>
+                                                <div id="incorrect-explanation-${uniqueId}-${altIndex}" class="hidden mt-2"></div>
+                                            </div>
+                                         </label>
+                                    </div>
+                                `).join('')}
+                            </div>
+                            <button class="mt-4 bg-blue-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-blue-700 transition" onclick="window.app.checkAnswer('${uniqueId}', ${JSON.stringify(q).replace(/"/g, '&quot;')})">Confirmar Resposta</button>
+                            <div id="resultado-${uniqueId}" class="hidden mt-4 p-4 rounded-md"></div>
+                        </div>
+                    `;
+                    }).join('');
+                    lucide.createIcons();
+                    document.querySelectorAll('#questoes-list').forEach(el => {
+                        renderMathInElement(el, { delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}] });
+                    });
+                }
+                this.checkIfCanGenerate();
             },
 
             checkAnswer: function(questaoId, questaoString) {
@@ -1684,4 +1674,5 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
+
 
