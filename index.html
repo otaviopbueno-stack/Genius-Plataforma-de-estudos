@@ -1386,7 +1386,6 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     disciplinaSelect.innerHTML += `<option value="${m.id}">${m.nome}</option>`;
                 });
                 this.updateConteudoFilter('todos');
-                this.checkIfCanGenerate();
             },
             
             updateConteudoFilter: function(disciplinaId) {
@@ -1416,6 +1415,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     }
                 }
                 this.renderQuestoes();
+                this.checkIfCanGenerate();
             },
 
             updateSubconteudoFilter: function(disciplinaId, conteudoId) {
@@ -1451,6 +1451,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     subconteudoContainer.classList.add('hidden');
                 }
                 this.renderQuestoes();
+                this.checkIfCanGenerate();
             },
 
             addFilterListeners: function() {
