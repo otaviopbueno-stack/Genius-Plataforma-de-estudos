@@ -246,13 +246,13 @@
         // --- INÍCIO DA CONFIGURAÇÃO DO FIREBASE ---
         // COLE A SUA CONFIGURAÇÃO DO FIREBASE AQUI!
         const firebaseConfig = {
-          apiKey: "SUA_API_KEY",
-          authDomain: "SEU_AUTH_DOMAIN",
-          databaseURL: "SUA_DATABASE_URL",
-          projectId: "SEU_PROJECT_ID",
-          storageBucket: "SEU_STORAGE_BUCKET",
-          messagingSenderId: "SEU_MESSAGING_SENDER_ID",
-          appId: "SEU_APP_ID"
+  apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
+  authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
+  databaseURL: "https://genius---plataforma-de-estudos-default-rtdb.firebaseio.com",
+  projectId: "genius---plataforma-de-estudos",
+  storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
+  messagingSenderId: "410977832662",
+  appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
         };
 
         // Variáveis globais para os serviços do Firebase
@@ -804,32 +804,10 @@
                 this.renderQuestoes();
             },
 
-            findTopicNameById: function(disciplinaId, topicoId) {
-                const materia = this.db.materias.find(m => m.id === disciplinaId);
-                if (!materia) return null;
-
-                for (const frente of materia.frentes) {
-                    for (const modulo of frente.modulos) {
-                        for (const assunto of modulo.assuntos) {
-                            if (assunto.id === topicoId) {
-                                return assunto.nome;
-                            }
-                            if (assunto.subconteudos) {
-                                const sub = assunto.subconteudos.find(s => s.id === topicoId);
-                                if (sub) {
-                                    return `${assunto.nome}: ${sub.nome}`;
-                                }
-                            }
-                        }
-                    }
-                }
-                return null; // Retorna nulo se não encontrar
-            },
-
             initializeFirebase: function() {
                 // Verifica se as credenciais de exemplo ainda estão a ser usadas
-                if (firebaseConfig.apiKey === "SUA_API_KEY") {
-                    console.warn("Firebase não configurado. A aplicação funcionará em modo offline (cache local).");
+                if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY" || !firebaseConfig.databaseURL) {
+                    console.warn("Firebase não configurado ou configuração incompleta. A aplicação funcionará em modo offline (cache local).");
                     return;
                 }
                 try {
@@ -884,38 +862,40 @@
                 
                 const payload = { prompt, isJson };
 
-                // Adiciona um timeout para a requisição
-                const timeoutPromise = new Promise((_, reject) =>
-                  setTimeout(() => reject(new Error('A requisição demorou muito para responder (timeout). Verifique os logs do Vercel.')), 15000) // 15 segundos
-                );
+                let response;
+                const maxRetries = 3;
+                let delay = 1000;
 
-                try {
-                    const response = await Promise.race([
-                        fetch(apiUrl, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(payload)
-                        }),
-                        timeoutPromise
-                    ]);
+                for (let i = 0; i < maxRetries; i++) {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload)
+                    });
 
-                    if (!response.ok) {
-                        const errorData = await response.json().catch(() => ({ error: "Erro desconhecido ao ler a resposta do servidor." }));
-                        console.error("Erro na chamada ao proxy:", errorData);
-                        throw new Error(errorData.error || "O servidor retornou um erro.");
+                    if (response.status !== 429) { // 429 is Rate limit error
+                        break;
                     }
-
-                    const data = await response.json();
-                    if (data.choices && data.choices.length > 0) {
-                        return data.choices[0].message.content;
-                    } else {
-                        throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
+                    if (i < maxRetries - 1) {
+                        console.warn(`API sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                        delay *= 2;
                     }
-                } catch (error) {
-                    console.error("Erro final no callOpenAIProxy:", error);
-                    throw error; // Re-lança o erro para ser apanhado pela função que chamou
+                }
+
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
+                    console.error("Erro na chamada ao proxy:", errorData);
+                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error}`);
+                }
+
+                const data = await response.json();
+                if (data.choices && data.choices.length > 0) {
+                    return data.choices[0].message.content;
+                } else {
+                    throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
                 }
             },
 
@@ -1417,7 +1397,6 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     }
                 }
                 this.renderQuestoes();
-                this.checkIfCanGenerate();
             },
 
             updateSubconteudoFilter: function(disciplinaId, conteudoId) {
@@ -1453,7 +1432,6 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     subconteudoContainer.classList.add('hidden');
                 }
                 this.renderQuestoes();
-                this.checkIfCanGenerate();
             },
 
             addFilterListeners: function() {
@@ -1480,12 +1458,16 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
             checkIfCanGenerate: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const topico = document.getElementById('filtro-topico').value;
+                const conteudo = document.getElementById('filtro-conteudo').value;
                 const btn = document.getElementById('generate-questions-btn');
                 
-                btn.disabled = (disciplina === 'todos' || topico === 'todos');
+                btn.disabled = (disciplina === 'todos' || conteudo === 'todos');
                 
-                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topico);
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+                const topicoFiltrado = (subconteudo && subconteudo !== 'todos') ? subconteudo : conteudo;
+                
+                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topicoFiltrado);
 
                 if(filtered.length > 0) {
                      btn.innerHTML = 'Gerar Mais 10 Questões';
@@ -1496,14 +1478,18 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
             handleGenerateQuestionsClick: async function() {
                 const disciplinaSelect = document.getElementById('filtro-disciplina');
-                const topicoSelect = document.getElementById('filtro-topico');
+                const conteudoSelect = document.getElementById('filtro-conteudo');
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
                 const btn = document.getElementById('generate-questions-btn');
                 
                 const disciplinaId = disciplinaSelect.value;
-                const topicoId = topicoSelect.value;
+                const conteudoId = conteudoSelect.value;
+                const subconteudoId = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+
+                const topicoIdParaSalvar = (subconteudoId !== 'todos') ? subconteudoId : conteudoId;
                 
                 const materia = this.db.materias.find(m => m.id === disciplinaId);
-                const nomeTopico = this.findTopicNameById(disciplinaId, topicoId);
+                let nomeTopico = this.findTopicNameById(disciplinaId, topicoIdParaSalvar);
 
                 if (!nomeTopico) {
                     alert("Erro: Tópico selecionado não foi encontrado na estrutura de dados.");
@@ -1516,7 +1502,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 try {
                     // 1. Tentar buscar no Firebase
                     if (database) {
-                        const dbPath = `questoes/${disciplinaId}/${topicoId}`;
+                        const dbPath = `questoes/${disciplinaId}/${topicoIdParaSalvar}`;
                         console.log(`Verificando Firebase em: ${dbPath}`);
                         const snapshot = await get(ref(database, dbPath));
                         if (snapshot.exists()) {
@@ -1524,7 +1510,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                             
                             questoesDoFirebase.forEach(q => {
                                 q.disciplina = disciplinaId;
-                                q.assunto = topicoId; 
+                                q.assunto = topicoIdParaSalvar; 
                             });
                             this.db.questoes.push(...questoesDoFirebase);
                             
@@ -1535,13 +1521,13 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         }
                     }
 
-                    // 2. Se não existir, gerar com IA
+                    // 2. Se não existir no Firebase, gerar com IA
                     console.log("Nenhuma questão no Firebase. Gerando com a IA...");
                     const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, nomeTopico);
                     
                     // 3. Salvar o novo lote no Firebase
                     if (database) {
-                        const dbPath = `questoes/${disciplinaId}/${topicoId}`;
+                        const dbPath = `questoes/${disciplinaId}/${topicoIdParaSalvar}`;
                         const questoesParaSalvar = {};
                         newQuestoes.forEach((q, index) => {
                             const { id, ...rest } = q;
@@ -1553,7 +1539,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                     
                     newQuestoes.forEach(q => {
                         q.disciplina = disciplinaId;
-                        q.assunto = topicoId;
+                        q.assunto = topicoIdParaSalvar;
                     });
                     this.db.questoes.push(...newQuestoes);
                     this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
@@ -1577,18 +1563,22 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
             renderQuestoes: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const topico = document.getElementById('filtro-topico').value;
+                const conteudo = document.getElementById('filtro-conteudo').value;
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
                 const questoesList = document.getElementById('questoes-list');
+
+                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo;
                 
                 this.checkIfCanGenerate();
 
-                if(disciplina === 'todos' || topico === 'todos'){
+                if(disciplina === 'todos' || conteudo === 'todos'){
                      questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
                      return;
                 }
 
                 const filteredQuestoes = this.db.questoes.filter(q => {
-                    return q.disciplina === disciplina && q.assunto === topico;
+                    return q.disciplina === disciplina && q.assunto === topicoFiltrado;
                 });
                 
                 if (filteredQuestoes.length === 0) {
@@ -1694,3 +1684,4 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
+
