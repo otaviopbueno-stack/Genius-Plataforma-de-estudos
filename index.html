@@ -918,6 +918,32 @@
                 }
             },
 
+            parseJsonFromApi: function(jsonString) {
+                try {
+                    // Tenta o parse direto primeiro, que é o caso mais comum
+                    return JSON.parse(jsonString);
+                } catch (e) {
+                    console.warn("Parse direto do JSON falhou. Tentando extrair o bloco JSON...");
+                    // Se falhar, tenta extrair um bloco JSON do texto
+                    const jsonMatch = jsonString.match(/```json\s*([\s\S]*?)\s*```|({[\s\S]*})|(\[[\s\S]*\])/);
+                    if (jsonMatch) {
+                        // Tenta fazer o parse do bloco extraído (prioriza o primeiro grupo que não for nulo)
+                        const extractedJson = jsonMatch[1] || jsonMatch[2] || jsonMatch[3];
+                        try {
+                            return JSON.parse(extractedJson);
+                        } catch (e2) {
+                            console.error("Falhou ao fazer o parse do bloco JSON extraído.", e2);
+                            console.error("String extraída:", extractedJson);
+                            throw new Error("A resposta da API continha um bloco JSON, mas estava mal formatado.");
+                        }
+                    } else {
+                        console.error("Nenhum bloco JSON válido encontrado na resposta da API.");
+                        console.error("Resposta recebida:", jsonString);
+                        throw new Error("A resposta da API não continha um formato JSON reconhecível.");
+                    }
+                }
+            },
+
             generateContentWithGemini: async function(prompt) {
                  try {
                     let text = await this.callOpenAIProxy(prompt, false);
@@ -964,10 +990,10 @@
 
                 try {
                     const jsonString = await this.callOpenAIProxy(prompt, true);
-                    const parsedData = JSON.parse(jsonString);
+                    const parsedData = this.parseJsonFromApi(jsonString);
                     
                     if (!parsedData || !Array.isArray(parsedData.questoes)) {
-                        throw new Error("A resposta da API não continha um array de 'questoes' válido.");
+                        throw new Error("A resposta da API não continha um array de 'questoes' válido após a extração.");
                     }
 
                     const questoes = parsedData.questoes;
@@ -1706,4 +1732,5 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
+
 
