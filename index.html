@@ -819,6 +819,28 @@
                     alert("Não foi possível conectar à base de dados. Verifique a sua configuração do Firebase no código.");
                 }
             },
+
+            findTopicNameById: function(disciplinaId, topicoId) {
+                const materia = this.db.materias.find(m => m.id === disciplinaId);
+                if (!materia) return null;
+
+                for (const frente of materia.frentes) {
+                    for (const modulo of frente.modulos) {
+                        for (const assunto of modulo.assuntos) {
+                            if (assunto.id === topicoId) {
+                                return assunto.nome;
+                            }
+                            if (assunto.subconteudos) {
+                                const sub = assunto.subconteudos.find(s => s.id === topicoId);
+                                if (sub) {
+                                    return `${assunto.nome}: ${sub.nome}`;
+                                }
+                            }
+                        }
+                    }
+                }
+                return null; // Retorna nulo se não encontrar
+            },
             
             // --- LÓGICA DE CACHE ---
             getCache: function(key) {
@@ -862,40 +884,37 @@
                 
                 const payload = { prompt, isJson };
 
-                let response;
-                const maxRetries = 3;
-                let delay = 1000;
+                const timeoutPromise = new Promise((_, reject) =>
+                  setTimeout(() => reject(new Error('A requisição demorou muito para responder (timeout). Verifique os logs do Vercel.')), 15000) // 15 segundos
+                );
 
-                for (let i = 0; i < maxRetries; i++) {
-                    response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(payload)
-                    });
+                try {
+                    const response = await Promise.race([
+                        fetch(apiUrl, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(payload)
+                        }),
+                        timeoutPromise
+                    ]);
 
-                    if (response.status !== 429) { // 429 is Rate limit error
-                        break;
+                    if (!response.ok) {
+                        const errorData = await response.json().catch(() => ({ error: "Erro desconhecido ao ler a resposta do servidor." }));
+                        console.error("Erro na chamada ao proxy:", errorData);
+                        throw new Error(errorData.error || "O servidor retornou um erro.");
                     }
-                    if (i < maxRetries - 1) {
-                        console.warn(`API sobrecarregada. Tentando novamente em ${delay / 1000}s...`);
-                        await new Promise(resolve => setTimeout(resolve, delay));
-                        delay *= 2;
+
+                    const data = await response.json();
+                    if (data.choices && data.choices.length > 0) {
+                        return data.choices[0].message.content;
+                    } else {
+                        throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
                     }
-                }
-
-                if (!response.ok) {
-                    const errorData = await response.json().catch(() => ({ error: "Erro desconhecido" }));
-                    console.error("Erro na chamada ao proxy:", errorData);
-                    throw new Error(`Erro ao gerar conteúdo: ${errorData.error}`);
-                }
-
-                const data = await response.json();
-                if (data.choices && data.choices.length > 0) {
-                    return data.choices[0].message.content;
-                } else {
-                    throw new Error("A resposta da API estava vazia ou foi bloqueada por segurança.");
+                } catch (error) {
+                    console.error("Erro final no callOpenAIProxy:", error);
+                    throw error; // Re-lança o erro para ser apanhado pela função que chamou
                 }
             },
 
@@ -1463,7 +1482,11 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 
                 btn.disabled = (disciplina === 'todos' || conteudo === 'todos');
                 
-                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === conteudo);
+                const subconteudoSelect = document.getElementById('filtro-subconteudo');
+                const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
+                const topicoFiltrado = (subconteudo && subconteudo !== 'todos') ? subconteudo : conteudo;
+                
+                const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topicoFiltrado);
 
                 if(filtered.length > 0) {
                      btn.innerHTML = 'Gerar Mais 10 Questões';
@@ -1505,7 +1528,11 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         if (snapshot.exists()) {
                             const questoesDoFirebase = Object.values(snapshot.val());
                             
-                            this.db.questoes = questoesDoFirebase.map(q => ({...q, disciplina: disciplinaId, assunto: topicoIdParaSalvar}));
+                            questoesDoFirebase.forEach(q => {
+                                q.disciplina = disciplinaId;
+                                q.assunto = topicoIdParaSalvar; 
+                            });
+                            this.db.questoes.push(...questoesDoFirebase);
                             
                             this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                             this.renderQuestoes();
@@ -1530,7 +1557,11 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         console.log("Novas questões salvas no Firebase!");
                     }
                     
-                    this.db.questoes = newQuestoes.map(q => ({...q, disciplina: disciplinaId, assunto: topicoIdParaSalvar}));
+                    newQuestoes.forEach(q => {
+                        q.disciplina = disciplinaId;
+                        q.assunto = topicoIdParaSalvar;
+                    });
+                    this.db.questoes.push(...newQuestoes);
                     this.setCache(this.CACHE_PREFIX + 'questoes', this.db.questoes);
                     this.renderQuestoes();
 
@@ -1547,21 +1578,21 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
             renderQuestoes: function() {
                 const disciplina = document.getElementById('filtro-disciplina').value;
-                const conteudo = document.getElementById('filtro-conteudo');
+                const conteudo = document.getElementById('filtro-conteudo').value;
                 const subconteudoSelect = document.getElementById('filtro-subconteudo');
                 const questoesList = document.getElementById('questoes-list');
 
                 // Limpa a lista de questões atual antes de renderizar
                 this.db.questoes = [];
                 
-                if (!conteudo || conteudo.value === 'todos' || disciplina === 'todos') {
+                if (!conteudo || conteudo === 'todos' || disciplina === 'todos') {
                     questoesList.innerHTML = `<p class="text-center text-slate-500">Selecione uma disciplina e um tópico para gerar questões.</p>`;
                     this.checkIfCanGenerate();
                     return;
                 }
 
                 const subconteudo = subconteudoSelect.parentElement.classList.contains('hidden') ? 'todos' : subconteudoSelect.value;
-                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo.value;
+                const topicoFiltrado = (subconteudo !== 'todos') ? subconteudo : conteudo;
                 
                 const cachedData = this.getCache(this.CACHE_PREFIX + 'questoes');
                 const filteredQuestoes = (cachedData || []).filter(q => {
@@ -1674,5 +1705,4 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
-
 
