@@ -246,13 +246,13 @@
         // --- INÍCIO DA CONFIGURAÇÃO DO FIREBASE ---
         // COLE A SUA CONFIGURAÇÃO DO FIREBASE AQUI!
         const firebaseConfig = {
-  apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
-  authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
-  databaseURL: "https://genius---plataforma-de-estudos-default-rtdb.firebaseio.com",
-  projectId: "genius---plataforma-de-estudos",
-  storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
-  messagingSenderId: "410977832662",
-  appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
+  apiKey: "AIzaSyA7hT4IdGbXRe7wwuSfLrLz1BQvf-ZibBM",
+  authDomain: "gerador-de-questoes-c6a55.firebaseapp.com",
+  databaseURL: "https://gerador-de-questoes-c6a55-default-rtdb.firebaseio.com",
+  projectId: "gerador-de-questoes-c6a55",
+  storageBucket: "gerador-de-questoes-c6a55.firebasestorage.app",
+  messagingSenderId: "853530859407",
+  appId: "1:853530859407:web:e2abadc56098c3ba0bddfa"
         };
 
         // Variáveis globais para os serviços do Firebase
@@ -804,6 +804,42 @@
                 this.renderQuestoes();
             },
 
+            handleMateriaSearch: function(event) {
+                const searchTerm = event.target.value.toLowerCase().trim();
+                const allAssuntos = document.querySelectorAll('[id^="assunto-"]');
+
+                allAssuntos.forEach(assuntoDiv => {
+                    const assuntoTitle = assuntoDiv.querySelector('h5').textContent.toLowerCase();
+                    const subconteudos = assuntoDiv.querySelectorAll('h6');
+                    let textToSearch = assuntoTitle;
+
+                    subconteudos.forEach(sub => {
+                        textToSearch += ' ' + sub.textContent.toLowerCase();
+                    });
+
+                    if (textToSearch.includes(searchTerm)) {
+                        assuntoDiv.style.display = 'block';
+                    } else {
+                        assuntoDiv.style.display = 'none';
+                    }
+                });
+
+                // Ocultar os títulos de módulo/frente se todos os seus conteúdos estiverem ocultos
+                document.querySelectorAll('.mb-8 > div').forEach(container => { // Itera sobre frentes e módulos
+                    if (container.id.startsWith('assuntos-container-')) {
+                        const visibleAssuntos = container.querySelectorAll('[id^="assunto-"]:not([style*="display: none"])');
+                        const moduloDiv = container.closest('.bg-white');
+                        if (moduloDiv) {
+                             if (visibleAssuntos.length === 0) {
+                                moduloDiv.style.display = 'none';
+                            } else {
+                                moduloDiv.style.display = 'block';
+                            }
+                        }
+                    }
+                });
+            },
+
             initializeFirebase: function() {
                 // Verifica se as credenciais de exemplo ainda estão a ser usadas
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY" || !firebaseConfig.databaseURL) {
@@ -1133,7 +1169,13 @@
                                 <i data-lucide="arrow-left" class="h-4 w-4"></i>
                                 Voltar para todas as matérias
                             </button>
-                            <h2 class="text-4xl font-bold mb-2">${materia.nome}</h2>
+                            <h2 class="text-4xl font-bold mb-4">${materia.nome}</h2>
+                            
+                            <div class="relative mb-8">
+                                <input type="search" id="materia-search-bar" placeholder="Pesquisar nesta matéria..." class="w-full pl-12 pr-4 py-3 rounded-full border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition text-lg">
+                                <i data-lucide="search" class="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            </div>
+
                             <div class="flex flex-wrap gap-3 mb-8 border-b border-slate-200 pb-6">
                                 ${materia.frentes.flatMap(f => f.modulos.flatMap(m => m.assuntos)).map(assunto => `<a href="#assunto-${assunto.id}" onclick="event.preventDefault(); document.getElementById('assunto-${assunto.id}').scrollIntoView({behavior: 'smooth', block: 'center'});" class="bg-slate-200 text-slate-800 px-4 py-2 rounded-full text-sm font-medium hover:bg-blue-600 hover:text-white transition duration-300">${assunto.nome}</a>`).join('')}
                             </div>
@@ -1194,6 +1236,12 @@
                 document.getElementById('materias-home').classList.add('hidden');
                 detalheDiv.classList.remove('hidden');
                 lucide.createIcons();
+
+                // Adiciona o event listener à barra de pesquisa
+                const searchBar = document.getElementById('materia-search-bar');
+                if(searchBar) {
+                    searchBar.addEventListener('input', this.handleMateriaSearch.bind(this));
+                }
             },
 
             showMateriasHome: function() {
