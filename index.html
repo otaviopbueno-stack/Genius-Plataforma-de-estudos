@@ -804,42 +804,6 @@
                 this.renderQuestoes();
             },
 
-            handleMateriaSearch: function(event) {
-                const searchTerm = event.target.value.toLowerCase().trim();
-                const allAssuntos = document.querySelectorAll('[id^="assunto-"]');
-
-                allAssuntos.forEach(assuntoDiv => {
-                    const assuntoTitle = assuntoDiv.querySelector('h5').textContent.toLowerCase();
-                    const subconteudos = assuntoDiv.querySelectorAll('h6');
-                    let textToSearch = assuntoTitle;
-
-                    subconteudos.forEach(sub => {
-                        textToSearch += ' ' + sub.textContent.toLowerCase();
-                    });
-
-                    if (textToSearch.includes(searchTerm)) {
-                        assuntoDiv.style.display = 'block';
-                    } else {
-                        assuntoDiv.style.display = 'none';
-                    }
-                });
-
-                // Ocultar os títulos de módulo/frente se todos os seus conteúdos estiverem ocultos
-                document.querySelectorAll('.mb-8 > div').forEach(container => { // Itera sobre frentes e módulos
-                    if (container.id.startsWith('assuntos-container-')) {
-                        const visibleAssuntos = container.querySelectorAll('[id^="assunto-"]:not([style*="display: none"])');
-                        const moduloDiv = container.closest('.bg-white');
-                        if (moduloDiv) {
-                             if (visibleAssuntos.length === 0) {
-                                moduloDiv.style.display = 'none';
-                            } else {
-                                moduloDiv.style.display = 'block';
-                            }
-                        }
-                    }
-                });
-            },
-
             initializeFirebase: function() {
                 // Verifica se as credenciais de exemplo ainda estão a ser usadas
                 if (!firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY" || !firebaseConfig.databaseURL) {
@@ -996,9 +960,9 @@
             
             fetchQuestoesFromGemini: async function(materiaNome, assuntoNome) {
                 const prompt = `
-                    Sua tarefa é criar 10 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}", no estilo de vestibulares brasileiros como ENEM e FUVEST.
+                    Sua tarefa é criar 5 questões de múltipla escolha sobre o tópico "${assuntoNome}" da matéria de "${materiaNome}", no estilo de vestibulares brasileiros como ENEM e FUVEST.
 
-                    A resposta DEVE ser um objeto JSON contendo uma única chave chamada "questoes", que é um array de 10 objetos.
+                    A resposta DEVE ser um objeto JSON contendo uma única chave chamada "questoes", que é um array de 5 objetos.
                     Cada objeto no array deve seguir ESTRITAMENTE a seguinte estrutura:
                     {
                         "banca": "Nome da Banca (ex: FUVEST 2023)",
@@ -1564,7 +1528,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                 const filtered = this.db.questoes.filter(q => q.disciplina === disciplina && q.assunto === topicoFiltrado);
 
                 if(filtered.length > 0) {
-                     btn.innerHTML = 'Gerar Mais 10 Questões';
+                     btn.innerHTML = 'Gerar Mais 5 Questões';
                 } else {
                      btn.innerHTML = 'Gerar Questões';
                 }
@@ -1780,5 +1744,4 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
 
 </body>
 </html>
-
 
