@@ -50,3 +50,4 @@ export default async function handler(req, res) {
     res.status(500).json({ error: 'Ocorreu um erro ao processar o seu pedido.' });
   }
 }
+
