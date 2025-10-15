@@ -1580,7 +1580,7 @@ Dê sugestões claras e práticas sobre como o aluno pode aprimorar o texto, sem
                         }
                     }
 
-                    // 2. Se não existir, gerar com IA
+                    // 2. Se não existir no Firebase, gerar com IA
                     console.log("Nenhuma questão no Firebase/Cache. Gerando com a IA...");
                     const newQuestoes = await this.fetchQuestoesFromGemini(materia.nome, nomeTopico);
                     
