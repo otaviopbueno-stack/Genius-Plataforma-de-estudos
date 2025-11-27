@@ -1362,17 +1362,19 @@
                                                         <div id="cont-${a.id}" class="hidden mt-2 pl-4 border-l-2 border-indigo-100 pb-2">
                                                             ${a.subconteudos ? a.subconteudos.map(sub => `
                                                                 <div class="mt-2 pl-2 border-l-2 border-gray-100 sub-conteudo-item">
-                                                                    <div class="font-medium text-sm text-gray-600 mb-1">${sub.nome}</div>
-                                                                    <div class="flex gap-2 mb-2">
-                                                                        <button onclick="window.app.generateContent('${m.nome}', '${sub.nome}', 'resumo', 'res-${sub.id}')" class="text-xs bg-indigo-50 text-indigo-700 px-2 py-1 rounded hover:bg-indigo-100">Resumo</button>
-                                                                        <button onclick="window.app.generateContent('${m.nome}', '${sub.nome}', 'completo', 'res-${sub.id}')" class="text-xs bg-gray-100 text-gray-700 px-2 py-1 rounded hover:bg-gray-200">Completo</button>
+                                                                    <div class="font-medium text-sm text-gray-600 mb-2">${sub.nome}</div>
+                                                                    <div class="flex flex-wrap gap-2 mb-3">
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${sub.nome}', 'resumo', 'res-${sub.id}')" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded hover:bg-indigo-100 border border-indigo-100 transition" title="Revisão rápida e tópicos">Resumo</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${sub.nome}', 'explicacao', 'res-${sub.id}')" class="text-xs font-semibold bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded hover:bg-indigo-200 border border-indigo-200 transition" title="Aula didática padrão">Explicação</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${sub.nome}', 'completo', 'res-${sub.id}')" class="text-xs font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 shadow-sm transition" title="Dossiê aprofundado">Explicação Completa</button>
                                                                     </div>
                                                                     <div id="res-${sub.id}" class="text-gray-700 text-sm leading-relaxed prose max-w-none"></div>
                                                                 </div>
                                                             `).join('') : `
-                                                                <div class="flex gap-2 mb-3">
-                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'resumo', 'res-${a.id}')" class="text-xs font-bold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded hover:bg-indigo-100 transition">Gerar Resumo</button>
-                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'completo', 'res-${a.id}')" class="text-xs font-bold bg-gray-100 text-gray-700 px-2 py-1.5 rounded hover:bg-gray-200 transition">Explicação Completa</button>
+                                                                <div class="flex flex-wrap gap-2 mb-3">
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'resumo', 'res-${a.id}')" class="text-xs font-semibold bg-indigo-50 text-indigo-700 px-3 py-1.5 rounded hover:bg-indigo-100 border border-indigo-100 transition">Resumo</button>
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'explicacao', 'res-${a.id}')" class="text-xs font-semibold bg-indigo-100 text-indigo-800 px-3 py-1.5 rounded hover:bg-indigo-200 border border-indigo-200 transition">Explicação</button>
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'completo', 'res-${a.id}')" class="text-xs font-semibold bg-indigo-600 text-white px-3 py-1.5 rounded hover:bg-indigo-700 shadow-sm transition">Explicação Completa</button>
                                                                 </div>
                                                                 <div id="res-${a.id}" class="text-gray-700 text-sm leading-relaxed prose max-w-none"></div>
                                                             `}
@@ -1391,6 +1393,87 @@
                 
                 if(typeof lucide !== 'undefined') lucide.createIcons();
                 window.scrollTo(0,0);
+            },
+
+            // ... (filterSubjectContents mantido igual) ...
+
+            // --- GERAÇÃO DE CONTEÚDO ---
+            generateContent: async function(materia, topico, tipo, targetId) {
+                const target = document.getElementById(targetId);
+                if(!target) return;
+
+                let loadingMsg = "A preparar conteúdo...";
+                if (tipo === 'resumo') loadingMsg = "Sintetizando pontos-chave...";
+                if (tipo === 'explicacao') loadingMsg = "Preparando aula didática...";
+                if (tipo === 'completo') loadingMsg = "Elaborando dossiê completo...";
+
+                target.innerHTML = this.getLoadingSpinner(loadingMsg);
+                
+                // Definição dos Formatos
+                let formatoInstrucao = "";
+                if (tipo === 'resumo') {
+                    formatoInstrucao = `
+                    **FORMATO: RESUMO FLASHCARD (Alta Densidade)**
+                    - Objetivo: Revisão rápida e memorização.
+                    - Estrutura: Use listas com marcadores (bullet points) para quase tudo.
+                    - Conteúdo: Apenas definições cruciais, fórmulas essenciais (se houver) e palavras-chave.
+                    - Estilo: Direto ao ponto. Sem introduções longas ou histórias. Economize palavras.
+                    `;
+                } else if (tipo === 'explicacao') {
+                    formatoInstrucao = `
+                    **FORMATO: AULA DIDÁTICA (Engajadora/Anti-Tédio)**
+                    - Objetivo: Entendimento do conceito e motivação.
+                    - Estrutura: Introdução com analogia do cotidiano -> Desenvolvimento lógico -> Exemplo prático.
+                    - Conteúdo: Explique o "porquê" e o "como".
+                    - Estilo: Conversacional, carismático (como um professor youtuber). Use <b>negrito</b> para ênfase.
+                    `;
+                } else if (tipo === 'completo') {
+                    formatoInstrucao = `
+                    **FORMATO: DOSSIÊ COMPLETO (Aprofundado)**
+                    - Objetivo: Domínio total do assunto para questões difíceis.
+                    - Estrutura: Tópicos detalhados, contexto histórico, deduções, nuances e exceções.
+                    - Conteúdo: Cubra o tópico de A a Z. Inclua relações interdisciplinares e análise crítica.
+                    - Estilo: Acadêmico porém acessível, rigoroso e exaustivo.
+                    `;
+                }
+
+                // Lógica específica para Sociologia/Humanas (mantida e combinada)
+                let diretrizesMateria = "";
+                if (['Sociologia', 'Filosofia', 'História'].includes(materia)) {
+                    diretrizesMateria = `
+                    **DIRETRIZES ESPECÍFICAS (HUMANAS):**
+                    1. Foco Conceitual: Defina conceitos (ex: Fato Social) inequivocamente.
+                    2. Autores: Cite os teóricos principais e suas obras.
+                    3. Contexto: Aplique à realidade social ou histórica. Sem matemática desnecessária.
+                    `;
+                }
+
+                const prompt = `
+                Aja como um professor especialista em ENEM.
+                Tópico: "${topico}"
+                Matéria: "${materia}"
+                
+                ${formatoInstrucao}
+                
+                ${diretrizesMateria}
+
+                **DIRETRIZES GERAIS DE VISUAL:**
+                - Use tags HTML para estruturar (<h3>, <ul>, <li>, <b>, <blockquote>).
+                - Evite blocos de texto gigantes. Quebre em parágrafos curtos.
+                - Se houver fórmulas, use LaTeX estritamente entre $$.
+
+                Gere o conteúdo agora.
+                `;
+
+                try {
+                    let content = await this.callAPI(prompt, false);
+                    content = content.replace(/```html/g, '').replace(/```/g, '');
+                    
+                    target.innerHTML = content;
+                    if(window.renderMathInElement) renderMathInElement(target);
+                } catch (e) {
+                    target.innerHTML = `<div class="text-red-500 p-2 bg-red-50 rounded text-xs">Falha: ${e.message}</div>`;
+                }
             },
 
             filterSubjectContents: function(term) {
