@@ -832,14 +832,29 @@
                 const target = document.getElementById(targetId);
                 if(!target) return;
 
+                // Usa o novo spinner padronizado
                 target.innerHTML = this.getLoadingSpinner("A preparar uma aula incrível...");
                 
+                // Lógica específica para Sociologia/Humanas
+                let diretrizesEspecificas = "";
+                if (['Sociologia', 'Filosofia', 'História'].includes(materia)) {
+                    diretrizesEspecificas = `
+                    **DIRETRIZES OBRIGATÓRIAS PARA SOCIOLOGIA/HUMANAS:**
+                    1. **Foco Conceitual:** Explique os conceitos-chave (ex: Fato Social, Ação Social, Mais-Valia) de forma direta e inequívoca.
+                    2. **Autores Clássicos:** Sempre vincule o tópico aos seus principais teóricos (ex: Durkheim, Weber, Marx, Bauman) se aplicável, explicando a visão deles.
+                    3. **Sem Dispersão:** Não use dados estatísticos aleatórios ou lógica matemática. Foque na análise social, histórica e crítica.
+                    4. **Contextualização:** Mostre como esse conceito se aplica na sociedade atual ou no contexto histórico em que surgiu.
+                    `;
+                }
+
                 const prompt = `
                 Aja como um professor de alto desempenho do ENEM, famoso por sua didática impecável e por prender a atenção dos alunos.
                 
                 Tópico: "${topico}"
                 Matéria: "${materia}"
                 Formato: ${tipo === 'resumo' ? 'Resumo "Flashcard" (Direto e Visual)' : 'Aula Explicativa Engajadora'}
+                
+                ${diretrizesEspecificas}
 
                 **DIRETRIZES DE ESTILO (ANTI-TÉDIO):**
                 1. **Visual Leve:** Nada de blocos de texto gigantes ("muralhas de texto"). Use parágrafos curtos.
@@ -851,11 +866,12 @@
                 4. **Linguagem:** Didática, conversacional e motivadora (ex: "Imagine que...", "O segredo aqui é...").
                 5. **Matemática:** Se houver fórmulas, use LaTeX estritamente entre $$.
 
-                Objetivo: Transformar esse conteúdo técnico em algo que o aluno sinta prazer em ler e facilidade em entender.
+                Objetivo: Transformar esse conteúdo técnico em algo que o aluno sinta prazer em ler e facilidade em entender, mantendo o rigor conceitual da disciplina.
                 `;
 
                 try {
                     let content = await this.callAPI(prompt, false);
+                    // Limpeza de Markdown para evitar exibição de ```html
                     content = content.replace(/```html/g, '').replace(/```/g, '');
                     
                     target.innerHTML = content;
@@ -944,10 +960,11 @@
                 const loadingEl = document.getElementById('loading-indicator');
                 const placeholderEl = document.getElementById('questoes-placeholder');
 
-                // 1. Definir Tópico
+                // 1. Definir Tópico e Contexto
                 const searchVal = searchInput.value.trim();
                 let topicoPrompt = "";
                 let discNome = "Conhecimentos Gerais/ENEM";
+                let discId = ""; // Novo: Capturar o ID para saber se é Exatas ou Humanas
                 let dificuldade = difSel ? difSel.value : "medio";
 
                 if (searchVal) {
@@ -955,6 +972,7 @@
                 } else {
                     if(!discSel.value || !contSel.value) return alert("Por favor, selecione pelo menos a disciplina e o conteúdo, ou digite um assunto na barra de pesquisa.");
                     
+                    discId = discSel.value; // Captura o ID (ex: 'sociologia', 'matematica')
                     discNome = discSel.options[discSel.selectedIndex].text;
                     const conteudoNome = contSel.options[contSel.selectedIndex].text;
                     topicoPrompt = conteudoNome;
@@ -964,20 +982,45 @@
                     }
                 }
 
+                // Identificar se é matéria de cálculo
+                const isExatas = ['matematica', 'fisica', 'quimica'].includes(discId);
+
                 // UI Loading
                 btn.disabled = true;
                 btn.innerHTML = `<span class="animate-spin inline-block mr-2">⟳</span> Gerando...`;
                 loadingEl.classList.remove('hidden');
                 if(placeholderEl) placeholderEl.classList.add('hidden');
 
-                // Config Dificuldade (Bloom / Carga Cognitiva)
+                // Config Dificuldade
                 let regrasDificuldade = "";
                 if (dificuldade === 'facil') {
-                    regrasDificuldade = "NÍVEL FÁCIL (Recordar/Entender): Questões de aplicação direta e imediata do conceito. Textos curtos e objetivos. O aluno identifica o dado no texto e aplica a teoria/fórmula sem intermediários. Evite distratores complexos.";
+                    regrasDificuldade = "NÍVEL FÁCIL (Recordar/Entender): Questões de aplicação direta do conceito. Textos curtos e objetivos.";
                 } else if (dificuldade === 'dificil') {
-                    regrasDificuldade = "NÍVEL DIFÍCIL (Analisar/Avaliar): A dificuldade deve vir da INTERPRETAÇÃO e da LÓGICA, não de cálculos braçais ou decoreba obscura. Crie situações-problema onde o aluno precise: 1) Filtrar informações irrelevantes do texto; 2) Relacionar dois ou mais conceitos do TÓPICO para montar a estratégia; 3) Resolver em múltiplas etapas. Os distratores devem prever erros conceituais comuns.";
+                    regrasDificuldade = "NÍVEL DIFÍCIL (Analisar/Avaliar): A dificuldade deve vir da INTERPRETAÇÃO complexa e relação entre conceitos distintos.";
                 } else {
-                    regrasDificuldade = "NÍVEL MÉDIO (Aplicar/Analisar - Padrão ENEM): Questões contextualizadas clássicas. Exigem leitura atenta para extrair os dados e aplicação do conhecimento. Requer um nível moderado de abstração.";
+                    regrasDificuldade = "NÍVEL MÉDIO (Aplicar/Analisar - Padrão ENEM): Questões contextualizadas clássicas. Equilíbrio entre leitura e resolução.";
+                }
+
+                // SELEÇÃO DE PROTOCOLO (A CORREÇÃO PRINCIPAL)
+                let protocoloLogico = "";
+                
+                if (isExatas) {
+                    // Protocolo para MATEMÁTICA/FÍSICA/QUÍMICA (Foco em números)
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CÁLCULO/EXATAS):
+                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'.
+                    2. **SEM ALUCINAÇÃO:** A alternativa 'true' DEVE ser cópia exata do valor final do cálculo. Se deu 100, a resposta é "100".
+                    3. **DISTRATORES:** Crie valores errados plausíveis (erros de sinal, etc), mas diferentes do correto.
+                    `;
+                } else {
+                    // Protocolo para HUMANAS/BIOLÓGICAS/LINGUAGENS (Foco em conceitos)
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CONCEITUAL/HUMANAS):
+                    1. **FOCO CONCEITUAL:** A questão DEVE cobrar teoria, interpretação de texto, contexto histórico ou análise social.
+                    2. **PROIBIDO CÁLCULOS:** NÃO crie questões matemáticas ou de lógica quantitativa se o assunto for Sociologia, História, Geografia ou Linguagens.
+                    3. **COERÊNCIA:** A alternativa correta deve ser a única que se alinha perfeitamente com o texto base e o comando.
+                    4. **DISTRATORES:** As alternativas erradas devem ser conceitos reais mas aplicados incorretamente, ou interpretações exageradas/reducionistas do texto.
+                    `;
                 }
 
                 const prompt = `
@@ -988,14 +1031,12 @@
                 CALIBRAGEM PEDAGÓGICA:
                 ${regrasDificuldade}
 
-                PROTOCOLO DE SEGURANÇA LÓGICA (OBRIGATÓRIO):
-                1. **MANTENHA O FOCO:** Não fuja do tópico "${topicoPrompt}".
-                2. **UNICIDADE TOTAL:** As 5 alternativas (A, B, C, D, E) devem possuir valores ou textos COMPLETAMENTE DIFERENTES. É PROIBIDO repetir o mesmo valor em duas letras.
-                3. **VÍNCULO DE VERDADE:** - Passo A: Resolva a questão matematicamente ou logicamente. Encontre o resultado X.
-                   - Passo B: Crie uma alternativa com o texto X e marque "correta": true.
-                   - Passo C: Crie 4 distratores (Y, Z, W, K) diferentes de X e marque "correta": false.
-                   - ERRO CRÍTICO A EVITAR: Jamais marque como 'true' uma alternativa cujo texto difere do resultado da resolução.
-                4. **ESTILO ENEM:** Use situação-problema, interpretação de texto ou gráfico.
+                ${protocoloLogico}
+
+                ESTRUTURA DA QUESTÃO:
+                1. Enunciado com Texto Base (Contextualização).
+                2. Comando claro.
+                3. 5 Alternativas.
 
                 RETORNE APENAS O JSON VÁLIDO (SEM MARKDOWN \`\`\`json ... \`\`\`):
                 {
@@ -1003,13 +1044,13 @@
                         {
                             "enunciado": "Texto motivador + Pergunta...",
                             "alternativas": [
-                                {"letra": "A", "texto": "Valor Distinto 1", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "B", "texto": "Valor EXATO do Cálculo", "correta": true, "justificativa_erro": "Gabarito."},
-                                {"letra": "C", "texto": "Valor Distinto 2", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "D", "texto": "Valor Distinto 3", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "E", "texto": "Valor Distinto 4", "correta": false, "justificativa_erro": "..."}
+                                {"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "Gabarito."},
+                                {"letra": "C", "texto": "...", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "D", "texto": "...", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "E", "texto": "...", "correta": false, "justificativa_erro": "..."}
                             ],
-                            "resolucao": "Explicação passo a passo provando o valor exato."
+                            "resolucao": "Explicação detalhada do conceito e por que as outras estão erradas."
                         }
                     ]
                 }`;
