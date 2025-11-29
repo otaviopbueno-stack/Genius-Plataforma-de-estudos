@@ -488,22 +488,20 @@
                 const btn = document.getElementById('btn-gerar-questoes');
                 const loadingEl = document.getElementById('loading-indicator');
                 const placeholderEl = document.getElementById('questoes-placeholder');
-                // const contextoEl = document.getElementById('texto-contexto'); // Removido
-
-                // 1. Definir Tópico e Contexto
+                
+                // 1. Definir Tópico
                 const searchVal = searchInput.value.trim();
                 let topicoPrompt = "";
                 let discNome = "Conhecimentos Gerais/ENEM";
-                let discId = ""; 
+                let discId = "";
                 let dificuldade = difSel ? difSel.value : "medio";
-                // let contextoTexto = contextoEl ? contextoEl.value.trim() : ""; // Removido
 
                 if (searchVal) {
                     topicoPrompt = searchVal;
                 } else {
                     if(!discSel.value || !contSel.value) return alert("Por favor, selecione pelo menos a disciplina e o conteúdo, ou digite um assunto na barra de pesquisa.");
                     
-                    discId = discSel.value; 
+                    discId = discSel.value;
                     discNome = discSel.options[discSel.selectedIndex].text;
                     const conteudoNome = contSel.options[contSel.selectedIndex].text;
                     topicoPrompt = conteudoNome;
@@ -512,74 +510,46 @@
                         topicoPrompt = `${conteudoNome}: ${subSel.value}`;
                     }
                 }
-
-                // Identificar se é matéria de cálculo
+                
                 const isExatas = ['matematica', 'fisica', 'quimica'].includes(discId);
 
                 // UI Loading
                 btn.disabled = true;
-                btn.innerHTML = `<span class="animate-spin inline-block mr-2">⟳</span> Gerando...`;
+                btn.innerHTML = `<span class="animate-spin inline-block mr-2">⟳</span> Consultando Agente INEP...`;
                 loadingEl.classList.remove('hidden');
                 if(placeholderEl) placeholderEl.classList.add('hidden');
 
-                // Config Dificuldade (Refinada)
+                // Config Dificuldade
                 let regrasDificuldade = "";
-                if (dificuldade === 'facil') {
-                    regrasDificuldade = "NÍVEL FÁCIL (Recordar/Entender): Questões de aplicação direta e imediata do conceito. Textos curtos e objetivos.";
-                } else if (dificuldade === 'dificil') {
-                    regrasDificuldade = "NÍVEL DIFÍCIL (Analisar/Avaliar): A dificuldade deve vir da INTERPRETAÇÃO complexa e relação entre conceitos distintos.";
-                } else {
-                    regrasDificuldade = "NÍVEL MÉDIO (Aplicar/Analisar - Padrão ENEM): Questões contextualizadas clássicas. Equilíbrio entre leitura e resolução.";
-                }
+                if (dificuldade === 'facil') regrasDificuldade = "NÍVEL FÁCIL (Conceitual/Direto).";
+                else if (dificuldade === 'dificil') regrasDificuldade = "NÍVEL DIFÍCIL (Analítico/Complexo).";
+                else regrasDificuldade = "NÍVEL MÉDIO (Padrão ENEM).";
 
-                // SELEÇÃO DE PROTOCOLO (A CORREÇÃO PRINCIPAL)
-                let protocoloLogico = "";
-                
-                if (isExatas) {
-                    protocoloLogico = `
-                    PROTOCOLO DE SEGURANÇA (CÁLCULO/EXATAS):
-                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'.
-                    2. **SEM ALUCINAÇÃO:** A alternativa 'true' DEVE ser cópia exata do valor final do cálculo. Se deu 100, a resposta é "100".
-                    3. **DISTRATORES:** Crie valores errados plausíveis (erros de sinal, etc), mas diferentes do correto.
-                    `;
-                } else {
-                    protocoloLogico = `
-                    PROTOCOLO DE SEGURANÇA (CONCEITUAL/HUMANAS):
-                    1. **FOCO CONCEITUAL:** A questão DEVE cobrar teoria, interpretação de texto, contexto histórico ou análise social.
-                    2. **PROIBIDO CÁLCULOS:** NÃO crie questões matemáticas ou de lógica quantitativa se o assunto for Sociologia, História, Geografia ou Linguagens.
-                    3. **COERÊNCIA:** A alternativa correta deve ser a única que se alinha perfeitamente com o texto base e o comando.
-                    4. **DISTRATORES:** As alternativas erradas devem ser conceitos reais mas aplicados incorretamente, ou interpretações exageradas/reducionistas do texto.
-                    `;
-                }
+                let instrucaoExatas = isExatas ? "IMPORTANTE: Use o CODE INTERPRETER para validar todos os cálculos matemáticos antes de responder." : "";
 
-                const prompt = `
-                Aja como um Elaborador Sênior de Itens do INEP (ENEM).
-                Crie 5 questões INÉDITAS de múltipla escolha.
+                // Prompt Simplificado (O Agente já tem as instruções pesadas no sistema da OpenAI)
+                let prompt = `
                 Tópico: "${topicoPrompt}" (Disciplina: ${discNome}).
+                Dificuldade: ${regrasDificuldade}
                 
-                CALIBRAGEM PEDAGÓGICA:
-                ${regrasDificuldade}
-
-                ${protocoloLogico}
-
-                ESTRUTURA DA QUESTÃO:
-                1. Enunciado com Texto Base (Contextualização).
-                2. Comando claro.
-                3. 5 Alternativas.
-
-                RETORNE APENAS O JSON VÁLIDO (SEM MARKDOWN \`\`\`json ... \`\`\`):
+                INSTRUÇÃO: Acesse sua base de conhecimento (arquivos .txt/pdf das provas anteriores) para identificar o estilo de cobrança deste tópico.
+                ${instrucaoExatas}
+                
+                Gere 5 questões INÉDITAS seguindo o padrão identificado nos arquivos.
+                
+                FORMATO JSON OBRIGATÓRIO:
                 {
                     "questoes": [
                         {
-                            "enunciado": "Texto motivador + Pergunta...",
+                            "enunciado": "...",
                             "alternativas": [
                                 {"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "Gabarito."},
+                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "..."},
                                 {"letra": "C", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "D", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "E", "texto": "...", "correta": false, "justificativa_erro": "..."}
                             ],
-                            "resolucao": "Explicação detalhada do conceito e por que as outras estão erradas."
+                            "resolucao": "..."
                         }
                     ]
                 }`;
@@ -592,7 +562,7 @@
                     localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
                     this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
                 } catch(e) {
-                    alert("Erro: " + e.message);
+                    alert("Erro ao consultar o Agente: " + e.message);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
