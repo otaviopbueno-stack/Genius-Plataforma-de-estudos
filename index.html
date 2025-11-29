@@ -99,19 +99,14 @@
 
     <!-- MAIN CONTENT -->
     <main class="container mx-auto px-4 py-8 md:py-12">
-        
         <!-- 1. INÍCIO -->
         <section id="inicio" class="content-section active">
-            <div class="text-center py-16 md:py-24 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-sm border border-indigo-100 dark:border-gray-700 transition-colors duration-300">
-                <h1 class="text-4xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
-                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">A sua plataforma inteligente para dominar o ENEM e Vestibulares. Estude com resumos, pratique com questões e aperfeiçoe a sua redação.</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
-                        Explorar Matérias
-                    </button>
-                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">
-                        Praticar Questões
-                    </button>
+            <div class="text-center py-16 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-indigo-100 dark:border-gray-700">
+                <h1 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
+                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">Sua plataforma inteligente de estudos.</p>
+                <div class="flex justify-center gap-4">
+                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700" onclick="window.app.navigateTo('materias')">Explorar</button>
+                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50" onclick="window.app.navigateTo('questoes')">Praticar</button>
                 </div>
             </div>
         </section>
@@ -488,20 +483,22 @@
                 const btn = document.getElementById('btn-gerar-questoes');
                 const loadingEl = document.getElementById('loading-indicator');
                 const placeholderEl = document.getElementById('questoes-placeholder');
-                
-                // 1. Definir Tópico
+                // const contextoEl = document.getElementById('texto-contexto'); // Removido
+
+                // 1. Definir Tópico e Contexto
                 const searchVal = searchInput.value.trim();
                 let topicoPrompt = "";
                 let discNome = "Conhecimentos Gerais/ENEM";
-                let discId = "";
+                let discId = ""; 
                 let dificuldade = difSel ? difSel.value : "medio";
+                // let contextoTexto = contextoEl ? contextoEl.value.trim() : ""; // Removido
 
                 if (searchVal) {
                     topicoPrompt = searchVal;
                 } else {
                     if(!discSel.value || !contSel.value) return alert("Por favor, selecione pelo menos a disciplina e o conteúdo, ou digite um assunto na barra de pesquisa.");
                     
-                    discId = discSel.value;
+                    discId = discSel.value; 
                     discNome = discSel.options[discSel.selectedIndex].text;
                     const conteudoNome = contSel.options[contSel.selectedIndex].text;
                     topicoPrompt = conteudoNome;
@@ -510,46 +507,74 @@
                         topicoPrompt = `${conteudoNome}: ${subSel.value}`;
                     }
                 }
-                
+
+                // Identificar se é matéria de cálculo
                 const isExatas = ['matematica', 'fisica', 'quimica'].includes(discId);
 
                 // UI Loading
                 btn.disabled = true;
-                btn.innerHTML = `<span class="animate-spin inline-block mr-2">⟳</span> Consultando Agente INEP...`;
+                btn.innerHTML = `<span class="animate-spin inline-block mr-2">⟳</span> Gerando...`;
                 loadingEl.classList.remove('hidden');
                 if(placeholderEl) placeholderEl.classList.add('hidden');
 
-                // Config Dificuldade
+                // Config Dificuldade (Refinada)
                 let regrasDificuldade = "";
-                if (dificuldade === 'facil') regrasDificuldade = "NÍVEL FÁCIL (Conceitual/Direto).";
-                else if (dificuldade === 'dificil') regrasDificuldade = "NÍVEL DIFÍCIL (Analítico/Complexo).";
-                else regrasDificuldade = "NÍVEL MÉDIO (Padrão ENEM).";
+                if (dificuldade === 'facil') {
+                    regrasDificuldade = "NÍVEL FÁCIL (Recordar/Entender): Questões de aplicação direta e imediata do conceito. Textos curtos e objetivos.";
+                } else if (dificuldade === 'dificil') {
+                    regrasDificuldade = "NÍVEL DIFÍCIL (Analisar/Avaliar): A dificuldade deve vir da INTERPRETAÇÃO complexa e relação entre conceitos distintos.";
+                } else {
+                    regrasDificuldade = "NÍVEL MÉDIO (Aplicar/Analisar - Padrão ENEM): Questões contextualizadas clássicas. Equilíbrio entre leitura e resolução.";
+                }
 
-                let instrucaoExatas = isExatas ? "IMPORTANTE: Use o CODE INTERPRETER para validar todos os cálculos matemáticos antes de responder." : "";
+                // SELEÇÃO DE PROTOCOLO (A CORREÇÃO PRINCIPAL)
+                let protocoloLogico = "";
+                
+                if (isExatas) {
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CÁLCULO/EXATAS):
+                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'.
+                    2. **SEM ALUCINAÇÃO:** A alternativa 'true' DEVE ser cópia exata do valor final do cálculo. Se deu 100, a resposta é "100".
+                    3. **DISTRATORES:** Crie valores errados plausíveis (erros de sinal, etc), mas diferentes do correto.
+                    `;
+                } else {
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CONCEITUAL/HUMANAS):
+                    1. **FOCO CONCEITUAL:** A questão DEVE cobrar teoria, interpretação de texto, contexto histórico ou análise social.
+                    2. **PROIBIDO CÁLCULOS:** NÃO crie questões matemáticas ou de lógica quantitativa se o assunto for Sociologia, História, Geografia ou Linguagens.
+                    3. **COERÊNCIA:** A alternativa correta deve ser a única que se alinha perfeitamente com o texto base e o comando.
+                    4. **DISTRATORES:** As alternativas erradas devem ser conceitos reais mas aplicados incorretamente, ou interpretações exageradas/reducionistas do texto.
+                    `;
+                }
 
-                // Prompt Simplificado (O Agente já tem as instruções pesadas no sistema da OpenAI)
-                let prompt = `
+                const prompt = `
+                Aja como um Elaborador Sênior de Itens do INEP (ENEM).
+                Crie 5 questões INÉDITAS de múltipla escolha.
                 Tópico: "${topicoPrompt}" (Disciplina: ${discNome}).
-                Dificuldade: ${regrasDificuldade}
                 
-                INSTRUÇÃO: Acesse sua base de conhecimento (arquivos .txt/pdf das provas anteriores) para identificar o estilo de cobrança deste tópico.
-                ${instrucaoExatas}
-                
-                Gere 5 questões INÉDITAS seguindo o padrão identificado nos arquivos.
-                
-                FORMATO JSON OBRIGATÓRIO:
+                CALIBRAGEM PEDAGÓGICA:
+                ${regrasDificuldade}
+
+                ${protocoloLogico}
+
+                ESTRUTURA DA QUESTÃO:
+                1. Enunciado com Texto Base (Contextualização).
+                2. Comando claro.
+                3. 5 Alternativas.
+
+                RETORNE APENAS O JSON VÁLIDO (SEM MARKDOWN \`\`\`json ... \`\`\`):
                 {
                     "questoes": [
                         {
-                            "enunciado": "...",
+                            "enunciado": "Texto motivador + Pergunta...",
                             "alternativas": [
                                 {"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "..."},
+                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "Gabarito."},
                                 {"letra": "C", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "D", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "E", "texto": "...", "correta": false, "justificativa_erro": "..."}
                             ],
-                            "resolucao": "..."
+                            "resolucao": "Explicação detalhada do conceito e por que as outras estão erradas."
                         }
                     ]
                 }`;
@@ -562,7 +587,7 @@
                     localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
                     this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
                 } catch(e) {
-                    alert("Erro ao consultar o Agente: " + e.message);
+                    alert("Erro: " + e.message);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
