@@ -99,14 +99,19 @@
 
     <!-- MAIN CONTENT -->
     <main class="container mx-auto px-4 py-8 md:py-12">
+        
         <!-- 1. INÍCIO -->
         <section id="inicio" class="content-section active">
-            <div class="text-center py-16 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl border border-indigo-100 dark:border-gray-700">
-                <h1 class="text-4xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
-                <p class="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">Sua plataforma inteligente de estudos.</p>
-                <div class="flex justify-center gap-4">
-                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700" onclick="window.app.navigateTo('materias')">Explorar</button>
-                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50" onclick="window.app.navigateTo('questoes')">Praticar</button>
+            <div class="text-center py-16 md:py-24 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-sm border border-indigo-100 dark:border-gray-700 transition-colors duration-300">
+                <h1 class="text-4xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
+                <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">A sua plataforma inteligente para dominar o ENEM e Vestibulares. Estude com resumos, pratique com questões e aperfeiçoe a sua redação.</p>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
+                        Explorar Matérias
+                    </button>
+                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">
+                        Praticar Questões
+                    </button>
                 </div>
             </div>
         </section>
@@ -286,19 +291,9 @@
                 }
             },
 
-            // --- API CORE (Lógica Híbrida) ---
+            // --- API CORE (Lógica Híbrida com Polling no Cliente) ---
             callAPI: async function(prompt, isJson) {
                 if (!API_KEY) API_KEY = localStorage.getItem('insflow_openai_key') || "";
-
-                if (!API_KEY) {
-                    const key = window.prompt("Chave API necessária. Insira sua OpenAI API Key:");
-                    if(key) {
-                        API_KEY = key;
-                        localStorage.setItem('insflow_openai_key', API_KEY);
-                    } else {
-                        throw new Error("Chave API não fornecida.");
-                    }
-                }
 
                 const requestBody = {
                     model: "gpt-4o-mini", 
@@ -307,18 +302,55 @@
                     temperature: 0.7
                 };
 
+                // 1. TENTATIVA BACKEND VERCEL (Fluxo Async)
                 try {
-                    const response = await fetch('/api/chat', {
+                    // A. Iniciar a tarefa (Start)
+                    const startReq = await fetch('/api/chat', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(requestBody)
                     });
-                    if (response.ok) {
-                        const json = await response.json();
-                        return json.choices[0].message.content;
+
+                    if (startReq.ok) {
+                        const { threadId, runId } = await startReq.json();
+                        console.log("Tarefa iniciada no servidor:", runId);
+
+                        // B. Monitorar progresso (Polling) a cada 2s
+                        let attempts = 0;
+                        while (attempts < 45) { // Max 90s
+                            await new Promise(r => setTimeout(r, 2000));
+                            attempts++;
+
+                            const checkReq = await fetch(`/api/chat?threadId=${threadId}&runId=${runId}`);
+                            if (!checkReq.ok) throw new Error("Erro ao verificar status");
+                            
+                            const statusData = await checkReq.json();
+                            
+                            if (statusData.status === 'completed') {
+                                return statusData.response; // SUCESSO!
+                            }
+                            if (statusData.status === 'failed') {
+                                throw new Error("O Agente falhou no servidor: " + JSON.stringify(statusData.error));
+                            }
+                            // Se 'in_progress', continua o loop...
+                        }
+                        throw new Error("Tempo limite excedido no servidor (Agente muito lento).");
                     }
-                    console.warn("Backend Vercel indisponível. Tentando direto...");
-                } catch (e) {}
+                } catch (e) {
+                    console.warn("Backend Vercel falhou ou indisponível. Usando Fallback Local...", e);
+                }
+
+                // 2. FALLBACK: Modo Direto (Chave Local)
+                // Se o servidor falhar, pede a chave e faz direto
+                if (!API_KEY) {
+                    const key = window.prompt("Servidor indisponível. Insira sua API Key para processamento local:");
+                    if(key) {
+                        API_KEY = key;
+                        localStorage.setItem('insflow_openai_key', API_KEY);
+                    } else {
+                        throw new Error("Chave API necessária.");
+                    }
+                }
 
                 try {
                     const response = await fetch("https://api.openai.com/v1/chat/completions", {
@@ -338,6 +370,7 @@
 
                     const json = await response.json();
                     return json.choices[0].message.content;
+
                 } catch (e) {
                     console.error("API Error:", e);
                     throw e;
@@ -483,7 +516,6 @@
                 const btn = document.getElementById('btn-gerar-questoes');
                 const loadingEl = document.getElementById('loading-indicator');
                 const placeholderEl = document.getElementById('questoes-placeholder');
-                // const contextoEl = document.getElementById('texto-contexto'); // Removido
 
                 // 1. Definir Tópico e Contexto
                 const searchVal = searchInput.value.trim();
@@ -491,7 +523,6 @@
                 let discNome = "Conhecimentos Gerais/ENEM";
                 let discId = ""; 
                 let dificuldade = difSel ? difSel.value : "medio";
-                // let contextoTexto = contextoEl ? contextoEl.value.trim() : ""; // Removido
 
                 if (searchVal) {
                     topicoPrompt = searchVal;
@@ -533,7 +564,7 @@
                 if (isExatas) {
                     protocoloLogico = `
                     PROTOCOLO DE SEGURANÇA (CÁLCULO/EXATAS):
-                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'.
+                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'. Use a ferramenta Code Interpreter se disponível.
                     2. **SEM ALUCINAÇÃO:** A alternativa 'true' DEVE ser cópia exata do valor final do cálculo. Se deu 100, a resposta é "100".
                     3. **DISTRATORES:** Crie valores errados plausíveis (erros de sinal, etc), mas diferentes do correto.
                     `;
@@ -568,11 +599,11 @@
                         {
                             "enunciado": "Texto motivador + Pergunta...",
                             "alternativas": [
-                                {"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "Gabarito."},
-                                {"letra": "C", "texto": "...", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "D", "texto": "...", "correta": false, "justificativa_erro": "..."},
-                                {"letra": "E", "texto": "...", "correta": false, "justificativa_erro": "..."}
+                                {"letra": "A", "texto": "Valor Distinto 1", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "B", "texto": "Valor EXATO do Cálculo", "correta": true, "justificativa_erro": "Gabarito."},
+                                {"letra": "C", "texto": "Valor Distinto 2", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "D", "texto": "Valor Distinto 3", "correta": false, "justificativa_erro": "..."},
+                                {"letra": "E", "texto": "Valor Distinto 4", "correta": false, "justificativa_erro": "..."}
                             ],
                             "resolucao": "Explicação detalhada do conceito e por que as outras estão erradas."
                         }
@@ -688,7 +719,6 @@
             renderMateriasGrid: function() {
                 const grid = document.getElementById('materias-grid');
                 if(!grid) return;
-                // Exemplo simplificado de renderização para manter no limite de tamanho
                 grid.innerHTML = this.db.materias.map(m => `
                     <div class="subject-card ${m.cor} p-6 rounded-lg shadow-sm border cursor-pointer flex flex-col items-center hover:shadow-md transition hover:-translate-y-1" onclick="window.app.openMateria('${m.id}')">
                         <i data-lucide="${m.icone}" class="h-10 w-10 mb-3"></i>
@@ -704,7 +734,6 @@
                 const detail = document.getElementById('materia-detalhe');
                 document.getElementById('materias-home').classList.add('hidden');
                 detail.classList.remove('hidden');
-                // Renderização do detalhe da matéria (HTML grande) adaptado para dark mode
                 detail.innerHTML = `
                     <div class="max-w-5xl mx-auto">
                         <button onclick="document.getElementById('materia-detalhe').classList.add('hidden'); document.getElementById('materias-home').classList.remove('hidden');" class="mb-6 text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-2 hover:underline">
@@ -770,7 +799,7 @@
 
             // --- NAVEGAÇÃO (Restaurada) ---
             setupNavigation: function() {
-                document.querySelectorAll('.nav-link, [data-target]').forEach(l => {
+                document.querySelectorAll('.nav-link').forEach(l => {
                     l.onclick = (e) => {
                         const t = l.getAttribute('data-target');
                         if (t) { e.preventDefault(); this.navigateTo(t); }
@@ -812,7 +841,32 @@
                     });
                 });
             },
-            setupSearch: function() {},
+            setupSearch: function() {
+                const input = document.getElementById('search-topic');
+                const res = document.getElementById('search-results');
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value.toLowerCase();
+                    if(val.length < 2) { res.classList.add('hidden'); return; }
+                    const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
+                    if(hits.length) {
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="window.app.selectSearch('${i.data.materiaId}', '${i.data.conteudoId}')">${i.label} <span class="text-xs text-gray-500">${i.context}</span></div>`).join('');
+                        res.classList.remove('hidden');
+                    }
+                });
+            },
+            
+            selectSearch: function(mId, cId) {
+                document.getElementById('search-results').classList.add('hidden');
+                const disc = document.getElementById('filtro-disciplina');
+                disc.value = mId;
+                disc.dispatchEvent(new Event('change'));
+                setTimeout(() => {
+                    const cont = document.getElementById('filtro-conteudo');
+                    cont.value = cId;
+                    cont.dispatchEvent(new Event('change'));
+                }, 100);
+            },
+            
             filterSubjectContents: function(term) {
                 const t = term.toLowerCase().trim();
                 const container = document.getElementById('materia-conteudos-container');
