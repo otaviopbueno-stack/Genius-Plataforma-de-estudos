@@ -3,36 +3,40 @@ export default async function handler(req, res) {
   const assistantId = process.env.OPENAI_ASSISTANT_ID;
 
   if (!apiKey || !assistantId) {
-    return res.status(500).json({ error: 'Configuração de API ou Assistant ID ausente.' });
+    return res.status(500).json({ error: 'Configuração de API ou Assistant ID ausente no Vercel.' });
   }
 
-  // 1. Rota de CHECK (Verificar Status) - Rápida (<1s)
+  // MODO VERIFICAÇÃO (GET): O site pergunta "Já acabou?"
   if (req.method === 'GET') {
     const { threadId, runId } = req.query;
-    if (!threadId || !runId) return res.status(400).json({ error: 'Faltam IDs' });
+    if (!threadId || !runId) return res.status(400).json({ error: 'IDs faltando' });
 
     try {
-      // Verifica status
+      // 1. Verifica o status do Run
       const runCheck = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         headers: { "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" }
       });
       const runStatus = await runCheck.json();
 
+      // 2. Se completou, busca a resposta final
       if (runStatus.status === 'completed') {
-        // Se acabou, pega a resposta
         const msgResp = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
           headers: { "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" }
         });
         const messages = await msgResp.json();
+        // Pega a última mensagem do assistente
         const lastMsg = messages.data.find(m => m.role === 'assistant');
-        return res.status(200).json({ status: 'completed', response: lastMsg.content[0].text.value });
+        const textResponse = lastMsg.content[0].text.value;
+        
+        return res.status(200).json({ status: 'completed', response: textResponse });
       } 
       
+      // 3. Se falhou
       if (['failed', 'cancelled', 'expired'].includes(runStatus.status)) {
         return res.status(200).json({ status: 'failed', error: runStatus.last_error });
       }
 
-      // Ainda rodando
+      // 4. Se ainda está rodando
       return res.status(200).json({ status: 'in_progress' });
 
     } catch (error) {
@@ -40,10 +44,10 @@ export default async function handler(req, res) {
     }
   }
 
-  // 2. Rota de START (Iniciar Conversa) - Rápida (<2s)
+  // MODO INÍCIO (POST): O site diz "Comece a gerar"
   if (req.method === 'POST') {
     try {
-      // Cria Thread
+      // 1. Cria a Thread com a mensagem do usuário
       const threadResp = await fetch("https://api.openai.com/v1/threads", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
@@ -51,7 +55,7 @@ export default async function handler(req, res) {
       });
       const thread = await threadResp.json();
 
-      // Inicia Run
+      // 2. Inicia o Run (Acorda o Agente)
       const runResp = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
@@ -59,7 +63,7 @@ export default async function handler(req, res) {
       });
       const run = await runResp.json();
 
-      // Devolve IDs para o navegador monitorar
+      // 3. Responde IMEDIATAMENTE com os IDs (Não espera o agente pensar)
       return res.status(200).json({ threadId: thread.id, runId: run.id });
 
     } catch (error) {
