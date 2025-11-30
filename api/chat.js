@@ -1,4 +1,9 @@
 export default async function handler(req, res) {
+  // ADICIONADO: Cabeçalhos para desativar cache completamente e evitar status 304
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+
   const apiKey = process.env.OPENAI_API_KEY;
   const assistantId = process.env.OPENAI_ASSISTANT_ID;
 
