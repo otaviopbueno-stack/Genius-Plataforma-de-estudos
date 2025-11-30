@@ -593,27 +593,21 @@
                 }`;
 
                 try {
-                    let rawResponse = await this.callAPI(prompt, true);
+                    let jsonString = await this.callAPI(prompt, true);
+                    jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
+                    const data = JSON.parse(jsonString);
                     
-                    // --- CORREÇÃO DE ERRO DE JSON ---
-                    // 1. Extração Cirúrgica: Pega tudo entre o primeiro '{' e o último '}'
-                    const firstOpen = rawResponse.indexOf('{');
-                    const lastClose = rawResponse.lastIndexOf('}');
+                    // CORREÇÃO DA ORDEM NUMÉRICA:
+                    // Pegamos o tamanho ATUAL da lista antes de adicionar as novas.
+                    // Ex: Se já tem 10 questões, startIndex será 10. A próxima será Q11.
+                    const startIndex = this.db.questoes.length;
                     
-                    if (firstOpen !== -1 && lastClose !== -1 && lastClose > firstOpen) {
-                        const jsonString = rawResponse.substring(firstOpen, lastClose + 1);
-                        const data = JSON.parse(jsonString);
-                        
-                        this.db.questoes = [...this.db.questoes, ...data.questoes];
-                        localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
-                        this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
-                    } else {
-                        throw new Error("A resposta da IA não contém um formato JSON válido.");
-                    }
-
+                    this.db.questoes = [...this.db.questoes, ...data.questoes];
+                    localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                    
+                    this.appendQuestoesToDOM(data.questoes, startIndex);
                 } catch(e) {
-                    console.error("Erro ao processar resposta:", e);
-                    alert("Erro na geração: " + e.message + "\nTente novamente.");
+                    alert("Erro: " + e.message);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
@@ -623,56 +617,124 @@
 
             appendQuestoesToDOM: function(questoes, startIndex) {
                 const list = document.getElementById('questoes-list');
+                
                 const html = questoes.map((q, i) => {
-                    const idx = startIndex + i;
+                    // Lógica Simples: Índice Inicial (do banco) + Índice Atual (do loop) + 1
+                    // Ex: Start=10, i=0 -> 10+0+1 = Q11
+                    const numeroQuestao = startIndex + i + 1;
+                    
                     return `
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 animate-fade-in">
                         <div class="flex gap-3 mb-4">
-                            <span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-2 py-1 rounded text-sm h-fit">Q${idx+1}</span>
+                            <span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-3 py-1 rounded-lg text-sm h-fit whitespace-nowrap">
+                                Questão ${numeroQuestao}
+                            </span>
                             <div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div>
                         </div>
-                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${idx}">
+                        
+                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${numeroQuestao}">
                             ${q.alternativas.map((alt, optIdx) => `
                                 <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors relative"
-                                     onclick="window.app.selectAlternativa(${idx}, ${optIdx})" data-idx="${optIdx}" data-correct="${alt.correta}">
+                                     onclick="window.app.selectAlternativa(${numeroQuestao}, ${optIdx})"
+                                     data-idx="${optIdx}"
+                                     data-correct="${alt.correta}">
+                                     
                                     <div class="flex gap-3 items-center">
-                                        <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center">
+                                        <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center shrink-0">
                                             <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 hidden"></div>
                                         </div>
-                                        <div class="font-bold text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300">${alt.letra})</div>
+                                        <div class="font-bold text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 shrink-0">${alt.letra})</div>
                                         <div class="text-gray-700 dark:text-gray-300">${alt.texto}</div>
                                     </div>
+
                                     <div class="feedback hidden mt-2 text-sm p-2 rounded bg-opacity-50 text-gray-700 dark:text-gray-300">
                                         ${!alt.correta ? (alt.justificativa_erro || 'Incorreto.') : 'Correto!'}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
+
                         <div class="mt-6 pl-0 md:pl-10 flex flex-col gap-4">
-                            <button id="btn-responder-${idx}" onclick="window.app.verificarResposta(${idx})" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">Responder</button>
-                            <div id="resolucao-${idx}" class="hidden">
+                            <button id="btn-responder-${numeroQuestao}" onclick="window.app.verificarResposta(${numeroQuestao})" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                Responder
+                            </button>
+
+                            <div id="resolucao-${numeroQuestao}" class="hidden">
                                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800 text-sm text-gray-700 dark:text-gray-300">
-                                    <span class="font-bold text-blue-700 dark:text-blue-400 block mb-1">Resolução:</span>${q.resolucao}
+                                    <span class="font-bold text-blue-700 dark:text-blue-400 block mb-1">Resolução:</span>
+                                    ${q.resolucao}
                                 </div>
                             </div>
                         </div>
-                    </div>`;
-                }).join('');
+                    </div>
+                `}).join('');
+
                 const loadingEl = document.getElementById('loading-indicator');
                 loadingEl.insertAdjacentHTML('beforebegin', html);
+                
                 if(window.renderMathInElement) renderMathInElement(list);
             },
 
-            // --- INTERAÇÃO QUESTÕES ---
+            // Renderização inicial completa (usada no init)
+            renderQuestoes: function() {
+                const list = document.getElementById('questoes-list');
+                const placeholder = document.getElementById('questoes-placeholder');
+                
+                if(!this.db.questoes.length) return;
+                
+                if(placeholder) placeholder.classList.add('hidden');
+                
+                // Limpar lista mas manter placeholder e loader
+                const staticContent = `
+                    <div id="questoes-placeholder" class="hidden text-center text-gray-500 py-12 bg-white rounded-xl border border-dashed border-gray-300">
+                        <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 mb-3"></i>
+                        <p>Selecione uma disciplina para começar.</p>
+                    </div>
+                    <div id="loading-indicator" class="hidden text-center py-8">
+                        <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
+                        <p class="text-gray-500 animate-pulse" id="loading-text">Criando questões inéditas...</p>
+                    </div>
+                `;
+                list.innerHTML = staticContent;
+
+                // Usar o append para gerar o conteúdo inicial, começando do zero
+                this.appendQuestoesToDOM(this.db.questoes, 0);
+            },
+
+            clearQuestions: function() {
+                if(confirm('Deseja apagar todas as questões geradas?')) {
+                    this.db.questoes = [];
+                    try { localStorage.removeItem(this.CACHE_PREFIX + 'questoes'); } catch(e){}
+                    
+                    const list = document.getElementById('questoes-list');
+                    list.innerHTML = `
+                        <div id="questoes-placeholder" class="text-center text-gray-500 py-12 bg-white rounded-xl border border-dashed border-gray-300">
+                            <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 mb-3"></i>
+                            <p>Selecione uma disciplina para começar.</p>
+                        </div>
+                        <div id="loading-indicator" class="hidden text-center py-8">
+                            <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
+                            <p class="text-gray-500 animate-pulse" id="loading-text">Criando questões inéditas...</p>
+                        </div>
+                    `;
+                }
+            },
+
             selectAlternativa: function(qIndex, altIndex) {
                 const btn = document.getElementById(`btn-responder-${qIndex}`);
+                // Impede troca se já respondeu
                 if (btn && btn.disabled && btn.classList.contains('bg-gray-400')) return;
+
                 const container = document.getElementById(`q-options-${qIndex}`);
+                
+                // Remove seleção visual anterior
                 container.querySelectorAll('.option-item').forEach(el => {
                     el.classList.remove('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
                     el.querySelector('.option-radio').classList.remove('border-indigo-600', 'dark:border-indigo-400');
                     el.querySelector('.option-radio div').classList.add('hidden');
                 });
+
+                // Adiciona seleção visual na atual
                 const selected = container.querySelector(`.option-item[data-idx="${altIndex}"]`);
                 if(selected) {
                     selected.classList.add('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
@@ -685,28 +747,34 @@
                 const container = document.getElementById(`q-options-${qIndex}`);
                 const selected = container.querySelector('.option-item.selected');
                 if (!selected) return alert("Selecione uma alternativa.");
-                
+
                 const isCorrect = selected.getAttribute('data-correct') === 'true';
                 const btn = document.getElementById(`btn-responder-${qIndex}`);
                 const resDiv = document.getElementById(`resolucao-${qIndex}`);
 
+                // Bloqueia interações
                 btn.disabled = true;
-                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btn.classList.add('bg-gray-400');
                 btn.textContent = isCorrect ? "Resposta Correta" : "Resposta Incorreta";
-                btn.className = `w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition text-white ${isCorrect ? 'bg-green-600' : 'bg-red-600'}`;
+                btn.classList.replace('bg-indigo-600', isCorrect ? 'bg-green-600' : 'bg-red-600');
+                btn.classList.replace('hover:bg-indigo-700', isCorrect ? 'hover:bg-green-700' : 'hover:bg-red-700');
 
+                // Aplica estilos de feedback
                 container.querySelectorAll('.option-item').forEach(el => {
                     const correctAttr = el.getAttribute('data-correct') === 'true';
+                    
                     if (correctAttr) {
                         el.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'dark:border-green-500');
                         el.querySelector('.feedback').classList.remove('hidden');
                         el.querySelector('.feedback').classList.add('text-green-700', 'dark:text-green-400');
-                    } else if (el.classList.contains('selected') && !isCorrect) {
+                    }
+                    else if (el.classList.contains('selected') && !isCorrect) {
                         el.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'dark:border-red-500');
                         el.querySelector('.feedback').classList.remove('hidden');
                         el.querySelector('.feedback').classList.add('text-red-700', 'dark:text-red-400');
                     }
                 });
+
                 resDiv.classList.remove('hidden');
             },
 
