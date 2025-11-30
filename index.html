@@ -43,16 +43,23 @@
         .content-section.active { display: block; animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
-        html.dark ::-webkit-scrollbar-thumb { background-color: #475569; }
-
+        /* Utilitários */
+        .option-item.selected { border-color: #4f46e5; background-color: #eef2ff; }
+        .option-item.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; }
+        .option-item.wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; }
+        
+        /* Estilo Riscado (Novo) */
+        .option-item.strikethrough { opacity: 0.6; background-color: #f3f4f6; }
+        .option-item.strikethrough .option-text { text-decoration: line-through; color: #9ca3af; }
+        html.dark .option-item.strikethrough { background-color: #1f2937; }
+        
         #search-results {
             max-height: 300px;
             overflow-y: auto;
             scrollbar-width: thin;
         }
+        #search-results::-webkit-scrollbar { width: 6px; }
+        #search-results::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
@@ -624,27 +631,43 @@
                     const numeroQuestao = startIndex + i + 1;
                     
                     return `
+            // --- RENDERIZAÇÃO (APPEND MODE) ---
+            appendQuestoesToDOM: function(questoes, startIndex) {
+                const list = document.getElementById('questoes-list');
+                
+                const html = questoes.map((q, i) => {
+                    const globalIndex = startIndex + i;
+                    return `
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 animate-fade-in">
                         <div class="flex gap-3 mb-4">
                             <span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-3 py-1 rounded-lg text-sm h-fit whitespace-nowrap">
-                                Questão ${numeroQuestao}
+                                Questão ${globalIndex+1}
                             </span>
                             <div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div>
                         </div>
                         
-                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${numeroQuestao}">
+                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${globalIndex}">
                             ${q.alternativas.map((alt, optIdx) => `
                                 <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors relative"
-                                     onclick="window.app.selectAlternativa(${numeroQuestao}, ${optIdx})"
+                                     onclick="window.app.selectAlternativa(${globalIndex}, ${optIdx})"
                                      data-idx="${optIdx}"
                                      data-correct="${alt.correta}">
                                      
-                                    <div class="flex gap-3 items-center">
-                                        <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center shrink-0">
-                                            <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 hidden"></div>
+                                    <div class="flex items-center justify-between w-full">
+                                        <div class="flex gap-3 items-center flex-1">
+                                            <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center shrink-0">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 hidden"></div>
+                                            </div>
+                                            <div class="font-bold text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 shrink-0">${alt.letra})</div>
+                                            <div class="option-text text-gray-700 dark:text-gray-300">${alt.texto}</div>
                                         </div>
-                                        <div class="font-bold text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 shrink-0">${alt.letra})</div>
-                                        <div class="text-gray-700 dark:text-gray-300">${alt.texto}</div>
+                                        
+                                        <!-- Botão de Riscar -->
+                                        <button class="p-2 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors z-10"
+                                                onclick="event.stopPropagation(); window.app.toggleStrike(this)"
+                                                title="Eliminar alternativa">
+                                            <i data-lucide="eye-off" class="w-4 h-4"></i>
+                                        </button>
                                     </div>
 
                                     <div class="feedback hidden mt-2 text-sm p-2 rounded bg-opacity-50 text-gray-700 dark:text-gray-300">
@@ -655,11 +678,11 @@
                         </div>
 
                         <div class="mt-6 pl-0 md:pl-10 flex flex-col gap-4">
-                            <button id="btn-responder-${numeroQuestao}" onclick="window.app.verificarResposta(${numeroQuestao})" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                            <button id="btn-responder-${globalIndex}" onclick="window.app.verificarResposta(${globalIndex})" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
                                 Responder
                             </button>
 
-                            <div id="resolucao-${numeroQuestao}" class="hidden">
+                            <div id="resolucao-${globalIndex}" class="hidden">
                                 <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800 text-sm text-gray-700 dark:text-gray-300">
                                     <span class="font-bold text-blue-700 dark:text-blue-400 block mb-1">Resolução:</span>
                                     ${q.resolucao}
@@ -675,48 +698,30 @@
                 if(window.renderMathInElement) renderMathInElement(list);
             },
 
-            // Renderização inicial completa (usada no init)
-            renderQuestoes: function() {
-                const list = document.getElementById('questoes-list');
-                const placeholder = document.getElementById('questoes-placeholder');
-                
-                if(!this.db.questoes.length) return;
-                
-                if(placeholder) placeholder.classList.add('hidden');
-                
-                // Limpar lista mas manter placeholder e loader
-                const staticContent = `
-                    <div id="questoes-placeholder" class="hidden text-center text-gray-500 py-12 bg-white rounded-xl border border-dashed border-gray-300">
-                        <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 mb-3"></i>
-                        <p>Selecione uma disciplina para começar.</p>
-                    </div>
-                    <div id="loading-indicator" class="hidden text-center py-8">
-                        <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
-                        <p class="text-gray-500 animate-pulse" id="loading-text">Criando questões inéditas...</p>
-                    </div>
-                `;
-                list.innerHTML = staticContent;
+            // ... (Outras funções) ...
 
-                // Usar o append para gerar o conteúdo inicial, começando do zero
-                this.appendQuestoesToDOM(this.db.questoes, 0);
-            },
+            // --- FUNÇÕES DE INTERAÇÃO ---
+            toggleStrike: function(btn) {
+                const item = btn.closest('.option-item');
+                
+                // Se estiver selecionada, remove a seleção antes de riscar (opcional, mas lógico)
+                if (item.classList.contains('selected')) {
+                    item.classList.remove('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+                    item.querySelector('.option-radio').classList.remove('border-indigo-600', 'dark:border-indigo-400');
+                    item.querySelector('.option-radio div').classList.add('hidden');
+                }
 
-            clearQuestions: function() {
-                if(confirm('Deseja apagar todas as questões geradas?')) {
-                    this.db.questoes = [];
-                    try { localStorage.removeItem(this.CACHE_PREFIX + 'questoes'); } catch(e){}
-                    
-                    const list = document.getElementById('questoes-list');
-                    list.innerHTML = `
-                        <div id="questoes-placeholder" class="text-center text-gray-500 py-12 bg-white rounded-xl border border-dashed border-gray-300">
-                            <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 mb-3"></i>
-                            <p>Selecione uma disciplina para começar.</p>
-                        </div>
-                        <div id="loading-indicator" class="hidden text-center py-8">
-                            <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
-                            <p class="text-gray-500 animate-pulse" id="loading-text">Criando questões inéditas...</p>
-                        </div>
-                    `;
+                // Alterna o estado riscado
+                item.classList.toggle('strikethrough');
+                
+                // Feedback visual no ícone
+                const icon = btn.querySelector('i');
+                if (item.classList.contains('strikethrough')) {
+                    btn.classList.add('text-red-400', 'dark:text-red-400');
+                    btn.classList.remove('text-gray-300', 'dark:text-gray-600');
+                } else {
+                    btn.classList.remove('text-red-400', 'dark:text-red-400');
+                    btn.classList.add('text-gray-300', 'dark:text-gray-600');
                 }
             },
 
@@ -734,9 +739,11 @@
                     el.querySelector('.option-radio div').classList.add('hidden');
                 });
 
-                // Adiciona seleção visual na atual
+                // Adiciona seleção visual na atual (se não estiver riscada)
+                // (Opcional: você pode permitir selecionar riscada se quiser, mas geralmente não faz sentido)
                 const selected = container.querySelector(`.option-item[data-idx="${altIndex}"]`);
-                if(selected) {
+                
+                if(selected && !selected.classList.contains('strikethrough')) {
                     selected.classList.add('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
                     selected.querySelector('.option-radio').classList.add('border-indigo-600', 'dark:border-indigo-400');
                     selected.querySelector('.option-radio div').classList.remove('hidden');
