@@ -593,14 +593,27 @@
                 }`;
 
                 try {
-                    let jsonString = await this.callAPI(prompt, true);
-                    jsonString = jsonString.replace(/```json/g, '').replace(/```/g, '').trim();
-                    const data = JSON.parse(jsonString);
-                    this.db.questoes = [...this.db.questoes, ...data.questoes];
-                    localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
-                    this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
+                    let rawResponse = await this.callAPI(prompt, true);
+                    
+                    // --- CORREÇÃO DE ERRO DE JSON ---
+                    // 1. Extração Cirúrgica: Pega tudo entre o primeiro '{' e o último '}'
+                    const firstOpen = rawResponse.indexOf('{');
+                    const lastClose = rawResponse.lastIndexOf('}');
+                    
+                    if (firstOpen !== -1 && lastClose !== -1 && lastClose > firstOpen) {
+                        const jsonString = rawResponse.substring(firstOpen, lastClose + 1);
+                        const data = JSON.parse(jsonString);
+                        
+                        this.db.questoes = [...this.db.questoes, ...data.questoes];
+                        localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                        this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
+                    } else {
+                        throw new Error("A resposta da IA não contém um formato JSON válido.");
+                    }
+
                 } catch(e) {
-                    alert("Erro: " + e.message);
+                    console.error("Erro ao processar resposta:", e);
+                    alert("Erro na geração: " + e.message + "\nTente novamente.");
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
