@@ -53,7 +53,7 @@
         .option-item.strikethrough { opacity: 0.6; background-color: #f3f4f6; }
         .option-item.strikethrough .option-text { text-decoration: line-through; color: #9ca3af; }
         html.dark .option-item.strikethrough { background-color: #1f2937; }
-        
+
         #search-results {
             max-height: 300px;
             overflow-y: auto;
@@ -77,8 +77,8 @@
                 <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="questoes">Questões</a>
                 <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="redacao">Redação</a>
                 
-                <!-- Botão Dark Mode -->
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()">
+                <!-- Botão Dark Mode (Desktop) -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()" title="Alternar Tema">
                     <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
                     <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
                 </button>
@@ -86,6 +86,7 @@
 
             <!-- Menu Mobile Toggle -->
             <div class="flex items-center md:hidden gap-4">
+                <!-- Botão Dark Mode (Mobile) -->
                 <button id="theme-toggle-mobile" class="text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()">
                     <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
                     <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
@@ -112,7 +113,7 @@
                 <h1 class="text-4xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
                 <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">Sua plataforma inteligente de estudos.</p>
                 <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow-lg hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
+                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
                         Explorar Matérias
                     </button>
                     <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">
@@ -262,6 +263,7 @@
             init: function() {
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 
+                // Inicializar tema
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
                     document.documentElement.classList.add('dark');
                 } else {
@@ -284,6 +286,7 @@
                 this.setupSearch();
             },
 
+            // --- TEMA DARK MODE ---
             toggleTheme: function() {
                 const html = document.documentElement;
                 if (html.classList.contains('dark')) {
@@ -367,66 +370,129 @@
                 }
             },
 
-            getLoadingSpinner: function(text) {
-                return `<div class="flex flex-col items-center justify-center p-6 space-y-3"><div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-indigo-600 dark:text-indigo-400 font-medium animate-pulse">${text}</p></div>`;
+            // --- UI HELPERS ---
+            getLoadingSpinner: function(text = "A processar...") {
+                return `
+                    <div class="flex flex-col items-center justify-center p-6 space-y-3 bg-gray-50 dark:bg-gray-800 rounded-lg border border-gray-100 dark:border-gray-700">
+                        <div class="w-10 h-10 border-4 border-indigo-200 dark:border-indigo-900 border-t-indigo-600 dark:border-t-indigo-400 rounded-full animate-spin"></div>
+                        <p class="text-sm text-indigo-600 dark:text-indigo-400 font-medium animate-pulse">${text}</p>
+                    </div>
+                `;
             },
 
+            // --- GERAÇÃO DE CONTEÚDO ---
             generateContent: async function(materia, topico, tipo, targetId) {
                 const target = document.getElementById(targetId);
                 if(!target) return;
-                
-                let msg = tipo === 'resumo' ? "Sintetizando..." : (tipo === 'explicacao' ? "Criando aula..." : "Elaborando dossiê...");
-                target.innerHTML = this.getLoadingSpinner(msg);
 
-                let formato = tipo === 'resumo' ? 'Resumo Flashcard' : (tipo === 'explicacao' ? 'Aula Didática' : 'Dossiê Completo');
-                let extra = ['Sociologia','Filosofia','História'].includes(materia) ? "Foque em conceitos e autores." : "";
+                let loadingMsg = "A preparar conteúdo...";
+                if (tipo === 'resumo') loadingMsg = "Sintetizando pontos-chave...";
+                if (tipo === 'explicacao') loadingMsg = "Preparando aula didática...";
+                if (tipo === 'completo') loadingMsg = "Elaborando dossiê completo...";
+
+                target.innerHTML = this.getLoadingSpinner(loadingMsg);
                 
-                const prompt = `Professor ENEM. Tópico: ${topico} (${materia}). Formato: ${formato}. ${extra}. Use HTML (h3, ul, b) e LaTeX $$ para fórmulas.`;
+                let formatoInstrucao = "";
+                if (tipo === 'resumo') {
+                    formatoInstrucao = `
+                    **FORMATO: RESUMO FLASHCARD (Alta Densidade)**
+                    - Objetivo: Revisão rápida e memorização.
+                    - Estrutura: Use listas com marcadores (bullet points) para quase tudo.
+                    - Conteúdo: Apenas definições cruciais, fórmulas essenciais (se houver) e palavras-chave.
+                    - Estilo: Direto ao ponto. Sem introduções longas ou histórias. Economize palavras.
+                    `;
+                } else if (tipo === 'explicacao') {
+                    formatoInstrucao = `
+                    **FORMATO: AULA DIDÁTICA (Engajadora/Anti-Tédio)**
+                    - Objetivo: Entendimento do conceito e motivação.
+                    - Estrutura: Introdução com analogia do cotidiano -> Desenvolvimento lógico -> Exemplo prático.
+                    - Conteúdo: Explique o "porquê" e o "como".
+                    - Estilo: Conversacional, carismático (como um professor youtuber). Use <b>negrito</b> para ênfase.
+                    `;
+                } else if (tipo === 'completo') {
+                    formatoInstrucao = `
+                    **FORMATO: DOSSIÊ COMPLETO (Aprofundado)**
+                    - Objetivo: Domínio total do assunto para questões difíceis.
+                    - Estrutura: Tópicos detalhados, contexto histórico, deduções, nuances e exceções.
+                    - Conteúdo: Cubra o tópico de A a Z. Inclua relações interdisciplinares e análise crítica.
+                    - Estilo: Acadêmico porém acessível, rigoroso e exaustivo.
+                    `;
+                }
+
+                let diretrizesMateria = "";
+                if (['Sociologia', 'Filosofia', 'História'].includes(materia)) {
+                    diretrizesMateria = `
+                    **DIRETRIZES ESPECÍFICAS (HUMANAS):**
+                    1. Foco Conceitual: Defina conceitos (ex: Fato Social) inequivocamente.
+                    2. Autores: Cite os teóricos principais e suas obras.
+                    3. Contexto: Aplique à realidade social ou histórica. Sem matemática desnecessária.
+                    `;
+                }
+
+                const prompt = `
+                Aja como um professor especialista em ENEM.
+                Tópico: "${topico}"
+                Matéria: "${materia}"
+                
+                ${formatoInstrucao}
+                
+                ${diretrizesMateria}
+
+                **DIRETRIZES GERAIS DE VISUAL:**
+                - Use tags HTML para estruturar (<h3>, <ul>, <li>, <b>, <blockquote>).
+                - Evite blocos de texto gigantes. Quebre em parágrafos curtos.
+                - Se houver fórmulas, use LaTeX estritamente entre $$.
+
+                Gere o conteúdo agora.
+                `;
 
                 try {
                     let content = await this.callAPI(prompt, false);
                     content = content.replace(/```html/g, '').replace(/```/g, '');
+                    
                     target.innerHTML = content;
                     if(window.renderMathInElement) renderMathInElement(target);
                 } catch (e) {
-                    target.innerHTML = `<div class="text-red-500 p-2 text-xs">Erro: ${e.message}</div>`;
+                    target.innerHTML = `<div class="text-red-500 dark:text-red-400 p-2 bg-red-50 dark:bg-red-900/20 rounded text-xs">Falha: ${e.message}</div>`;
                 }
             },
 
+            // --- QUESTÕES ---
             populateFilters: function() {
                 const discSel = document.getElementById('filtro-disciplina');
                 if(!discSel) return;
-                discSel.innerHTML = '<option value="">Selecione</option>' + this.db.materias.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
+                discSel.innerHTML = '<option value="">Selecione a Disciplina</option>' + this.db.materias.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
                 
-                const reset = (id, txt) => { const el = document.getElementById(id); el.innerHTML = `<option value="">${txt}</option>`; el.disabled = true; };
+                const resetSelect = (el, txt) => { el.innerHTML = `<option value="">${txt}</option>`; el.disabled = true; };
 
                 discSel.onchange = () => {
-                    reset('filtro-conteudo', 'Selecione o Conteúdo');
-                    reset('filtro-subconteudo', 'Aguardando Conteúdo');
                     const mId = discSel.value;
+                    resetSelect(document.getElementById('filtro-conteudo'), 'Selecione o Conteúdo');
+                    resetSelect(document.getElementById('filtro-subconteudo'), 'Selecione o Conteúdo primeiro');
+                    
                     if(mId) {
                         const m = this.db.materias.find(x => x.id === mId);
                         const assuntos = [];
-                        m.frentes.forEach(f => f.modulos.forEach(md => md.assuntos.forEach(a => assuntos.push(a))));
-                        document.getElementById('filtro-conteudo').innerHTML = '<option value="">Selecione</option>' + assuntos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+                        m.frentes.forEach(f => f.modulos.forEach(mod => mod.assuntos.forEach(a => assuntos.push(a))));
+                        document.getElementById('filtro-conteudo').innerHTML = '<option value="">Selecione o Conteúdo</option>' + assuntos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
                         document.getElementById('filtro-conteudo').disabled = false;
                         this.currentAssuntos = assuntos;
                     }
                 };
-
-                document.getElementById('filtro-conteudo').onchange = () => {
-                    const aId = document.getElementById('filtro-conteudo').value;
-                    const sub = document.getElementById('filtro-subconteudo');
-                    reset('filtro-subconteudo', 'Selecione (Opcional)');
-                    if(aId) {
-                        const ass = this.currentAssuntos.find(a => a.id === aId);
-                        if(ass && ass.subconteudos) {
-                            sub.innerHTML = '<option value="">Geral</option>' + ass.subconteudos.map(s => `<option value="${s.nome}">${s.nome}</option>`).join('');
-                            sub.disabled = false;
-                        }
-                    }
-                };
                 
+                document.getElementById('filtro-conteudo').onchange = () => {
+                   const aId = document.getElementById('filtro-conteudo').value;
+                   const subSel = document.getElementById('filtro-subconteudo');
+                   resetSelect(subSel, 'Selecione o Sub-conteúdo');
+                   if(aId) {
+                       const assunto = this.currentAssuntos.find(a => a.id === aId);
+                       if(assunto && assunto.subconteudos) {
+                           subSel.innerHTML = '<option value="">Geral</option>' + assunto.subconteudos.map(s => `<option value="${s.nome}">${s.nome}</option>`).join('');
+                           subSel.disabled = false;
+                       }
+                   }
+                };
+
                 document.getElementById('btn-gerar-questoes').onclick = () => this.handleGenerateQuestions();
             },
 
@@ -474,39 +540,57 @@
                 // Config Dificuldade
                 let regrasDificuldade = "";
                 if (dificuldade === 'facil') {
-                    regrasDificuldade = "NÍVEL FÁCIL: Aplicação direta. Textos curtos.";
+                    regrasDificuldade = "NÍVEL FÁCIL (Recordar/Entender): Questões de aplicação direta e imediata do conceito. Textos curtos e objetivos.";
                 } else if (dificuldade === 'dificil') {
-                    regrasDificuldade = "NÍVEL DIFÍCIL: Questões exigentes. Textos densos, múltiplos passos.";
+                    regrasDificuldade = "NÍVEL DIFÍCIL (Analisar/Avaliar): A dificuldade deve vir da INTERPRETAÇÃO complexa e relação entre conceitos distintos.";
                 } else {
-                    regrasDificuldade = "NÍVEL MÉDIO (PADRÃO ENEM): Equilíbrio entre interpretação e resolução.";
+                    regrasDificuldade = "NÍVEL MÉDIO (Aplicar/Analisar - Padrão ENEM): Questões contextualizadas clássicas. Equilíbrio entre leitura e resolução.";
                 }
 
                 // Protocolo Lógico
                 let protocoloLogico = "";
                 if (isExatas) {
-                    protocoloLogico = `EXATAS: Resolva matematicamente no campo 'resolucao' PRIMEIRO. A alternativa 'true' DEVE ser igual ao resultado da conta.`;
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CÁLCULO/EXATAS):
+                    1. **RESOLUÇÃO PRIMEIRO:** Resolva matematicamente no campo 'resolucao'. Use a ferramenta Code Interpreter se disponível.
+                    2. **SEM ALUCINAÇÃO:** A alternativa 'true' DEVE ser cópia exata do valor final do cálculo. Se deu 100, a resposta é "100".
+                    3. **DISTRATORES:** Crie valores errados plausíveis (erros de sinal, etc), mas diferentes do correto.
+                    `;
                 } else {
-                    protocoloLogico = `HUMANAS: Foco conceitual. A alternativa correta deve ser a única coerente com o texto base.`;
+                    protocoloLogico = `
+                    PROTOCOLO DE SEGURANÇA (CONCEITUAL/HUMANAS):
+                    1. **FOCO CONCEITUAL:** A questão DEVE cobrar teoria, interpretação de texto, contexto histórico ou análise social.
+                    2. **PROIBIDO CÁLCULOS:** NÃO crie questões matemáticas ou de lógica quantitativa se o assunto for Sociologia, História, Geografia ou Linguagens.
+                    3. **COERÊNCIA:** A alternativa correta deve ser a única que se alinha perfeitamente com o texto base e o comando.
+                    4. **DISTRATORES:** As alternativas erradas devem ser conceitos reais mas aplicados incorretamente, ou interpretações exageradas/reducionistas do texto.
+                    `;
                 }
 
-                // Prompt OTIMIZADO PARA JSON SEGURO
                 const prompt = `
-                Aja como um Elaborador Sênior do ENEM. Crie 5 questões INÉDITAS.
-                Tópico: "${topicoPrompt}" (${discNome}).
-                Dificuldade: ${regrasDificuldade}
+                Aja como um Elaborador Sênior de Itens do INEP (ENEM).
+                Crie 5 questões INÉDITAS de múltipla escolha.
+                Tópico: "${topicoPrompt}" (Disciplina: ${discNome}).
+                
+                CALIBRAGEM PEDAGÓGICA:
+                ${regrasDificuldade}
+
                 ${protocoloLogico}
 
-                **REGRAS TÉCNICAS CRÍTICAS PARA JSON:**
-                1. NÃO use quebras de linha reais dentro das strings. Use '\\n' para pular linha no texto.
-                2. Escape TODAS as aspas duplas internas com barra invertida (ex: "Termo \\"citado\\"").
-                3. Retorne APENAS o objeto JSON, sem blocos de código markdown ou explicações extras.
-                4. O JSON deve ser minificado (uma única linha se possível) para garantir integridade.
+                ESTRUTURA DA QUESTÃO:
+                1. Enunciado com Texto Base (Contextualização).
+                2. Comando claro.
+                3. 5 Alternativas.
+                
+                **REGRAS TÉCNICAS CRÍTICAS (JSON):**
+                1. A resposta DEVE ser um JSON válido.
+                2. NÃO quebre linhas dentro de strings. Use '\\n' literal.
+                3. NÃO use aspas não escapadas dentro de strings.
 
-                JSON OBRIGATÓRIO:
+                RETORNE APENAS O JSON VÁLIDO (SEM MARKDOWN \`\`\`json ... \`\`\`):
                 {
                     "questoes": [
                         {
-                            "enunciado": "Texto...",
+                            "enunciado": "Texto motivador + Pergunta...",
                             "alternativas": [
                                 {"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "B", "texto": "...", "correta": true, "justificativa_erro": "Gabarito."},
@@ -514,7 +598,7 @@
                                 {"letra": "D", "texto": "...", "correta": false, "justificativa_erro": "..."},
                                 {"letra": "E", "texto": "...", "correta": false, "justificativa_erro": "..."}
                             ],
-                            "resolucao": "..."
+                            "resolucao": "Explicação detalhada do conceito e por que as outras estão erradas."
                         }
                     ]
                 }`;
@@ -522,44 +606,29 @@
                 try {
                     let rawResponse = await this.callAPI(prompt, true);
                     
-                    // --- SANITIZAÇÃO DE JSON AVANÇADA ---
-                    // Remove blocos de código Markdown
-                    rawResponse = rawResponse.replace(/```json/g, '').replace(/```/g, '').trim();
+                    // Limpeza de Markdown
+                    rawResponse = rawResponse.trim();
+                    rawResponse = rawResponse.replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '');
                     
-                    // Encontra o JSON real
+                    // Extração Cirúrgica de JSON
                     const firstOpen = rawResponse.indexOf('{');
                     const lastClose = rawResponse.lastIndexOf('}');
                     
                     if (firstOpen !== -1 && lastClose !== -1) {
-                        let jsonString = rawResponse.substring(firstOpen, lastClose + 1);
+                        const jsonString = rawResponse.substring(firstOpen, lastClose + 1);
+                        const data = JSON.parse(jsonString);
                         
-                        // Tenta corrigir quebras de linha inválidas dentro de strings (comum em LLMs)
-                        // Substitui quebras de linha literais por espaço, exceto se já estiverem escapadas
-                        // (Esta é uma correção de emergência, o ideal é o prompt resolver)
-                        
-                        try {
-                            const data = JSON.parse(jsonString);
-                            
-                            // Validar estrutura
-                            if(!data.questoes || !Array.isArray(data.questoes)) throw new Error("Estrutura JSON inválida");
-
-                            const startIndex = this.db.questoes.length;
-                            this.db.questoes = [...this.db.questoes, ...data.questoes];
-                            localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
-                            this.appendQuestoesToDOM(data.questoes, startIndex);
-                            
-                        } catch (parseError) {
-                            console.error("Erro de Parse JSON Bruto:", jsonString);
-                            throw new Error("A IA gerou um formato inválido. Tente novamente (Erro de sintaxe).");
-                        }
-
+                        const startIndex = this.db.questoes.length;
+                        this.db.questoes = [...this.db.questoes, ...data.questoes];
+                        localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                        this.appendQuestoesToDOM(data.questoes, startIndex);
                     } else {
-                        throw new Error("Resposta da IA vazia ou incompleta.");
+                        throw new Error("JSON não encontrado na resposta.");
                     }
 
                 } catch(e) {
                     console.error(e);
-                    alert(`Erro na geração: ${e.message}\nPor favor, tente novamente.`);
+                    alert(`Erro na geração: ${e.message}\nTente novamente.`);
                 } finally {
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
@@ -569,52 +638,397 @@
 
             appendQuestoesToDOM: function(questoes, startIndex) {
                 const list = document.getElementById('questoes-list');
+                
                 const html = questoes.map((q, i) => {
-                    const idx = startIndex + i;
+                    const globalIndex = startIndex + i;
                     return `
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 animate-fade-in">
-                        <div class="flex gap-3 mb-4"><span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-2 py-1 rounded text-sm h-fit">Q${idx+1}</span><div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div></div>
-                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${idx}">
+                        <div class="flex gap-3 mb-4">
+                            <span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-3 py-1 rounded-lg text-sm h-fit whitespace-nowrap">
+                                Questão ${globalIndex+1}
+                            </span>
+                            <div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div>
+                        </div>
+                        
+                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${globalIndex}">
                             ${q.alternativas.map((alt, optIdx) => `
-                                <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 relative" onclick="window.app.selectAlternativa(${idx}, ${optIdx})" data-idx="${optIdx}" data-correct="${alt.correta}">
+                                <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors relative"
+                                     onclick="window.app.selectAlternativa(${globalIndex}, ${optIdx})"
+                                     data-idx="${optIdx}"
+                                     data-correct="${alt.correta}">
+                                     
                                     <div class="flex items-center justify-between w-full">
                                         <div class="flex gap-3 items-center flex-1">
-                                            <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center"><div class="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 hidden"></div></div>
-                                            <div class="font-bold text-gray-400 dark:text-gray-500">${alt.letra})</div>
-                                            <div class="text-gray-700 dark:text-gray-300">${alt.texto}</div>
+                                            <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 dark:border-gray-500 flex items-center justify-center shrink-0">
+                                                <div class="w-2.5 h-2.5 rounded-full bg-indigo-600 dark:bg-indigo-400 hidden"></div>
+                                            </div>
+                                            <div class="font-bold text-gray-400 dark:text-gray-500 group-hover:text-gray-600 dark:group-hover:text-gray-300 shrink-0">${alt.letra})</div>
+                                            <div class="option-text text-gray-700 dark:text-gray-300">${alt.texto}</div>
                                         </div>
-                                        <button class="p-2 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors z-10" onclick="event.stopPropagation(); window.app.toggleStrike(this)" title="Riscar"><i data-lucide="eye-off" class="w-4 h-4"></i></button>
+                                        
+                                        <button class="p-2 text-gray-300 hover:text-gray-500 dark:text-gray-600 dark:hover:text-gray-400 rounded-full hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors z-10"
+                                                onclick="event.stopPropagation(); window.app.toggleStrike(this)"
+                                                title="Eliminar alternativa">
+                                            <i data-lucide="eye-off" class="w-4 h-4"></i>
+                                        </button>
                                     </div>
-                                    <div class="feedback hidden mt-2 text-sm p-2 rounded bg-opacity-50 text-gray-700 dark:text-gray-300">${!alt.correta ? (alt.justificativa_erro || 'Incorreto.') : 'Correto!'}</div>
+
+                                    <div class="feedback hidden mt-2 text-sm p-2 rounded bg-opacity-50 text-gray-700 dark:text-gray-300">
+                                        ${!alt.correta ? (alt.justificativa_erro || 'Incorreto.') : 'Correto!'}
+                                    </div>
                                 </div>
                             `).join('')}
                         </div>
-                        <div class="mt-6 pl-0 md:pl-10">
-                            <button id="btn-responder-${idx}" onclick="window.app.verificarResposta(${idx})" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">Responder</button>
-                            <div id="resolucao-${idx}" class="hidden mt-4 p-3 bg-blue-50 dark:bg-gray-700 rounded border border-blue-100 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
-                                <span class="font-bold block mb-1">Resolução:</span>${q.resolucao}
+
+                        <div class="mt-6 pl-0 md:pl-10 flex flex-col gap-4">
+                            <button id="btn-responder-${globalIndex}" onclick="window.app.verificarResposta(${globalIndex})" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50 disabled:cursor-not-allowed">
+                                Responder
+                            </button>
+
+                            <div id="resolucao-${globalIndex}" class="hidden">
+                                <div class="p-3 bg-blue-50 dark:bg-blue-900/20 rounded border border-blue-100 dark:border-blue-800 text-sm text-gray-700 dark:text-gray-300">
+                                    <span class="font-bold text-blue-700 dark:text-blue-400 block mb-1">Resolução:</span>
+                                    ${q.resolucao}
+                                </div>
                             </div>
                         </div>
-                    </div>`;
-                }).join('');
-                document.getElementById('loading-indicator').insertAdjacentHTML('beforebegin', html);
+                    </div>
+                `}).join('');
+
+                const loadingEl = document.getElementById('loading-indicator');
+                loadingEl.insertAdjacentHTML('beforebegin', html);
+                
                 if(window.renderMathInElement) renderMathInElement(list);
             },
 
-            renderQuestoes: function() {
-                if(!this.db.questoes.length) return;
-                document.getElementById('questoes-placeholder').classList.add('hidden');
-                this.appendQuestoesToDOM(this.db.questoes, 0);
-            },
+            // --- REDAÇÃO ---
+            handleRedacao: async function(tipo) {
+                const input = document.getElementById('redacao-theme');
+                const output = document.getElementById('redacao-output');
+                const texto = document.getElementById('redacao-paragraph').value;
+                
+                output.classList.remove('hidden');
+                output.innerHTML = this.getLoadingSpinner("Processando...");
+                
+                let prompt = "";
+                const tema = input.value;
 
-            clearQuestions: function() {
-                if(confirm('Apagar?')) {
-                    this.db.questoes = [];
-                    localStorage.removeItem(this.CACHE_PREFIX + 'questoes');
-                    document.getElementById('questoes-list').innerHTML = `<div id="questoes-placeholder" class="text-center text-gray-500 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed"><i data-lucide="book-open" class="mx-auto h-12 w-12 mb-3"></i><p>Inicie a geração.</p></div><div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>`;
+                if (tipo === 'tema') {
+                    prompt = "Gere apenas UM título de tema de redação estilo ENEM sobre um problema social atual no Brasil. Não use aspas.";
+                } else if (tipo === 'repertorio') {
+                    if(!tema) return alert("Escreva um tema primeiro.");
+                    prompt = `Para o tema de redação "${tema}", liste 3 repertórios socioculturais legítimos (Filósofos, Livros ou Fatos Históricos) e explique brevemente como conectar cada um ao tema.`;
+                } else if (tipo === 'esboco') {
+                    if(!tema) return alert("Escreva um tema primeiro.");
+                    prompt = `Crie um projeto de texto estruturado (Tese, Argumento 1, Argumento 2, Proposta de Intervenção) para o tema "${tema}".`;
+                } else if (tipo === 'analise') {
+                    if(!texto) return alert("Cole um parágrafo primeiro.");
+                    prompt = `Analise este parágrafo de redação ENEM com base na norma culta e coesão. Aponte erros e sugira melhorias:\n\n"${texto}"`;
+                }
+
+                try {
+                    let result = await this.callAPI(prompt, false);
+                    result = result.replace(/```html/g, '').replace(/```/g, '');
+
+                    if (tipo === 'tema') {
+                        input.value = result.replace(/["\n]/g, '');
+                        output.classList.add('hidden');
+                    } else {
+                        output.innerHTML = result.replace(/\n/g, '<br>');
+                    }
+                } catch (e) {
+                    output.innerHTML = `<span class="text-red-500">Erro: ${e.message}</span>`;
                 }
             },
 
+            // --- NAVEGAÇÃO ---
+            setupNavigation: function() {
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.onclick = (e) => {
+                        const t = l.getAttribute('data-target');
+                        if (t) { e.preventDefault(); this.navigateTo(t); }
+                    };
+                });
+            },
+            
+            setupMobileMenu: function() {
+                const btn = document.getElementById('mobile-menu-btn');
+                const menu = document.getElementById('mobile-menu');
+                if(btn && menu) btn.onclick = () => menu.classList.toggle('hidden');
+            },
+
+            navigateTo: function(id) {
+                document.querySelectorAll('.content-section').forEach(el => {
+                    el.classList.remove('active');
+                    el.style.display = 'none';
+                });
+                
+                const target = document.getElementById(id);
+                if(target) {
+                    target.style.display = 'block';
+                    setTimeout(() => target.classList.add('active'), 10);
+                }
+                
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.classList.toggle('active', l.getAttribute('data-target') === id);
+                });
+                
+                window.scrollTo(0,0);
+            },
+
+            // --- RENDERIZAÇÃO DE MATÉRIAS ---
+            renderMateriasGrid: function() {
+                const grid = document.getElementById('materias-grid');
+                if(!grid) return;
+                
+                grid.innerHTML = this.db.materias.map(m => `
+                    <div class="subject-card ${m.cor} p-6 rounded-lg shadow-sm border cursor-pointer flex flex-col items-center hover:shadow-md transition hover:-translate-y-1" onclick="window.app.openMateria('${m.id}')">
+                        <i data-lucide="${m.icone}" class="h-10 w-10 mb-3"></i>
+                        <h3 class="font-bold text-lg">${m.nome}</h3>
+                    </div>
+                `).join('');
+                
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+            },
+
+            openMateria: function(id) {
+                const m = this.db.materias.find(x => x.id === id);
+                if (!m) return;
+                
+                const detail = document.getElementById('materia-detalhe');
+                document.getElementById('materias-home').classList.add('hidden');
+                detail.classList.remove('hidden');
+                
+                detail.innerHTML = `
+                    <div class="max-w-5xl mx-auto">
+                        <button onclick="document.getElementById('materia-detalhe').classList.add('hidden'); document.getElementById('materias-home').classList.remove('hidden');" class="mb-6 text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-2 hover:underline">
+                            <i data-lucide="arrow-left" class="w-5 h-5"></i> Voltar para Matérias
+                        </button>
+                        
+                        <div class="flex flex-col md:flex-row items-center justify-between mb-8 gap-4">
+                            <h2 class="text-4xl font-bold text-gray-800 dark:text-white">${m.nome}</h2>
+                            
+                            <!-- BARRA DE PESQUISA DE CONTEÚDOS -->
+                            <div class="relative w-full md:w-96">
+                                <input type="text" 
+                                    class="w-full p-3 pl-10 rounded-lg border border-gray-200 dark:border-gray-600 shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white dark:bg-gray-700 dark:text-white dark:placeholder-gray-400" 
+                                    placeholder="Buscar conteúdo em ${m.nome}..." 
+                                    oninput="window.app.filterSubjectContents(this.value)">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5"></i>
+                            </div>
+                        </div>
+
+                        <div class="space-y-8" id="materia-conteudos-container">
+                        ${m.frentes.map(f => `
+                            <div class="materia-frente bg-white dark:bg-gray-800 p-5 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700">
+                                <h3 class="text-2xl font-bold text-gray-700 dark:text-gray-300 border-b dark:border-gray-600 pb-2 mb-4">${f.nome}</h3>
+                                <div class="grid gap-4">
+                                    ${f.modulos.map(mod => `
+                                        <div class="materia-modulo">
+                                            <h4 class="font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-3">${mod.nome}</h4>
+                                            <div class="space-y-2">
+                                                ${mod.assuntos.map(a => `
+                                                    <div class="border-t dark:border-gray-700 pt-2 materia-assunto">
+                                                        <button class="w-full flex justify-between items-center py-2 hover:text-indigo-600 dark:hover:text-indigo-400 text-left" 
+                                                            onclick="const el = document.getElementById('cont-${a.id}'); el.classList.toggle('hidden');">
+                                                            <div class="font-medium text-gray-800 dark:text-gray-200">${a.nome}</div>
+                                                            <i data-lucide="chevron-down" class="w-4 h-4"></i>
+                                                        </button>
+                                                        
+                                                        <div id="cont-${a.id}" class="hidden pl-4 mt-2 space-y-2 border-l-2 border-indigo-100 dark:border-gray-700">
+                                                            ${a.subconteudos ? a.subconteudos.map(s => `
+                                                                <div>
+                                                                    <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">${s.nome}</div>
+                                                                    <div class="flex flex-wrap gap-2">
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'resumo', 'res-${s.id}')" class="text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-900 transition" title="Revisão rápida e tópicos">Resumo</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'explicacao', 'res-${s.id}')" class="text-xs font-semibold bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-3 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600 transition" title="Aula didática padrão">Explicação</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'completo', 'res-${s.id}')" class="text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 shadow-sm transition" title="Dossiê aprofundado">Completa</button>
+                                                                    </div>
+                                                                    <div id="res-${s.id}" class="mt-2 text-gray-700 dark:text-gray-300 text-sm leading-relaxed prose max-w-none"></div>
+                                                                </div>
+                                                            `).join('') : `
+                                                                <div>
+                                                                    <div class="flex flex-wrap gap-2">
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'resumo', 'res-${a.id}')" class="text-xs font-semibold bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300 px-3 py-1 rounded hover:bg-indigo-100 dark:hover:bg-indigo-900/50 border border-indigo-100 dark:border-indigo-900 transition">Resumo</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'explicacao', 'res-${a.id}')" class="text-xs font-semibold bg-white dark:bg-gray-700 text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 px-3 py-1 rounded hover:bg-gray-50 dark:hover:bg-gray-600 transition">Explicação</button>
+                                                                        <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'completo', 'res-${a.id}')" class="text-xs font-semibold bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 shadow-sm transition">Completa</button>
+                                                                    </div>
+                                                                    <div id="res-${a.id}" class="mt-2 text-gray-700 dark:text-gray-300 text-sm leading-relaxed prose max-w-none"></div>
+                                                                </div>
+                                                            `}
+                                                        </div>
+                                                    </div>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    `).join('')}
+                                </div>
+                            </div>
+                        `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+                window.scrollTo(0,0);
+            },
+
+            filterSubjectContents: function(term) {
+                const t = term.toLowerCase().trim();
+                const container = document.getElementById('materia-conteudos-container');
+                if (!container) return;
+
+                const frentes = container.querySelectorAll('.materia-frente');
+
+                frentes.forEach(frente => {
+                    let frenteVisible = false;
+                    const modulos = frente.querySelectorAll('.materia-modulo');
+
+                    modulos.forEach(mod => {
+                        let moduloVisible = false;
+                        const assuntos = mod.querySelectorAll('.materia-assunto');
+
+                        assuntos.forEach(assunto => {
+                            const text = assunto.textContent.toLowerCase();
+                            if (text.includes(t)) {
+                                assunto.classList.remove('hidden');
+                                moduloVisible = true;
+                                if (t.length > 0) {
+                                    const contentDiv = assunto.querySelector('div[id^="cont-"]');
+                                    if (contentDiv) contentDiv.classList.remove('hidden');
+                                }
+                            } else {
+                                assunto.classList.add('hidden');
+                            }
+                        });
+
+                        if (moduloVisible) {
+                            mod.classList.remove('hidden');
+                            frenteVisible = true;
+                        } else {
+                            mod.classList.add('hidden');
+                        }
+                    });
+
+                    if (frenteVisible) {
+                        frente.classList.remove('hidden');
+                    } else {
+                        frente.classList.add('hidden');
+                    }
+                });
+            },
+
+            // --- FUNCIONALIDADE DE BUSCA (AUTOCOMPLETE) ---
+            buildSearchIndex: function() {
+                this.searchIndex = [];
+                this.db.materias.forEach(m => {
+                    m.frentes.forEach(f => {
+                        f.modulos.forEach(mod => {
+                            mod.assuntos.forEach(a => {
+                                this.searchIndex.push({
+                                    label: a.nome,
+                                    type: 'Conteúdo',
+                                    context: m.nome,
+                                    data: { materiaId: m.id, conteudoId: a.id, subId: '' }
+                                });
+                                if (a.subconteudos) {
+                                    a.subconteudos.forEach(s => {
+                                        this.searchIndex.push({
+                                            label: s.nome,
+                                            type: 'Sub-conteúdo',
+                                            context: `${m.nome} > ${a.nome}`,
+                                            data: { materiaId: m.id, conteudoId: a.id, subId: s.nome } 
+                                        });
+                                    });
+                                }
+                            });
+                        });
+                    });
+                });
+            },
+
+            setupSearch: function() {
+                const searchInput = document.getElementById('search-topic');
+                const resultsContainer = document.getElementById('search-results');
+                const clearBtn = document.getElementById('clear-search');
+
+                if (!searchInput) return;
+
+                searchInput.addEventListener('input', (e) => {
+                    const term = e.target.value.toLowerCase().trim();
+                    
+                    if (term.length < 2) {
+                        resultsContainer.classList.add('hidden');
+                        clearBtn.classList.add('hidden');
+                        return;
+                    }
+
+                    clearBtn.classList.remove('hidden');
+
+                    const matches = this.searchIndex.filter(item => 
+                        item.label.toLowerCase().includes(term) || 
+                        item.context.toLowerCase().includes(term)
+                    ).slice(0, 10);
+
+                    if (matches.length > 0) {
+                        resultsContainer.innerHTML = matches.map(item => `
+                            <div class="p-3 hover:bg-indigo-50 dark:hover:bg-indigo-900/30 cursor-pointer border-b border-gray-50 dark:border-gray-700 transition-colors flex flex-col" 
+                                 onclick='window.app.selectSearchResult(${JSON.stringify(item.data)}, "${item.label}")'>
+                                <span class="font-medium text-gray-800 dark:text-gray-200">${item.label}</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400">${item.type} em ${item.context}</span>
+                            </div>
+                        `).join('');
+                        resultsContainer.classList.remove('hidden');
+                    } else {
+                        resultsContainer.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
+                        resultsContainer.classList.remove('hidden');
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
+                        resultsContainer.classList.add('hidden');
+                    }
+                });
+
+                clearBtn.onclick = () => {
+                    searchInput.value = '';
+                    resultsContainer.classList.add('hidden');
+                    clearBtn.classList.add('hidden');
+                };
+            },
+
+            selectSearchResult: function(data, label) {
+                const searchInput = document.getElementById('search-topic');
+                const resultsContainer = document.getElementById('search-results');
+                searchInput.value = label;
+                resultsContainer.classList.add('hidden');
+
+                const discSel = document.getElementById('filtro-disciplina');
+                const contSel = document.getElementById('filtro-conteudo');
+                const subSel = document.getElementById('filtro-subconteudo');
+
+                discSel.value = data.materiaId;
+                discSel.dispatchEvent(new Event('change'));
+
+                contSel.value = data.conteudoId;
+                contSel.dispatchEvent(new Event('change'));
+
+                if (data.subId) {
+                    subSel.value = data.subId;
+                } else {
+                    subSel.value = "";
+                }
+                
+                discSel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                
+                [discSel, contSel, subSel].forEach(el => {
+                    el.classList.add('ring-2', 'ring-green-400', 'transition-all');
+                    setTimeout(() => el.classList.remove('ring-2', 'ring-green-400'), 1500);
+                });
+            },
+            
+            // --- FUNÇÕES DE INTERAÇÃO ---
             toggleStrike: function(btn) {
                 const item = btn.closest('.option-item');
                 if (item.classList.contains('selected')) {
@@ -635,17 +1049,17 @@
 
             selectAlternativa: function(qIndex, altIndex) {
                 const btn = document.getElementById(`btn-responder-${qIndex}`);
-                if (btn && btn.disabled) return;
+                if (btn && btn.disabled && btn.classList.contains('bg-gray-400')) return;
                 const container = document.getElementById(`q-options-${qIndex}`);
                 container.querySelectorAll('.option-item').forEach(el => {
-                    el.classList.remove('selected', 'border-indigo-600', 'bg-indigo-50', 'dark:bg-indigo-900');
-                    el.querySelector('.option-radio').classList.remove('border-indigo-600');
+                    el.classList.remove('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+                    el.querySelector('.option-radio').classList.remove('border-indigo-600', 'dark:border-indigo-400');
                     el.querySelector('.option-radio div').classList.add('hidden');
                 });
                 const selected = container.querySelector(`.option-item[data-idx="${altIndex}"]`);
                 if(selected && !selected.classList.contains('strikethrough')) {
-                    selected.classList.add('selected', 'border-indigo-600', 'bg-indigo-50', 'dark:bg-indigo-900');
-                    selected.querySelector('.option-radio').classList.add('border-indigo-600');
+                    selected.classList.add('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+                    selected.querySelector('.option-radio').classList.add('border-indigo-600', 'dark:border-indigo-400');
                     selected.querySelector('.option-radio div').classList.remove('hidden');
                 }
             },
@@ -657,116 +1071,45 @@
                 
                 const isCorrect = selected.getAttribute('data-correct') === 'true';
                 const btn = document.getElementById(`btn-responder-${qIndex}`);
-                
+                const resDiv = document.getElementById(`resolucao-${qIndex}`);
+
                 btn.disabled = true;
-                btn.textContent = isCorrect ? "Correto" : "Incorreto";
+                btn.classList.add('bg-gray-400', 'cursor-not-allowed');
+                btn.textContent = isCorrect ? "Resposta Correta" : "Resposta Incorreta";
                 btn.className = `w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition text-white ${isCorrect ? 'bg-green-600' : 'bg-red-600'}`;
 
                 container.querySelectorAll('.option-item').forEach(el => {
                     const correctAttr = el.getAttribute('data-correct') === 'true';
                     if (correctAttr) {
-                        el.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20');
+                        el.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'dark:border-green-500');
                         el.querySelector('.feedback').classList.remove('hidden');
                         el.querySelector('.feedback').classList.add('text-green-700', 'dark:text-green-400');
                     } else if (el.classList.contains('selected') && !isCorrect) {
-                        el.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20');
+                        el.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'dark:border-red-500');
                         el.querySelector('.feedback').classList.remove('hidden');
                         el.querySelector('.feedback').classList.add('text-red-700', 'dark:text-red-400');
                     }
                 });
-                document.getElementById(`resolucao-${qIndex}`).classList.remove('hidden');
+                resDiv.classList.remove('hidden');
             },
 
-            handleRedacao: async function(tipo) {
-                const input = document.getElementById('redacao-theme');
-                const output = document.getElementById('redacao-output');
-                const texto = document.getElementById('redacao-paragraph').value;
-                
-                output.classList.remove('hidden');
-                output.innerHTML = this.getLoadingSpinner("Processando...");
-                
-                let prompt = "";
-                const tema = input.value;
-
-                if (tipo === 'tema') prompt = "Gere um tema de redação ENEM atual.";
-                else if (tipo === 'repertorio') { if(!tema) return alert("Escreva o tema."); prompt = `Repertório sociocultural para: ${tema}.`; }
-                else if (tipo === 'esboco') { if(!tema) return alert("Escreva o tema."); prompt = `Esboço estrutural para: ${tema}.`; }
-                else if (tipo === 'analise') { if(!texto) return alert("Cole o texto."); prompt = `Analise parágrafo ENEM: ${texto}.`; }
-
-                try {
-                    let res = await this.callAPI(prompt, false);
-                    res = res.replace(/```html/g, '').replace(/```/g, '');
-                    if (tipo === 'tema') { input.value = res.replace(/["\n]/g, ''); output.classList.add('hidden'); }
-                    else output.innerHTML = res;
-                } catch (e) { output.innerHTML = `Erro: ${e.message}`; }
-            },
-
-            setupNavigation: function() {
-                document.querySelectorAll('.nav-link').forEach(l => {
-                    l.onclick = (e) => { e.preventDefault(); this.navigateTo(l.getAttribute('data-target')); };
-                });
-            },
-            setupMobileMenu: function() {
-                const menu = document.getElementById('mobile-menu');
-                document.getElementById('mobile-menu-btn').onclick = () => menu.classList.toggle('hidden');
-            },
-            navigateTo: function(id) {
-                document.querySelectorAll('.content-section').forEach(el => { el.classList.remove('active'); el.style.display = 'none'; });
-                const t = document.getElementById(id);
-                if(t) { t.style.display = 'block'; setTimeout(() => t.classList.add('active'), 10); }
-                window.scrollTo(0,0);
-            },
-            
-            renderMateriasGrid: function() {
-                const grid = document.getElementById('materias-grid');
-                if(grid) grid.innerHTML = this.db.materias.map(m => `<div class="p-6 rounded-lg shadow-sm border cursor-pointer flex flex-col items-center hover:shadow-md transition ${m.cor} dark:border-gray-700" onclick="window.app.openMateria('${m.id}')"><i data-lucide="${m.icone}" class="h-10 w-10 mb-3"></i><h3 class="font-bold text-lg">${m.nome}</h3></div>`).join('');
-                lucide.createIcons();
-            },
-            
-            openMateria: function(id) {
-                const m = this.db.materias.find(x => x.id === id);
-                if(!m) return;
-                const detail = document.getElementById('materia-detalhe');
-                document.getElementById('materias-home').classList.add('hidden');
-                detail.classList.remove('hidden');
-                detail.innerHTML = `<div class="max-w-5xl mx-auto"><button onclick="document.getElementById('materia-detalhe').classList.add('hidden'); document.getElementById('materias-home').classList.remove('hidden');" class="mb-6 text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-2"><i data-lucide="arrow-left"></i> Voltar</button><h2 class="text-4xl font-bold mb-8 dark:text-white">${m.nome}</h2><div class="space-y-8">${m.frentes.map(f => `<div><h3 class="text-2xl font-bold border-b pb-2 mb-4 dark:text-gray-200 dark:border-gray-600">${f.nome}</h3><div class="grid gap-4">${f.modulos.map(mod => `<div class="bg-white dark:bg-gray-800 p-5 rounded-lg border dark:border-gray-700"><h4 class="font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-3">${mod.nome}</h4><div class="space-y-2">${mod.assuntos.map(a => `<div class="border-t pt-2 dark:border-gray-700"><div class="font-medium dark:text-gray-300">${a.nome}</div><div class="flex gap-2 mt-2"><button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'resumo', 'res-${a.id}')" class="text-xs bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-2 py-1 rounded">Resumo</button><button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'explicacao', 'res-${a.id}')" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-2 py-1 rounded">Aula</button><button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'completo', 'res-${a.id}')" class="text-xs bg-indigo-600 text-white px-2 py-1 rounded">Completa</button></div><div id="res-${a.id}" class="mt-2 text-sm dark:text-gray-400"></div></div>`).join('')}</div></div>`).join('')}</div></div>`).join('')}</div></div>`;
-                lucide.createIcons();
-            },
-
-            buildSearchIndex: function() {
-                this.searchIndex = [];
-                this.db.materias.forEach(m => m.frentes.forEach(f => f.modulos.forEach(mod => mod.assuntos.forEach(a => this.searchIndex.push({label: a.nome, type: 'Assunto', context: m.nome, data: {mId: m.id, cId: a.id}})))));
-            },
-            
-            setupSearch: function() {
-                const input = document.getElementById('search-topic');
-                const res = document.getElementById('search-results');
-                input.addEventListener('input', (e) => {
-                    const val = e.target.value.toLowerCase();
-                    if(val.length < 2) { res.classList.add('hidden'); return; }
-                    const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
-                    if(hits.length) {
-                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer" onclick="window.app.selectSearch('${i.data.mId}', '${i.data.cId}')">${i.label} <span class="text-xs text-gray-500">${i.context}</span></div>`).join('');
-                        res.classList.remove('hidden');
-                    }
-                });
-            },
-            
-            selectSearch: function(mId, cId) {
-                document.getElementById('search-results').classList.add('hidden');
-                const disc = document.getElementById('filtro-disciplina');
-                disc.value = mId;
-                disc.dispatchEvent(new Event('change'));
-                setTimeout(() => {
-                    const cont = document.getElementById('filtro-conteudo');
-                    cont.value = cId;
-                    cont.dispatchEvent(new Event('change'));
-                }, 100);
-            },
-            
-            filterSubjectContents: function(val) {} 
+            clearQuestions: function() {
+                if(confirm('Deseja apagar todas as questões geradas?')) {
+                    this.db.questoes = [];
+                    try { localStorage.removeItem(this.CACHE_PREFIX + 'questoes'); } catch(e){}
+                    
+                    const list = document.getElementById('questoes-list');
+                    list.innerHTML = `
+                        <div id="questoes-placeholder" class="text-center text-gray-500 dark:text-gray-400 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 transition-colors duration-300">
+                            <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3"></i>
+                            <p>Selecione uma disciplina para começar.</p>
+                        </div>
+                    `;
+                }
+            }
         };
 
+        // Inicialização Global
         window.app = app;
         window.onload = () => app.init();
     </script>
