@@ -1,47 +1,44 @@
 export default async function handler(req, res) {
-  // ADICIONADO: Cabeçalhos para desativar cache completamente e evitar status 304
-  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
-
   const apiKey = process.env.OPENAI_API_KEY;
-  const assistantId = process.env.OPENAI_ASSISTANT_ID;
+  
+  // Define os IDs disponíveis no sistema
+  const assistants = {
+    default: process.env.OPENAI_ASSISTANT_ID,       // Gerador de Questões
+    auditor: process.env.OPENAI_ASSISTANT_ID_AUDITOR // Auditor de Conteúdo
+  };
 
-  if (!apiKey || !assistantId) {
-    return res.status(500).json({ error: 'Configuração de API ou Assistant ID ausente no Vercel.' });
+  if (!apiKey) {
+    return res.status(500).json({ error: 'API Key não configurada.' });
   }
 
-  // MODO VERIFICAÇÃO (GET): O site pergunta "Já acabou?"
+  // Cabeçalhos Anti-Cache
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+
+  // --- MODO VERIFICAÇÃO (GET) ---
+  // Verifica se o agente (qualquer um) terminou
   if (req.method === 'GET') {
     const { threadId, runId } = req.query;
     if (!threadId || !runId) return res.status(400).json({ error: 'IDs faltando' });
 
     try {
-      // 1. Verifica o status do Run
       const runCheck = await fetch(`https://api.openai.com/v1/threads/${threadId}/runs/${runId}`, {
         headers: { "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" }
       });
       const runStatus = await runCheck.json();
 
-      // 2. Se completou, busca a resposta final
       if (runStatus.status === 'completed') {
         const msgResp = await fetch(`https://api.openai.com/v1/threads/${threadId}/messages`, {
           headers: { "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" }
         });
         const messages = await msgResp.json();
-        // Pega a última mensagem do assistente
         const lastMsg = messages.data.find(m => m.role === 'assistant');
-        const textResponse = lastMsg.content[0].text.value;
-        
-        return res.status(200).json({ status: 'completed', response: textResponse });
+        return res.status(200).json({ status: 'completed', response: lastMsg.content[0].text.value });
       } 
       
-      // 3. Se falhou
       if (['failed', 'cancelled', 'expired'].includes(runStatus.status)) {
         return res.status(200).json({ status: 'failed', error: runStatus.last_error });
       }
 
-      // 4. Se ainda está rodando
       return res.status(200).json({ status: 'in_progress' });
 
     } catch (error) {
@@ -49,10 +46,19 @@ export default async function handler(req, res) {
     }
   }
 
-  // MODO INÍCIO (POST): O site diz "Comece a gerar"
+  // --- MODO INÍCIO (POST) ---
+  // Inicia o agente específico
   if (req.method === 'POST') {
     try {
-      // 1. Cria a Thread com a mensagem do usuário
+      // Descobre qual agente usar (padrão é o gerador)
+      const agentType = req.body.agentType || 'default';
+      const selectedAssistantId = assistants[agentType];
+
+      if (!selectedAssistantId) {
+        return res.status(400).json({ error: `Agente '${agentType}' não configurado no servidor.` });
+      }
+
+      // 1. Cria Thread
       const threadResp = await fetch("https://api.openai.com/v1/threads", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
@@ -60,15 +66,14 @@ export default async function handler(req, res) {
       });
       const thread = await threadResp.json();
 
-      // 2. Inicia o Run (Acorda o Agente)
+      // 2. Inicia Run com o Assistente Escolhido
       const runResp = await fetch(`https://api.openai.com/v1/threads/${thread.id}/runs`, {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}`, "OpenAI-Beta": "assistants=v2" },
-        body: JSON.stringify({ assistant_id: assistantId })
+        body: JSON.stringify({ assistant_id: selectedAssistantId })
       });
       const run = await runResp.json();
 
-      // 3. Responde IMEDIATAMENTE com os IDs (Não espera o agente pensar)
       return res.status(200).json({ threadId: thread.id, runId: run.id });
 
     } catch (error) {
