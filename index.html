@@ -32,12 +32,17 @@
         .content-section { display: none; }
         .content-section.active { display: block; animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
         .option-item.selected { border-color: #4f46e5; background-color: #eef2ff; }
         .option-item.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; }
         .option-item.wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; }
         .option-item.strikethrough { opacity: 0.6; background-color: #f3f4f6; }
         .option-item.strikethrough .option-text { text-decoration: line-through; color: #9ca3af; }
         html.dark .option-item.strikethrough { background-color: #1f2937; }
+        html.dark .option-item.selected { border-color: #818cf8; background-color: rgba(79, 70, 229, 0.2); }
+        html.dark .option-item.correct { background-color: rgba(34, 197, 94, 0.2) !important; border-color: #22c55e !important; }
+        html.dark .option-item.wrong { background-color: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; }
+
         #search-results { max-height: 300px; overflow-y: auto; }
     </style>
 </head>
@@ -99,11 +104,6 @@
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-4 text-center text-gray-800 dark:text-white">Gerador de Questões</h2>
                 
-                <!-- Status do Banco (Feedback visual) -->
-                <div class="mb-4 flex justify-end">
-                    <span id="cloud-status" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded text-gray-600" title="Status da conexão com Firebase Storage">Inicializando...</span>
-                </div>
-
                 <!-- BARRA DE PESQUISA INTELIGENTE -->
                 <div class="mb-6 relative z-20">
                     <div class="relative">
@@ -117,74 +117,47 @@
                 <!-- FILTROS -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 mb-8 relative z-10 transition-colors duration-300">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Disciplina</label>
-                            <select id="filtro-disciplina" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white"></select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</label>
-                            <select id="filtro-conteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
-                                <option value="">Selecione a Disciplina</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sub-conteúdo</label>
-                            <select id="filtro-subconteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
-                                <option value="">Selecione o Conteúdo</option>
-                            </select>
-                        </div>
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dificuldade</label>
-                            <select id="filtro-dificuldade" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white font-medium">
+                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Disciplina</label><select id="filtro-disciplina" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"></select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</label><select id="filtro-conteudo" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" disabled></select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sub-conteúdo</label><select id="filtro-subconteudo" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" disabled></select></div>
+                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dificuldade</label>
+                            <select id="filtro-dificuldade" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600">
                                 <option value="medio" selected>Médio (Padrão ENEM)</option>
-                                <option value="facil">Fácil (Conceitual)</option>
-                                <option value="dificil">Difícil (Desafiador)</option>
+                                <option value="facil">Fácil</option>
+                                <option value="dificil">Difícil</option>
                             </select>
                         </div>
                     </div>
-                    
                     <div class="flex gap-3">
-                        <button id="btn-gerar-questoes" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2">
-                            <i data-lucide="plus-circle" class="w-5 h-5"></i> Gerar 5 Novas Questões
-                        </button>
-                        <button onclick="window.app?.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition border border-gray-200 dark:border-gray-600" title="Limpar lista">
-                            <i data-lucide="trash-2" class="w-5 h-5"></i>
-                        </button>
+                        <button id="btn-gerar-questoes" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">Gerar 5 Novas Questões</button>
+                        <button onclick="window.app?.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg transition" title="Limpar lista"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
                     </div>
                 </div>
-
                 <div id="questoes-list" class="space-y-6 pb-12">
-                    <div id="questoes-placeholder" class="text-center text-gray-500 dark:text-gray-400 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 transition-colors duration-300">
-                        <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3"></i>
-                        <p>Selecione uma disciplina ou aguarde o carregamento do banco de provas.</p>
-                    </div>
+                    <div id="questoes-placeholder" class="text-center text-gray-500 dark:text-gray-400 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"><i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3"></i><p>Selecione uma disciplina para começar.</p></div>
                 </div>
-                
-                <div id="loading-indicator" class="hidden text-center py-8">
-                    <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
-                    <p class="text-gray-500 dark:text-gray-400 animate-pulse" id="loading-text">Criando questões inéditas...</p>
-                </div>
+                <div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div><p class="text-gray-500 dark:text-gray-400 animate-pulse" id="loading-text">Criando questões inéditas...</p></div>
             </div>
         </section>
 
         <section id="redacao" class="content-section">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">Assistente de Redação</h2>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border dark:border-gray-700">
                     <div class="mb-6">
-                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Tema da Redação</label>
+                        <label class="block font-bold mb-2">Tema da Redação</label>
                         <div class="flex gap-2">
-                            <input type="text" id="redacao-theme" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white" placeholder="Ex: Desafios da educação digital no Brasil">
-                            <button onclick="window.app?.handleRedacao('tema')" class="bg-gray-100 dark:bg-gray-600 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500 transition"><i data-lucide="shuffle" class="text-gray-600 dark:text-gray-200"></i></button>
+                            <input type="text" id="redacao-theme" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Ex: Desafios da educação digital">
+                            <button onclick="window.app?.handleRedacao('tema')" class="bg-gray-100 dark:bg-gray-600 p-3 rounded-lg border dark:border-gray-500"><i data-lucide="shuffle"></i></button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                        <button onclick="window.app?.handleRedacao('repertorio')" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 font-medium transition flex items-center justify-center gap-2"><i data-lucide="library"></i> Gerar Repertório</button>
-                        <button onclick="window.app?.handleRedacao('esboco')" class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 font-medium transition flex items-center justify-center gap-2"><i data-lucide="list"></i> Criar Esboço</button>
+                        <button onclick="window.app?.handleRedacao('repertorio')" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">Gerar Repertório</button>
+                        <button onclick="window.app?.handleRedacao('esboco')" class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">Criar Esboço</button>
                     </div>
                     <div class="border-t dark:border-gray-700 pt-4">
-                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Analisar Parágrafo</label>
-                        <textarea id="redacao-paragraph" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 mb-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Cole o seu parágrafo aqui..."></textarea>
+                        <label class="block font-bold mb-2">Analisar Parágrafo</label>
+                        <textarea id="redacao-paragraph" rows="4" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Cole seu parágrafo..."></textarea>
                         <button onclick="window.app?.handleRedacao('analise')" class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 mt-2">Analisar e Melhorar</button>
                     </div>
                     <div id="redacao-output" class="mt-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg min-h-[100px] border hidden"></div>
@@ -195,16 +168,6 @@
     
     <script type="module">
         let API_KEY = localStorage.getItem('insflow_openai_key') || ""; 
-        
-        const FIREBASE_CONFIG = {
-            apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
-            authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
-            databaseURL: "https://genius---plataforma-de-estudos-default-rtdb.firebaseio.com",
-            projectId: "genius---plataforma-de-estudos",
-            storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
-            messagingSenderId: "410977832662",
-            appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
-        };
 
         const app = {
             CACHE_PREFIX: 'insflow-full-',
@@ -214,23 +177,246 @@
             cloudFilesList: [],
             firebaseUtils: null,
             
+            // BANCO DE DADOS COMPLETO
             db: {
                 materias: [
-                    {id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800', frentes: [{ nome: 'Matemática Básica', modulos: [{ nome: 'Fundamentos', assuntos: [{id: 'operacoes', nome: 'Operações Básicas'}, {id: 'fracoes', nome: 'Frações e Decimais'}, {id: 'porcentagem', nome: 'Porcentagem'}]}] }, { nome: 'Geometria', modulos: [{ nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'circulos', nome: 'Círculos'}] }, { nome: 'Espacial', assuntos: [{id: 'prismas', nome: 'Prismas'}, {id: 'cilindros', nome: 'Cilindros'}] }] }]},
-                    {id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800', frentes: [{ nome: 'Mecânica', modulos: [{ nome: 'Cinemática', assuntos: [{id: 'mru', nome: 'Movimento Uniforme'}]}] }]},
-                    {id: 'quimica', nome: 'Química', icone: 'flask-conical', cor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800', frentes: [{ nome: 'Geral', modulos: [{ nome: 'Atomística', assuntos: [{id: 'atomos', nome: 'Estrutura Atômica'}]}] }]},
-                    {id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800', frentes: [{ nome: 'Citologia', modulos: [{ nome: 'Células', assuntos: [{id: 'celula', nome: 'Estrutura Celular'}]}] }]},
-                    {id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800', frentes: [{ nome: 'Geral', modulos: [{ nome: 'Antiga', assuntos: [{id: 'roma', nome: 'Roma Antiga'}]}] }]},
-                    {id: 'geografia', nome: 'Geografia', icone: 'globe', cor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800', frentes: [{ nome: 'Física', modulos: [{ nome: 'Climatologia', assuntos: [{id: 'clima', nome: 'Climas do Brasil'}]}] }]},
-                    {id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800', frentes: [{ nome: 'Fundamentos e Antiga', modulos: [{nome: 'Introdução', assuntos:[{id:'oque-filosofia', nome:'O que é Filosofia'}]}, {nome: 'Pensamento Antigo', assuntos:[{id:'felicidade-antiga', nome:'Felicidade e Filosofia no pensamento antigo'}, {id:'eros', nome:'Eros e filosofia'}]}] }, { nome: 'Ética e Política Contemporânea', modulos: [{nome: 'Bioética e Tecnologia', assuntos:[{id:'bioetica', nome:'Filosofia e bioética'}, {id:'tec-sociedade', nome:'Tecnologia e sociedade'}]}, {nome: 'Política e Religião', assuntos:[{id:'religiao-estado', nome:'Religião e Estado'}]}] }, { nome: 'Metafísica', modulos: [{nome: 'História da Metafísica', assuntos:[{id:'metafisica', nome:'Metafísica'}, {id:'critica-metafisica', nome:'Crítica à metafísica'}, {id:'pos-critica', nome:'Metafísica após a crítica'}]}] }]},
-                    {id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800', frentes: [{ nome: 'Módulos', modulos: [ { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social', subconteudos: [{id: 'cultura-ideologia', nome: 'Cultura e Ideologia'}, {id: 'identidade-socializacao', nome: 'Identidade e Socialização'}, {id: 'estratificacao-desigualdade', nome: 'Estratificação e Desigualdade'}]}]}, { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais', subconteudos: [{id: 'sociologia-trabalho', nome: 'Sociologia do Trabalho'}, {id: 'estado-poder-politica', nome: 'Estado, Poder e Política'}, {id: 'movimentos-sociais', nome: 'Movimentos Sociais'}]}]}, { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea', subconteudos: [{id: 'comte', nome: 'Augusto Comte'}, {id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}]}]} ] }]},
-                    {id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800', frentes: [{ nome: 'Gramática', modulos: [{ nome: 'Morfologia', assuntos: [{id: 'classes', nome: 'Classes de Palavras'}]}] }]},
-                    {id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800', frentes: [{ nome: 'Escolas', modulos: [{ nome: 'Brasil', assuntos: [{id: 'modernismo', nome: 'Modernismo'}]}] }]},
-                    {id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800', frentes: [{ nome: 'Gramática', modulos: [{ nome: 'Verbos', assuntos: [{id: 'verbos', nome: 'Tempos Verbais'}]}] }]},
-                    {id: 'redacao', nome: 'Redação', icone: 'file-pen-line', cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800', frentes: [{ nome: 'Técnica', modulos: [{ nome: 'Estrutura', assuntos: [{id: 'enem-red', nome: 'Modelo ENEM'}]}] }]}
+                    // MATEMÁTICA
+                    {
+                        id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800',
+                        frentes: [
+                            { nome: 'Matemática Básica', modulos: [
+                                { nome: 'Fundamentos', assuntos: [{id: 'operacoes', nome: 'Operações Básicas'}, {id: 'fracoes', nome: 'Frações e Decimais'}, {id: 'porcentagem', nome: 'Porcentagem'}, {id: 'potenciacao', nome: 'Potenciação e Radiciação'}] },
+                                { nome: 'Proporcionalidade', assuntos: [{id: 'razao', nome: 'Razão e Proporção'}, {id: 'regra-tres', nome: 'Regra de Três'}, {id: 'escalas', nome: 'Escalas'}] }
+                            ]},
+                            { nome: 'Funções', modulos: [
+                                { nome: 'Tipos de Função', assuntos: [{id: 'funcao-afim', nome: 'Função Afim (1º Grau)'}, {id: 'funcao-quadratica', nome: 'Função Quadrática (2º Grau)'}, {id: 'exponencial', nome: 'Função Exponencial'}, {id: 'logaritmica', nome: 'Função Logarítmica'}] }
+                            ]},
+                            { nome: 'Geometria', modulos: [
+                                { nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'poligonos', nome: 'Polígonos'}, {id: 'circulos', nome: 'Círculos e Circunferência'}, {id: 'areas', nome: 'Áreas de Figuras Planas'}] },
+                                { nome: 'Espacial', assuntos: [{id: 'poliedros', nome: 'Poliedros (Euler, Platão)'}, {id: 'prismas', nome: 'Prismas e Pirâmides'}, {id: 'cilindros', nome: 'Cilindros e Cones'}, {id: 'esferas', nome: 'Esferas'}] },
+                                { nome: 'Analítica', assuntos: [{id: 'ponto-reta', nome: 'Ponto e Reta'}, {id: 'circunferencia-analitica', nome: 'Circunferência'}, {id: 'conicas', nome: 'Cônicas'}] }
+                            ]},
+                            { nome: 'Estatística e Probabilidade', modulos: [
+                                { nome: 'Análise de Dados', assuntos: [{id: 'analise-comb', nome: 'Análise Combinatória'}, {id: 'probabilidade', nome: 'Probabilidade'}, {id: 'estatistica', nome: 'Estatística Descritiva (Média, Moda, Mediana)'}] }
+                            ]}
+                        ]
+                    },
+                    // FÍSICA
+                    {
+                        id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
+                        frentes: [
+                            { nome: 'Mecânica', modulos: [
+                                { nome: 'Cinemática', assuntos: [{id: 'mru', nome: 'MRU e MRUV'}, {id: 'vetores', nome: 'Vetores'}, {id: 'lancamentos', nome: 'Lançamentos'}, {id: 'mcu', nome: 'Movimento Circular'}] },
+                                { nome: 'Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton'}, {id: 'trabalho-energia', nome: 'Trabalho e Energia'}, {id: 'impulso', nome: 'Impulso e Quantidade de Movimento'}, {id: 'gravitacao', nome: 'Gravitação Universal'}] },
+                                { nome: 'Estática e Hidro', assuntos: [{id: 'estatica', nome: 'Estática'}, {id: 'hidrostatica', nome: 'Hidrostática'}] }
+                            ]},
+                            { nome: 'Termologia', modulos: [
+                                { nome: 'Calor e Temperatura', assuntos: [{id: 'termometria', nome: 'Termometria'}, {id: 'dilatacao', nome: 'Dilatação Térmica'}, {id: 'calorimetria', nome: 'Calorimetria'}] },
+                                { nome: 'Termodinâmica', assuntos: [{id: 'gases', nome: 'Estudo dos Gases'}, {id: 'leis-termo', nome: 'Leis da Termodinâmica'}] }
+                            ]},
+                            { nome: 'Eletricidade', modulos: [
+                                { nome: 'Eletrostática', assuntos: [{id: 'carga', nome: 'Carga e Força Elétrica'}, {id: 'campo', nome: 'Campo e Potencial Elétrico'}] },
+                                { nome: 'Eletrodinâmica', assuntos: [{id: 'corrente', nome: 'Corrente e Resistência'}, {id: 'circuitos', nome: 'Circuitos Elétricos'}, {id: 'potencia', nome: 'Potência e Energia'}] },
+                                { nome: 'Eletromagnetismo', assuntos: [{id: 'campo-mag', nome: 'Campo Magnético'}, {id: 'inducao', nome: 'Indução Eletromagnética'}] }
+                            ]},
+                            { nome: 'Ondulatória e Óptica', modulos: [
+                                { nome: 'Ondas', assuntos: [{id: 'mov-ondulatorio', nome: 'Movimento Ondulatório'}, {id: 'acustica', nome: 'Acústica'}] },
+                                { nome: 'Óptica', assuntos: [{id: 'reflexao', nome: 'Reflexão e Espelhos'}, {id: 'refracao', nome: 'Refração e Lentes'}] }
+                            ]}
+                        ]
+                    },
+                    // QUÍMICA (Completa com os 2 Volumes)
+                    {
+                        id: 'quimica', nome: 'Química', icone: 'flask-conical', cor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
+                        frentes: [
+                             {
+                                nome: 'Frente A: Geral e Físico-Química',
+                                modulos: [
+                                    { nome: 'Soluções e Propriedades', assuntos: [
+                                        {id: 'dispersoes', nome: 'Dispersões (Coloides/Suspensões)'},
+                                        {id: 'solucoes', nome: 'Soluções (Solubilidade)'},
+                                        {id: 'concentracao', nome: 'Concentração (Comum, Molar, Título)'},
+                                        {id: 'diluicao', nome: 'Diluição e Mistura de Soluções'},
+                                        {id: 'propriedades-coligativas', nome: 'Propriedades Coligativas'}
+                                    ]},
+                                    { nome: 'Termoquímica e Cinética', assuntos: [
+                                        {id: 'termo-1', nome: 'Termoquímica I (Entalpia)'},
+                                        {id: 'termo-2', nome: 'Termoquímica II (Lei de Hess)'},
+                                        {id: 'termo-3', nome: 'Termoquímica III (Energia de Ligação)'},
+                                        {id: 'cinetica', nome: 'Cinética Química (Velocidade e Fatores)'},
+                                        {id: 'radioatividade', nome: 'Radioatividade'}
+                                    ]},
+                                    { nome: 'Equilíbrio Químico', assuntos: [
+                                        {id: 'equilibrio', nome: 'Equilíbrio Químico (Kc/Kp)'},
+                                        {id: 'deslocamento', nome: 'Deslocamento de Equilíbrio'},
+                                        {id: 'equilibrio-ionico', nome: 'Equilíbrio Iônico (pH/pOH)'},
+                                        {id: 'hidrolise', nome: 'Hidrólise Salina e Tampão'},
+                                        {id: 'kps', nome: 'Produto de Solubilidade (Kps)'}
+                                    ]},
+                                    { nome: 'Eletroquímica', assuntos: [
+                                        {id: 'pilhas', nome: 'Pilhas (Células Galvânicas)'},
+                                        {id: 'eletrolise', nome: 'Eletrólise (Ígnea/Aquosa)'},
+                                        {id: 'corrosao', nome: 'Corrosão e Proteção'},
+                                        {id: 'leis-faraday', nome: 'Leis de Faraday'}
+                                    ]}
+                                ]
+                            },
+                            {
+                                nome: 'Frente B: Química Orgânica',
+                                modulos: [
+                                    { nome: 'Introdução', assuntos: [
+                                        {id: 'intro-org', nome: 'Introdução à Orgânica (Cadeias/Hibridização)'},
+                                        {id: 'funcoes-ident', nome: 'Identificação de Funções'},
+                                        {id: 'hidrocarbonetos', nome: 'Hidrocarbonetos e Nomenclatura'},
+                                        {id: 'aromaticidade', nome: 'Ressonância e Aromaticidade'}
+                                    ]},
+                                    { nome: 'Funções Orgânicas', assuntos: [
+                                        {id: 'combustiveis', nome: 'Combustíveis (Petróleo/Bio)'},
+                                        {id: 'funcoes-ox-1', nome: 'Funções Oxigenadas I (Álcoois/Fenóis/Éteres)'},
+                                        {id: 'funcoes-ox-2', nome: 'Funções Oxigenadas II (Ácidos/Aldeídos/Cetonas)'},
+                                        {id: 'funcoes-ox-3', nome: 'Funções Oxigenadas III (Derivados)'},
+                                        {id: 'nitrogenadas', nome: 'Nitrogenadas e Haletos'}
+                                    ]},
+                                    { nome: 'Isomeria', assuntos: [
+                                        {id: 'isomeria-plana', nome: 'Isomeria Constitucional'},
+                                        {id: 'isomeria-geo', nome: 'Isomeria Geométrica'},
+                                        {id: 'isomeria-optica', nome: 'Isomeria Óptica'}
+                                    ]},
+                                    { nome: 'Reações Orgânicas', assuntos: [
+                                        {id: 'reacoes-adicao', nome: 'Reações de Adição'},
+                                        {id: 'reacoes-subst', nome: 'Reações de Substituição'},
+                                        {id: 'reacoes-aromaticos', nome: 'Substituição em Aromáticos'},
+                                        {id: 'reacoes-redox', nome: 'Oxirredução em Orgânica'},
+                                        {id: 'reacoes-elim', nome: 'Eliminação e Esterificação'},
+                                        {id: 'polimeros', nome: 'Polímeros'}
+                                    ]}
+                                ]
+                            }
+                        ]
+                    },
+                    // BIOLOGIA
+                    {
+                        id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+                        frentes: [
+                            { nome: 'Celular e Molecular', modulos: [
+                                { nome: 'Bioquímica', assuntos: [{id: 'agua-sais', nome: 'Água e Sais Minerais'}, {id: 'carb-lipid', nome: 'Carboidratos e Lipídios'}, {id: 'prot-enz', nome: 'Proteínas e Enzimas'}, {id: 'ac-nucl', nome: 'Ácidos Nucleicos'}] },
+                                { nome: 'Citologia', assuntos: [{id: 'membrana', nome: 'Membrana Plasmática'}, {id: 'citoplasma', nome: 'Citoplasma e Organelas'}, {id: 'div-cel', nome: 'Divisão Celular (Mitose/Meiose)'}, {id: 'metabolismo', nome: 'Metabolismo Energético'}] }
+                            ]},
+                            { nome: 'Genética e Evolução', modulos: [
+                                { nome: 'Genética', assuntos: [{id: 'mendel', nome: 'Leis de Mendel'}, {id: 'interacao-genica', nome: 'Interação Gênica'}, {id: 'biotec', nome: 'Biotecnologia'}] },
+                                { nome: 'Evolução', assuntos: [{id: 'teorias-evol', nome: 'Teorias Evolutivas'}, {id: 'especiacao', nome: 'Especiação'}] }
+                            ]},
+                            { nome: 'Seres Vivos e Fisiologia', modulos: [
+                                { nome: 'Reinos', assuntos: [{id: 'virus-bact', nome: 'Vírus e Bactérias'}, {id: 'prot-fungi', nome: 'Protistas e Fungos'}, {id: 'botanica', nome: 'Botânica (Reino Plantae)'}, {id: 'zoologia', nome: 'Zoologia (Reino Animalia)'}] },
+                                { nome: 'Fisiologia Humana', assuntos: [{id: 'dig-resp', nome: 'Sistemas Digestório e Respiratório'}, {id: 'circ-exc', nome: 'Sistemas Circulatório e Excretor'}, {id: 'nerv-endo', nome: 'Sistemas Nervoso e Endócrino'}, {id: 'imune', nome: 'Sistema Imune'}] }
+                            ]},
+                            { nome: 'Ecologia', modulos: [
+                                { nome: 'Fundamentos', assuntos: [{id: 'cadeias', nome: 'Cadeias e Teias Alimentares'}, {id: 'populacoes', nome: 'Dinâmica de Populações'}, {id: 'relacoes', nome: 'Relações Ecológicas'}] },
+                                { nome: 'Biomas e Impactos', assuntos: [{id: 'biomas', nome: 'Biomas e Ciclos Biogeoquímicos'}, {id: 'impactos', nome: 'Impactos Ambientais'}] }
+                            ] }
+                        ]
+                    },
+                    // HISTÓRIA
+                    {
+                        id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800',
+                        frentes: [
+                            { nome: 'História Geral', modulos: [
+                                { nome: 'Antiguidade', assuntos: [{id: 'antiga-oriental', nome: 'Antiguidade Oriental'}, {id: 'grecia', nome: 'Grécia Antiga'}, {id: 'roma', nome: 'Roma Antiga'}] },
+                                { nome: 'Média e Moderna', assuntos: [{id: 'id-media', nome: 'Idade Média'}, {id: 'renascimento', nome: 'Renascimento e Reformas'}, {id: 'absolutismo', nome: 'Absolutismo e Iluminismo'}] },
+                                { nome: 'Contemporânea', assuntos: [{id: 'rev-ind-fran', nome: 'Revoluções (Industrial e Francesa)'}, {id: 'séc-xix', nome: 'Século XIX (Imperialismo)'}, {id: 'guerras', nome: 'Grandes Guerras e Totalitarismo'}, {id: 'guerra-fria', nome: 'Guerra Fria e Mundo Atual'}] }
+                            ]},
+                            { nome: 'História do Brasil', modulos: [
+                                { nome: 'Colônia', assuntos: [{id: 'br-pre', nome: 'Brasil Pré-Colonial'}, {id: 'br-colonia-eco', nome: 'Economia e Sociedade Colonial'}, {id: 'br-crise', nome: 'Crise do Sistema Colonial'}] },
+                                { nome: 'Império', assuntos: [{id: 'br-indep', nome: 'Processo de Independência'}, {id: 'br-1-reinado', nome: 'Primeiro Reinado e Regência'}, {id: 'br-2-reinado', nome: 'Segundo Reinado'}] },
+                                { nome: 'República', assuntos: [{id: 'br-rep-velha', nome: 'República Velha'}, {id: 'br-vargas', nome: 'Era Vargas'}, {id: 'br-ditadura', nome: 'Regime Militar'}, {id: 'br-nova-rep', nome: 'Nova República'}] }
+                            ]}
+                        ]
+                    },
+                    // GEOGRAFIA (ATUALIZADA COM EXTRAS)
+                    {
+                        id: 'geografia', nome: 'Geografia', icone: 'globe', cor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
+                        frentes: [
+                            { nome: 'Geografia Geral e Econômica', modulos: [
+                                { nome: 'Espaço Rural e Agrário', assuntos: [{id: 'producao-rural', nome: 'A Produção dos Espaços Rurais'}, {id: 'agrario-desenv', nome: 'Espaço Agrário (Desenvolvidos vs Sub)'}, {id: 'reforma-agraria', nome: 'Questão da Reforma Agrária'}] },
+                                { nome: 'Dinâmicas Socioeconômicas', assuntos: [{id: 'desigualdades', nome: 'Desigualdades Mundiais'}, {id: 'globalizacao', nome: 'Contradições da Globalização'}, {id: 'populacao', nome: 'Estrutura Populacional e Migrações'}] },
+                                { nome: 'Redes e Fluxos', assuntos: [{id: 'transportes', nome: 'Redes de Transporte'}, {id: 'turismo', nome: 'Turismo'}, {id: 'comercio-financas', nome: 'Comércio e Sistema Financeiro Global'}] }
+                            ]},
+                            { nome: 'Geopolítica e Brasil', modulos: [
+                                { nome: 'Geopolítica', assuntos: [{id: 'ordem-mundial', nome: 'Ordem Mundial e ONU'}, {id: 'conflitos', nome: 'Conflitos Regionais e Terrorismo'}, {id: 'nacionalismos', nome: 'Nacionalismos e Tensões'}] },
+                                { nome: 'Geografia do Brasil', assuntos: [{id: 'br-fisica', nome: 'Brasil Físico (Clima, Relevo)'}, {id: 'br-regional', nome: 'Regionalização do Brasil'}, {id: 'br-economica', nome: 'Economia Brasileira'}] }
+                            ]},
+                            { nome: 'Conteúdos Extras', modulos: [
+                                { nome: 'Temas Contemporâneos', assuntos: [{id: 'meio-ambiente', nome: 'Questões Ambientais'}, {id: 'energia', nome: 'Fontes de Energia'}, {id: 'urbanizacao', nome: 'Urbanização e Cidades'}] }
+                            ]}
+                        ]
+                    },
+                    // FILOSOFIA E SOCIOLOGIA (ATUALIZADAS)
+                    {
+                        id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800',
+                        frentes: [
+                            { nome: 'Fundamentos e Antiga', modulos: [
+                                { nome: 'Introdução', assuntos: [{id: 'oque-filosofia', nome: 'O que é Filosofia'}] },
+                                { nome: 'Pensamento Antigo', assuntos: [{id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'classicos', nome: 'Socráticos (Sócrates, Platão, Aristóteles)'}, {id: 'felicidade', nome: 'Felicidade e Filosofia Antiga'}, {id: 'eros', nome: 'Eros e Filosofia'}] }
+                            ]},
+                            { nome: 'Temáticas e Contemporânea', modulos: [
+                                { nome: 'Ética e Política', assuntos: [{id: 'etica', nome: 'Ética'}, {id: 'politica', nome: 'Filosofia Política'}, {id: 'bioetica', nome: 'Filosofia e Bioética'}, {id: 'tec-sociedade', nome: 'Tecnologia e Sociedade'}, {id: 'religiao-estado', nome: 'Religião e Estado'}] },
+                                { nome: 'Metafísica', assuntos: [{id: 'metafisica', nome: 'Metafísica (História e Crítica)'}, {id: 'pos-critica', nome: 'Metafísica após a Crítica'}] }
+                            ]}
+                        ]
+                    },
+                    {
+                        id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800',
+                        frentes: [
+                            { nome: 'Teoria Sociológica', modulos: [
+                                { nome: 'Conceitos Básicos', assuntos: [{id: 'individuo-sociedade', nome: 'Indivíduo e Sociedade'}, {id: 'cultura', nome: 'Cultura e Ideologia'}, {id: 'estratificacao', nome: 'Estratificação Social'}] },
+                                { nome: 'Clássicos', assuntos: [{id: 'comte', nome: 'Augusto Comte (Positivismo)'}, {id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}] }
+                            ]},
+                            { nome: 'Temas Sociais', modulos: [
+                                { nome: 'Trabalho e Política', assuntos: [{id: 'trabalho', nome: 'Mundo do Trabalho'}, {id: 'poder-estado', nome: 'Poder, Estado e Política'}, {id: 'movimentos', nome: 'Movimentos Sociais'}] },
+                                { nome: 'Diversidade e Cidadania', assuntos: [{id: 'cidadania', nome: 'Direitos e Cidadania'}, {id: 'desigualdade-br', nome: 'Desigualdade no Brasil'}] }
+                            ]}
+                        ]
+                    },
+                    // LINGUAGENS
+                    {
+                        id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800',
+                        frentes: [
+                            { nome: 'Gramática', modulos: [{ nome: 'Estrutura', assuntos: [{id: 'morfologia', nome: 'Morfologia'}, {id: 'sintaxe', nome: 'Sintaxe'}, {id: 'semantica', nome: 'Semântica'}] }] },
+                            { nome: 'Interpretação', modulos: [{ nome: 'Texto', assuntos: [{id: 'interpretacao', nome: 'Interpretação de Texto'}, {id: 'generos', nome: 'Gêneros Textuais'}, {id: 'figuras', nome: 'Figuras de Linguagem'}] }] }
+                        ]
+                    },
+                    {
+                        id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800',
+                        frentes: [
+                            { nome: 'História da Literatura', modulos: [
+                                { nome: 'Era Colonial', assuntos: [{id: 'quinhentismo', nome: 'Quinhentismo'}, {id: 'barroco', nome: 'Barroco'}, {id: 'arcadismo', nome: 'Arcadismo'}] },
+                                { nome: 'Era Nacional', assuntos: [{id: 'romantismo', nome: 'Romantismo'}, {id: 'realismo', nome: 'Realismo/Naturalismo'}, {id: 'modernismo', nome: 'Modernismo e Contemporâneo'}] }
+                            ]}
+                        ]
+                    },
+                    {
+                        id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800',
+                        frentes: [
+                            { nome: 'Língua Inglesa', modulos: [
+                                { nome: 'Gramática', assuntos: [{id: 'verbos', nome: 'Tempos Verbais'}, {id: 'conectivos', nome: 'Conectivos e Pronomes'}] },
+                                { nome: 'Leitura', assuntos: [{id: 'compreensao', nome: 'Compreensão de Texto (Reading)'}, {id: 'vocabulario', nome: 'Vocabulário Essencial'}] }
+                            ]}
+                        ]
+                    },
+                    {
+                        id: 'redacao', nome: 'Redação', icone: 'file-pen-line', cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800',
+                        frentes: [
+                            { nome: 'Produção Textual', modulos: [
+                                { nome: 'Técnica', assuntos: [{id: 'estrutura', nome: 'Estrutura Dissertativo-Argumentativa'}, {id: 'competencias', nome: 'As 5 Competências do ENEM'}, {id: 'repertorio', nome: 'Uso de Repertório Sociocultural'}] }
+                            ]}
+                        ]
+                    }
                 ],
                 questoes: []
             },
+            
+            searchIndex: [],
+            currentAssuntos: [], 
 
             init: function() {
                 if (typeof lucide !== 'undefined') lucide.createIcons();
@@ -247,8 +433,10 @@
                     } catch(e) { console.error("Cache inválido", e); }
                 }
 
-                // Tenta iniciar Firebase de forma segura
-                this.initFirebase();
+                // Inicializar Firebase
+                if (typeof app.initFirebase === 'function') {
+                    app.initFirebase();
+                }
 
                 this.setupNavigation();
                 this.setupMobileMenu();
@@ -260,56 +448,44 @@
 
             // --- FIREBASE & CLOUD STORAGE ---
             initFirebase: async function() {
-                const statusEl = document.getElementById('cloud-status');
-                
+                // Configuração do Firebase - Substitua com seus dados
+                const firebaseConfig = {
+                    apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
+                    authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
+                    projectId: "genius---plataforma-de-estudos",
+                    storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
+                    messagingSenderId: "410977832662",
+                    appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
+                };
+
                 try {
-                    // Importação dinâmica dos módulos Firebase
                     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
                     const { getAuth, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
                     const { getStorage, ref, listAll, getBytes } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js");
 
-                    // Inicializar Firebase com nome único para evitar conflito em hot-reload
-                    // Usamos um timestamp para garantir que seja sempre uma nova instância
                     const appName = "InsFlow-" + new Date().getTime();
-                    const firebaseApp = initializeApp(FIREBASE_CONFIG, appName);
+                    const firebaseApp = initializeApp(firebaseConfig, appName);
                     const auth = getAuth(firebaseApp);
                     this.storage = getStorage(firebaseApp);
                     
-                    // Tenta autenticação anônima. Se falhar, captura o erro sem travar o app.
                     try {
                         await signInAnonymously(auth);
                     } catch (authError) {
                         console.warn("Autenticação anônima falhou. Modo offline ativado.", authError);
-                        if(statusEl) {
-                            statusEl.textContent = "Modo Offline";
-                            statusEl.classList.remove('bg-gray-200', 'text-gray-600');
-                            statusEl.classList.add('bg-yellow-200', 'text-yellow-800');
-                        }
-                        return; // Sai da função se não conseguir autenticar
+                        return; 
                     }
 
                     onAuthStateChanged(auth, (user) => {
                         if (user) {
                             console.log("Firebase conectado:", user.uid);
-                            if(statusEl) {
-                                statusEl.textContent = "Conectado";
-                                statusEl.classList.remove('bg-gray-200', 'text-gray-600', 'bg-yellow-200', 'text-yellow-800');
-                                statusEl.classList.add('bg-green-200', 'text-green-800');
-                            }
                             this.fetchCloudFilesList(ref, listAll);
                         }
                     });
                     
-                    // Guardar referências para uso posterior em outras funções
                     this.firebaseUtils = { ref, getBytes };
 
                 } catch (e) {
                     console.error("Erro crítico ao inicializar Firebase:", e);
-                    if(statusEl) {
-                        statusEl.textContent = "Erro Conexão";
-                        statusEl.classList.remove('bg-gray-200', 'text-gray-600');
-                        statusEl.classList.add('bg-red-200', 'text-red-800');
-                    }
                 }
             },
 
@@ -321,14 +497,13 @@
                     this.cloudFilesList = res.items.filter(item => item.name.includes('_CAD_'));
                     console.log(`${this.cloudFilesList.length} provas encontradas no Storage.`);
                 } catch (error) {
-                    console.error("Erro ao listar arquivos do Storage (verifique regras de segurança):", error);
+                    console.error("Erro ao listar arquivos do Storage:", error);
                 }
             },
 
             autoLoadProofContext: async function() {
                 if (this.activeCloudText) return true;
 
-                // Se não há arquivos ou utils, aborta silenciosamente (fallback para IA pura)
                 if (!this.cloudFilesList || this.cloudFilesList.length === 0 || !this.firebaseUtils) {
                     return false; 
                 }
@@ -343,11 +518,8 @@
 
                 try {
                     const { ref, getBytes } = this.firebaseUtils;
-
-                    // Baixa Prova
                     const proofBlob = await getBytes(randomFileRef);
                     
-                    // Tenta Gabarito
                     let gabaritoText = "";
                     const gabPath = randomFileRef.fullPath.replace("_CAD_", "_GAB_");
                     try {
@@ -365,7 +537,6 @@
                         }
                     } catch (e) { console.warn("Sem gabarito para esta prova."); }
 
-                    // Processa Prova
                     let proofText = "";
                     if (typeof pdfjsLib !== 'undefined') {
                         const pdf = await pdfjsLib.getDocument({ data: proofBlob }).promise;
@@ -384,9 +555,8 @@
                     return true;
                 } catch (e) {
                     console.error("Erro autoload:", e);
-                    // Em caso de erro, apenas segue sem o contexto
-                    btn.textContent = originalText;
-                    btn.disabled = false;
+                    btn.textContent = "Erro base";
+                    setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
                     return false;
                 }
             },
@@ -525,18 +695,16 @@
                 }
 
                 btn.disabled = true;
-                btn.innerHTML = "Gerando...";
+                btn.innerHTML = "Gerando 5 Questões...";
                 document.getElementById('loading-indicator').classList.remove('hidden');
                 document.getElementById('questoes-placeholder').classList.add('hidden');
 
-                // Tentar carregar contexto do Firebase se disponível
                 await this.autoLoadProofContext();
 
                 const isExatas = ['matematica','fisica','quimica'].includes(discSel.value);
                 let protocolo = isExatas ? "EXATAS: Resolva matematicamente antes. Alternativa correta = resultado exato." : "HUMANAS: Foco conceitual. Sem cálculos.";
                 let dif = difSel.value === 'facil' ? 'Fácil' : (difSel.value === 'dificil' ? 'Difícil' : 'Médio');
 
-                // Injeção do contexto no prompt se disponível
                 let contextPrompt = "";
                 if (this.activeCloudText) {
                     contextPrompt = `\nUSE O SEGUINTE CONTEXTO/TEXTO BASE (Extraído de PDF Oficial):\n"${this.activeCloudText.substring(0, 10000)}"\nBaseie o estilo das questões nisso, mas crie novas.`;
@@ -553,22 +721,30 @@
 
                 try {
                     let res = await this.callAPI(prompt, true);
-                    
-                    res = res.trim();
-                    const firstOpen = res.indexOf('{');
-                    const lastClose = res.lastIndexOf('}');
-                    
-                    if (firstOpen !== -1 && lastClose !== -1) {
-                        const jsonString = res.substring(firstOpen, lastClose + 1);
-                        const data = JSON.parse(jsonString);
-                        
-                        const startIdx = this.db.questoes.length;
-                        this.db.questoes = [...this.db.questoes, ...data.questoes];
-                        localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
-                        this.appendQuestoesToDOM(data.questoes, startIdx);
-                    } else {
-                        throw new Error("JSON incompleto ou inválido.");
+                    res = res.trim().replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '');
+                    let data;
+                    try {
+                        data = JSON.parse(res);
+                    } catch (e) {
+                        const lastClose = res.lastIndexOf('}');
+                        if (lastClose > -1) {
+                             let fixed = res.substring(0, lastClose + 1) + "]}";
+                             fixed = fixed.replace(/,\]\}/, "]}");
+                             try { data = JSON.parse(fixed); } 
+                             catch (e2) { 
+                                 const matches = res.match(/\{"enunciado":.+?"alternativas":\[.+?\]\}/gs);
+                                 if (matches) data = { questoes: matches.map(m => JSON.parse(m)) };
+                                 else throw e; 
+                             }
+                        } else throw e;
                     }
+
+                    if(!data || !data.questoes) throw new Error("Falha na estrutura.");
+
+                    const startIdx = this.db.questoes.length;
+                    this.db.questoes = [...this.db.questoes, ...data.questoes];
+                    localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                    this.appendQuestoesToDOM(data.questoes, startIdx);
                 } catch(e) {
                     alert("Erro na geração: " + e.message);
                 } finally {
@@ -584,7 +760,7 @@
                     const idx = startIndex + i;
                     return `
                     <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 animate-fade-in">
-                        <div class="flex gap-3 mb-4"><span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-2 py-1 rounded text-sm h-fit">Q${idx+1}</span><div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div></div>
+                        <div class="flex gap-3 mb-4"><span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-3 py-1 rounded-lg text-sm h-fit whitespace-nowrap">Q${idx+1}</span><div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div></div>
                         <div class="space-y-2 pl-0 md:pl-10" id="q-options-${idx}">
                             ${q.alternativas.map((alt, optIdx) => `
                                 <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 relative" onclick="window.app.selectAlternativa(${idx}, ${optIdx})" data-idx="${optIdx}" data-correct="${alt.correta}">
@@ -620,7 +796,7 @@
             },
 
             clearQuestions: function() {
-                if(confirm('Apagar?')) {
+                if(confirm('Deseja apagar todas as questões geradas?')) {
                     this.db.questoes = [];
                     localStorage.removeItem(this.CACHE_PREFIX + 'questoes');
                     document.getElementById('questoes-list').innerHTML = `<div id="questoes-placeholder" class="text-center text-gray-500 py-12"><i data-lucide="book-open" class="mx-auto h-12 w-12 mb-3"></i><p>Inicie a geração.</p></div><div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>`;
