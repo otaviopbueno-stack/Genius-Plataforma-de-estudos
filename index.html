@@ -6,110 +6,180 @@
     <title>InsFlow - Plataforma de Estudos</title>
     <script src="https://cdn.tailwindcss.com"></script>
     
+    <!-- Configuração do Dark Mode no Tailwind -->
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { primary: '#4338ca' } } }
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4338ca',
+                    }
+                }
+            }
         }
     </script>
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Ícones -->
     <script src="https://unpkg.com/lucide@latest"></script>
     
+    <!-- Matemática (KaTeX) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
 
-    <!-- PDF.js -->
+    <!-- PDF.js (Necessário para ler o conteúdo dos arquivos do Storage) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
+        :root { --primary-color: #4338ca; }
         body { font-family: 'Poppins', sans-serif; }
-        .nav-link.active { color: #4338ca; position: relative; }
-        .nav-link.active::after { content: ''; position: absolute; width: 100%; height: 2px; bottom: -4px; left: 0; background-color: #4338ca; }
+        .nav-link.active { color: var(--primary-color); position: relative; }
+        .nav-link.active::after { content: ''; position: absolute; width: 100%; height: 2px; bottom: -4px; left: 0; background-color: var(--primary-color); }
+        
+        /* Ajuste para Dark Mode no link ativo */
         html.dark .nav-link.active { color: #818cf8; }
         html.dark .nav-link.active::after { background-color: #818cf8; }
+
         .content-section { display: none; }
         .content-section.active { display: block; animation: fadeIn 0.3s ease-in; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         
+        /* Utilitários de Questões */
         .option-item.selected { border-color: #4f46e5; background-color: #eef2ff; }
         .option-item.correct { background-color: #dcfce7 !important; border-color: #22c55e !important; }
         .option-item.wrong { background-color: #fee2e2 !important; border-color: #ef4444 !important; }
-        .option-item.strikethrough { opacity: 0.6; background-color: #f3f4f6; }
-        .option-item.strikethrough .option-text { text-decoration: line-through; color: #9ca3af; }
-        html.dark .option-item.strikethrough { background-color: #1f2937; }
+        
+        /* Dark Mode para Questões */
         html.dark .option-item.selected { border-color: #818cf8; background-color: rgba(79, 70, 229, 0.2); }
         html.dark .option-item.correct { background-color: rgba(34, 197, 94, 0.2) !important; border-color: #22c55e !important; }
         html.dark .option-item.wrong { background-color: rgba(239, 68, 68, 0.2) !important; border-color: #ef4444 !important; }
 
-        #search-results { max-height: 300px; overflow-y: auto; }
+        /* Estilo Riscado (Strike-through) */
+        .option-item.strikethrough { opacity: 0.5; background-color: #f3f4f6; }
+        .option-item.strikethrough .option-text { text-decoration: line-through; color: #9ca3af; }
+        html.dark .option-item.strikethrough { background-color: #1f2937; }
+        html.dark .option-item.strikethrough .option-text { color: #6b7280; }
+
+        #search-results {
+            max-height: 300px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+        }
+        #search-results::-webkit-scrollbar { width: 6px; }
+        #search-results::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 3px; }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300">
 
     <!-- HEADER -->
-    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 border-b dark:border-gray-700">
+    <header class="bg-white dark:bg-gray-800 shadow-md sticky top-0 z-50 transition-colors duration-300 border-b dark:border-gray-700">
         <nav class="container mx-auto px-4 h-16 flex items-center justify-between">
-            <a href="#" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400" onclick="window.app?.navigateTo('inicio')">InsFlow</a>
+            <a href="#" class="text-2xl font-bold text-indigo-600 dark:text-indigo-400" onclick="window.app.navigateTo('inicio')">InsFlow</a>
             
+            <!-- Menu Desktop -->
             <div class="hidden md:flex items-center space-x-8">
-                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400" data-target="inicio">Início</a>
-                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400" data-target="materias">Matérias</a>
-                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400" data-target="questoes">Questões</a>
-                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400" data-target="redacao">Redação</a>
-                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300" onclick="window.app?.toggleTheme()">
+                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="inicio">Início</a>
+                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="materias">Matérias</a>
+                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="questoes">Questões</a>
+                <a href="#" class="nav-link hover:text-indigo-600 dark:hover:text-indigo-400 transition" data-target="redacao">Redação</a>
+                
+                <!-- Botão Dark Mode -->
+                <button id="theme-toggle" class="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700 transition text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()" title="Alternar Tema">
                     <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
                     <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
                 </button>
             </div>
+
+            <!-- Menu Mobile Toggle -->
             <div class="flex items-center md:hidden gap-4">
-                <button id="theme-toggle-mobile" class="text-gray-600 dark:text-gray-300" onclick="window.app?.toggleTheme()">
+                <button id="theme-toggle-mobile" class="text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()">
                     <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
                     <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
                 </button>
                 <button id="mobile-menu-btn" class="text-gray-600 dark:text-gray-300"><i data-lucide="menu"></i></button>
             </div>
         </nav>
+        
+        <!-- Menu Mobile Content -->
         <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 space-y-2 shadow-lg">
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app?.navigateTo('inicio')">Início</a>
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app?.navigateTo('materias')">Matérias</a>
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app?.navigateTo('questoes')">Questões</a>
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app?.navigateTo('redacao')">Redação</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-800 dark:text-gray-200" onclick="window.app.navigateTo('inicio')">Início</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app.navigateTo('materias')">Matérias</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-800 dark:text-gray-200" onclick="window.app.navigateTo('questoes')">Questões</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-800 dark:text-gray-200" onclick="window.app.navigateTo('redacao')">Redação</a>
         </div>
     </header>
 
     <!-- MAIN CONTENT -->
     <main class="container mx-auto px-4 py-8 md:py-12">
+        
+        <!-- 1. INÍCIO -->
         <section id="inicio" class="content-section active">
             <div class="text-center py-16 md:py-24 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-sm border border-indigo-100 dark:border-gray-700 transition-colors duration-300">
                 <h1 class="text-4xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
                 <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">Sua plataforma inteligente de estudos.</p>
-                <div class="flex justify-center gap-4">
-                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700 font-semibold transition" onclick="window.app?.navigateTo('materias')">Explorar Matérias</button>
-                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app?.navigateTo('questoes')">Praticar Questões</button>
+                <div class="flex flex-col sm:flex-row justify-center gap-4">
+                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
+                        Explorar Matérias
+                    </button>
+                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">
+                        Praticar Questões
+                    </button>
                 </div>
             </div>
         </section>
 
+        <!-- 2. MATÉRIAS -->
         <section id="materias" class="content-section">
             <div id="materias-home">
-                <h2 class="text-3xl font-bold mb-8 text-center text-gray-800 dark:text-white">Matérias</h2>
+                <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                    <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Matérias</h2>
+                    <!-- Botão de Auditoria -->
+                    <button onclick="window.app.runContentAudit()" class="bg-yellow-600 hover:bg-yellow-700 text-white text-xs font-bold py-3 px-6 rounded-lg shadow-sm flex items-center gap-2 transition transform hover:scale-105">
+                        <i data-lucide="file-search"></i> 
+                        <span>Auditar Conteúdo vs. ENEM (IA)</span>
+                    </button>
+                </div>
+
+                <!-- Painel de Auditoria -->
+                <div id="audit-panel" class="hidden mb-8 animate-fade-in">
+                    <div class="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 p-6 rounded-xl">
+                        <h3 class="text-lg font-bold text-yellow-800 dark:text-yellow-400 mb-2 flex items-center gap-2">
+                            <i data-lucide="clipboard-list"></i> Relatório de Auditoria de Conteúdo
+                        </h3>
+                        <div id="audit-loading" class="hidden text-center py-8">
+                            <div class="inline-block animate-spin w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full mb-2"></div>
+                            <p class="text-yellow-700 dark:text-yellow-300 text-sm animate-pulse">O Agente está lendo todas as provas (2020-2024) e comparando com o seu banco de dados...</p>
+                        </div>
+                        <div id="audit-content" class="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300 mb-4"></div>
+                        <button onclick="document.getElementById('audit-panel').classList.add('hidden')" class="text-yellow-700 dark:text-yellow-500 underline text-xs font-bold">Fechar Relatório</button>
+                    </div>
+                </div>
+
                 <div id="materias-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6"></div>
             </div>
             <div id="materia-detalhe" class="hidden"></div>
         </section>
 
+        <!-- 3. QUESTÕES -->
         <section id="questoes" class="content-section">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-4 text-center text-gray-800 dark:text-white">Gerador de Questões</h2>
                 
+                <div class="mb-4 flex justify-end">
+                    <span id="cloud-status" class="text-xs font-mono bg-gray-200 px-2 py-1 rounded text-gray-600" title="Status da conexão com Firebase Storage">Inicializando...</span>
+                </div>
+
                 <!-- BARRA DE PESQUISA INTELIGENTE -->
                 <div class="mb-6 relative z-20">
                     <div class="relative">
                         <input type="text" id="search-topic" autocomplete="off" class="w-full p-4 pl-12 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-400" placeholder="Pesquise um tópico do banco de dados (ex: Logaritmos)...">
                         <i data-lucide="search" class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-5 h-5"></i>
-                        <button id="clear-search" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden"><i data-lucide="x" class="w-5 h-5"></i></button>
+                        <button id="clear-search" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hidden">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
                     </div>
                     <div id="search-results" class="absolute w-full bg-white dark:bg-gray-800 mt-2 rounded-xl shadow-xl border border-gray-100 dark:border-gray-700 hidden overflow-hidden"></div>
                 </div>
@@ -117,50 +187,78 @@
                 <!-- FILTROS -->
                 <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 mb-8 relative z-10 transition-colors duration-300">
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Disciplina</label><select id="filtro-disciplina" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600"></select></div>
-                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</label><select id="filtro-conteudo" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" disabled></select></div>
-                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sub-conteúdo</label><select id="filtro-subconteudo" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" disabled></select></div>
-                        <div><label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dificuldade</label>
-                            <select id="filtro-dificuldade" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Disciplina</label>
+                            <select id="filtro-disciplina" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white"></select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</label>
+                            <select id="filtro-conteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
+                                <option value="">Selecione a Disciplina</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sub-conteúdo</label>
+                            <select id="filtro-subconteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
+                                <option value="">Selecione o Conteúdo</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dificuldade</label>
+                            <select id="filtro-dificuldade" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white font-medium">
                                 <option value="medio" selected>Médio (Padrão ENEM)</option>
-                                <option value="facil">Fácil</option>
-                                <option value="dificil">Difícil</option>
+                                <option value="facil">Fácil (Conceitual)</option>
+                                <option value="dificil">Difícil (Desafiador)</option>
                             </select>
                         </div>
                     </div>
+                    
                     <div class="flex gap-3">
-                        <button id="btn-gerar-questoes" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition">Gerar 5 Novas Questões</button>
-                        <button onclick="window.app?.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg transition" title="Limpar lista"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                        <button id="btn-gerar-questoes" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2">
+                            <i data-lucide="plus-circle" class="w-5 h-5"></i> Gerar 5 Novas Questões
+                        </button>
+                        <button onclick="window.app.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition border border-gray-200 dark:border-gray-600" title="Limpar lista">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
                     </div>
                 </div>
+
                 <div id="questoes-list" class="space-y-6 pb-12">
-                    <div id="questoes-placeholder" class="text-center text-gray-500 dark:text-gray-400 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600"><i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3"></i><p>Selecione uma disciplina para começar.</p></div>
+                    <div id="questoes-placeholder" class="text-center text-gray-500 dark:text-gray-400 py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 transition-colors duration-300">
+                        <i data-lucide="book-open" class="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 mb-3"></i>
+                        <p>Selecione uma disciplina para começar.</p>
+                    </div>
                 </div>
-                <div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div><p class="text-gray-500 dark:text-gray-400 animate-pulse" id="loading-text">Criando questões inéditas...</p></div>
+                
+                <div id="loading-indicator" class="hidden text-center py-8">
+                    <div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full mb-4"></div>
+                    <p class="text-gray-500 dark:text-gray-400 animate-pulse" id="loading-text">Criando questões inéditas...</p>
+                </div>
             </div>
         </section>
 
+        <!-- 4. REDAÇÃO -->
         <section id="redacao" class="content-section">
             <div class="max-w-4xl mx-auto">
                 <h2 class="text-3xl font-bold mb-6 text-center text-gray-800 dark:text-white">Assistente de Redação</h2>
-                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border dark:border-gray-700">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg border border-gray-100 dark:border-gray-700 transition-colors duration-300">
                     <div class="mb-6">
-                        <label class="block font-bold mb-2">Tema da Redação</label>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Tema da Redação</label>
                         <div class="flex gap-2">
-                            <input type="text" id="redacao-theme" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Ex: Desafios da educação digital">
-                            <button onclick="window.app?.handleRedacao('tema')" class="bg-gray-100 dark:bg-gray-600 p-3 rounded-lg border dark:border-gray-500"><i data-lucide="shuffle"></i></button>
+                            <input type="text" id="redacao-theme" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 bg-white dark:bg-gray-700 dark:text-white" placeholder="Ex: Desafios da educação digital no Brasil">
+                            <button onclick="window.app.handleRedacao('tema')" class="bg-gray-100 dark:bg-gray-600 p-3 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-500 border border-gray-300 dark:border-gray-500 transition"><i data-lucide="shuffle" class="text-gray-600 dark:text-gray-200"></i></button>
                         </div>
                     </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                        <button onclick="window.app?.handleRedacao('repertorio')" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">Gerar Repertório</button>
-                        <button onclick="window.app?.handleRedacao('esboco')" class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700">Criar Esboço</button>
+                        <button onclick="window.app.handleRedacao('repertorio')" class="bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 font-medium transition flex items-center justify-center gap-2"><i data-lucide="library"></i> Gerar Repertório</button>
+                        <button onclick="window.app.handleRedacao('esboco')" class="bg-green-600 text-white p-3 rounded-lg hover:bg-green-700 font-medium transition flex items-center justify-center gap-2"><i data-lucide="list"></i> Criar Esboço</button>
                     </div>
                     <div class="border-t dark:border-gray-700 pt-4">
-                        <label class="block font-bold mb-2">Analisar Parágrafo</label>
-                        <textarea id="redacao-paragraph" rows="4" class="w-full p-3 border rounded-lg bg-white dark:bg-gray-700 dark:border-gray-600" placeholder="Cole seu parágrafo..."></textarea>
-                        <button onclick="window.app?.handleRedacao('analise')" class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 mt-2">Analisar e Melhorar</button>
+                        <label class="block text-gray-700 dark:text-gray-300 font-bold mb-2">Analisar Parágrafo</label>
+                        <textarea id="redacao-paragraph" rows="4" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg outline-none focus:ring-2 focus:ring-indigo-500 mb-2 bg-white dark:bg-gray-700 dark:text-white" placeholder="Cole o seu parágrafo aqui..."></textarea>
+                        <button onclick="window.app.handleRedacao('analise')" class="w-full bg-purple-600 text-white p-3 rounded-lg hover:bg-purple-700 font-medium transition">Analisar e Melhorar</button>
                     </div>
-                    <div id="redacao-output" class="mt-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg min-h-[100px] border hidden"></div>
+                    <div id="redacao-output" class="mt-6 p-6 bg-gray-50 dark:bg-gray-700 rounded-lg min-h-[100px] text-gray-700 dark:text-gray-200 border border-gray-200 dark:border-gray-600 hidden"></div>
                 </div>
             </div>
         </section>
@@ -168,6 +266,16 @@
     
     <script type="module">
         let API_KEY = localStorage.getItem('insflow_openai_key') || ""; 
+        
+        const FIREBASE_CONFIG = {
+            apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
+            authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
+            databaseURL: "https://genius---plataforma-de-estudos-default-rtdb.firebaseio.com",
+            projectId: "genius---plataforma-de-estudos",
+            storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
+            messagingSenderId: "410977832662",
+            appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
+        };
 
         const app = {
             CACHE_PREFIX: 'insflow-full-',
@@ -177,238 +285,463 @@
             cloudFilesList: [],
             firebaseUtils: null,
             
-            // BANCO DE DADOS COMPLETO
+            // --- BASE DE DADOS COMPLETA ---
             db: {
                 materias: [
-                    // MATEMÁTICA
-                    {
-                        id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800',
-                        frentes: [
-                            { nome: 'Matemática Básica', modulos: [
-                                { nome: 'Fundamentos', assuntos: [{id: 'operacoes', nome: 'Operações Básicas'}, {id: 'fracoes', nome: 'Frações e Decimais'}, {id: 'porcentagem', nome: 'Porcentagem'}, {id: 'potenciacao', nome: 'Potenciação e Radiciação'}] },
-                                { nome: 'Proporcionalidade', assuntos: [{id: 'razao', nome: 'Razão e Proporção'}, {id: 'regra-tres', nome: 'Regra de Três'}, {id: 'escalas', nome: 'Escalas'}] }
-                            ]},
-                            { nome: 'Funções', modulos: [
-                                { nome: 'Tipos de Função', assuntos: [{id: 'funcao-afim', nome: 'Função Afim (1º Grau)'}, {id: 'funcao-quadratica', nome: 'Função Quadrática (2º Grau)'}, {id: 'exponencial', nome: 'Função Exponencial'}, {id: 'logaritmica', nome: 'Função Logarítmica'}] }
-                            ]},
-                            { nome: 'Geometria', modulos: [
-                                { nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'poligonos', nome: 'Polígonos'}, {id: 'circulos', nome: 'Círculos e Circunferência'}, {id: 'areas', nome: 'Áreas de Figuras Planas'}] },
-                                { nome: 'Espacial', assuntos: [{id: 'poliedros', nome: 'Poliedros (Euler, Platão)'}, {id: 'prismas', nome: 'Prismas e Pirâmides'}, {id: 'cilindros', nome: 'Cilindros e Cones'}, {id: 'esferas', nome: 'Esferas'}] },
-                                { nome: 'Analítica', assuntos: [{id: 'ponto-reta', nome: 'Ponto e Reta'}, {id: 'circunferencia-analitica', nome: 'Circunferência'}, {id: 'conicas', nome: 'Cônicas'}] }
-                            ]},
-                            { nome: 'Estatística e Probabilidade', modulos: [
-                                { nome: 'Análise de Dados', assuntos: [{id: 'analise-comb', nome: 'Análise Combinatória'}, {id: 'probabilidade', nome: 'Probabilidade'}, {id: 'estatistica', nome: 'Estatística Descritiva (Média, Moda, Mediana)'}] }
-                            ]}
-                        ]
-                    },
-                    // FÍSICA
-                    {
-                        id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800',
-                        frentes: [
-                            { nome: 'Mecânica', modulos: [
-                                { nome: 'Cinemática', assuntos: [{id: 'mru', nome: 'MRU e MRUV'}, {id: 'vetores', nome: 'Vetores'}, {id: 'lancamentos', nome: 'Lançamentos'}, {id: 'mcu', nome: 'Movimento Circular'}] },
-                                { nome: 'Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton'}, {id: 'trabalho-energia', nome: 'Trabalho e Energia'}, {id: 'impulso', nome: 'Impulso e Quantidade de Movimento'}, {id: 'gravitacao', nome: 'Gravitação Universal'}] },
-                                { nome: 'Estática e Hidro', assuntos: [{id: 'estatica', nome: 'Estática'}, {id: 'hidrostatica', nome: 'Hidrostática'}] }
-                            ]},
-                            { nome: 'Termologia', modulos: [
-                                { nome: 'Calor e Temperatura', assuntos: [{id: 'termometria', nome: 'Termometria'}, {id: 'dilatacao', nome: 'Dilatação Térmica'}, {id: 'calorimetria', nome: 'Calorimetria'}] },
-                                { nome: 'Termodinâmica', assuntos: [{id: 'gases', nome: 'Estudo dos Gases'}, {id: 'leis-termo', nome: 'Leis da Termodinâmica'}] }
-                            ]},
-                            { nome: 'Eletricidade', modulos: [
-                                { nome: 'Eletrostática', assuntos: [{id: 'carga', nome: 'Carga e Força Elétrica'}, {id: 'campo', nome: 'Campo e Potencial Elétrico'}] },
-                                { nome: 'Eletrodinâmica', assuntos: [{id: 'corrente', nome: 'Corrente e Resistência'}, {id: 'circuitos', nome: 'Circuitos Elétricos'}, {id: 'potencia', nome: 'Potência e Energia'}] },
-                                { nome: 'Eletromagnetismo', assuntos: [{id: 'campo-mag', nome: 'Campo Magnético'}, {id: 'inducao', nome: 'Indução Eletromagnética'}] }
-                            ]},
-                            { nome: 'Ondulatória e Óptica', modulos: [
-                                { nome: 'Ondas', assuntos: [{id: 'mov-ondulatorio', nome: 'Movimento Ondulatório'}, {id: 'acustica', nome: 'Acústica'}] },
-                                { nome: 'Óptica', assuntos: [{id: 'reflexao', nome: 'Reflexão e Espelhos'}, {id: 'refracao', nome: 'Refração e Lentes'}] }
-                            ]}
-                        ]
-                    },
-                    // QUÍMICA (Completa com os 2 Volumes)
+                    {id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800', frentes: [{ nome: 'Matemática Básica e Álgebra', modulos: [{ nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações Numéricas', subconteudos: [{id: 'basicas', nome: '4 Operações Básicas'}, {id: 'pot-rad', nome: 'Potenciação e Radiciação'}]}, {id: 'razoes-proporcoes', nome: 'Razões e Proporções', subconteudos: [{id: 'razao-prop', nome: 'Razão e Proporção'}, {id: 'escalas', nome: 'Escalas e Grandezas'}]}, {id: 'regra-de-tres', nome: 'Regra de Três', subconteudos: [{id: 'regra-tres-simples', nome: 'Simples'}, {id: 'regra-tres-composta', nome: 'Composta'}]}, {id: 'porcentagem', nome: 'Porcentagem', subconteudos: [{id: 'calc-porcentagem', nome: 'Cálculos Básicos'}, {id: 'acresc-descontos', nome: 'Acréscimos e Descontos'}]}]}, { nome: 'Módulo 2: Funções', assuntos: [{id: 'funcao-afim', nome: 'Função Afim'},{id: 'funcao-quadratica', nome: 'Função Quadrática', subconteudos: [{id: 'graf-parabola', nome: 'Gráfico (Parábola)'}, {id: 'vertice-max-min', nome: 'Vértice (Máximos e Mínimos)'}, {id: 'raizes-bhaskara', nome: 'Raízes (Bhaskara)'}]}, {id: 'funcao-modular', nome: 'Função Modular'},{id: 'funcao-composta-inversa', nome: 'Função Composta e Inversa'}]}, { nome: 'Módulo 3: Funções Transcendentais', assuntos: [{id: 'funcao-exponencial', nome: 'Função Exponencial', subconteudos: [{id: 'eq-exp', nome: 'Equações Exponenciais'}, {id: 'ineq-exp', nome: 'Inequações Exponenciais'}]}, {id: 'funcao-logaritmica', nome: 'Função Logarítmica', subconteudos: [{id: 'prop-log', nome: 'Propriedades dos Logaritmos'}, {id: 'eq-log', nome: 'Equações Logarítmicas'}]}]}, { nome: 'Módulo 4: Álgebra Avançada', assuntos: [{id: 'polinomios', nome: 'Polinômios'},{id: 'equacoes', nome: 'Equações Algébricas'},{id: 'sistemas-equacoes', nome: 'Sistemas Lineares'},{id: 'numeros-complexos', nome: 'Números Complexos'},{id: 'matrizes-determinantes', nome: 'Matrizes e Determinantes', subconteudos: [{id: 'op-matrizes', nome: 'Operações com Matrizes'}, {id: 'calc-determinantes', nome: 'Cálculo de Determinantes'}]}]} ] }, { nome: 'Geometria e Trigonometria', modulos: [{ nome: 'Módulo 1: Geometria Plana', assuntos: [{id: 'angulos-poligonos', nome: 'Ângulos e Polígonos'},{id: 'triangulos-quadrilateros', nome: 'Triângulos e Quadriláteros', subconteudos: [{id: 'semelhanca-tri', nome: 'Semelhança de Triângulos'}, {id: 'rel-met-tri-ret', nome: 'Relações Métricas no Triângulo Retângulo'}]}, {id: 'circulo-circunferencia', nome: 'Círculo e Circunferência'},{id: 'areas-figuras-planas', nome: 'Áreas de Figuras Planas'}]}, { nome: 'Módulo 2: Geometria Espacial', assuntos: [ {id: 'poliedros', nome: 'Poliedros', subconteudos: [{id: 'relacao-euler', nome: 'Relação de Euler'}, {id: 'poliedros-platao', nome: 'Poliedros de Platão'}, {id: 'elementos-poliedros', nome: 'Elementos (Faces, Vértices, Arestas)'}, {id: 'volume-poliedros', nome: 'Volume de Poliedros'}]}, {id: 'prismas-piramides', nome: 'Prismas e Pirâmides', subconteudos: [{id: 'areas-prismas-piramides', nome: 'Áreas de Prismas e Pirâmides'}, {id: 'volumes-prismas-piramides', nome: 'Volumes de Prismas e Pirâmides'}]}, {id: 'cilindros-cones', nome: 'Cilindros e Cones', subconteudos: [{id: 'areas-cilindros-cones', nome: 'Áreas de Cilindros e Cones'}, {id: 'volumes-cilindros-cones', nome: 'Volumes de Cilindros e Cones'}]}, {id: 'esferas', nome: 'Esferas', subconteudos: [{id: 'area-volume-esfera', nome: 'Área e Volume da Esfera'}]} ]}, { nome: 'Módulo 3: Geometria Analítica', assuntos: [{id: 'ponto-reta-circunferencia', nome: 'Ponto, Reta e Circunferência', subconteudos: [{id: 'estudo-ponto', nome: 'Estudo do Ponto'}, {id: 'estudo-reta', nome: 'Estudo da Reta'}, {id: 'estudo-circunferencia', nome: 'Estudo da Circunferência'}]}, {id: 'conicas', nome: 'Cônicas'}]}, { nome: 'Módulo 4: Trigonometria', assuntos: [{id: 'razoes-trigonometricas', nome: 'Razões Trigonométricas no Triângulo Retângulo'},{id: 'ciclo-funcoes-trig', nome: 'Ciclo e Funções Trigonométricas', subconteudos: [{id: 'ciclo-trig', nome: 'Ciclo Trigonométrico'}, {id: 'funcoes-sen-cos-tan', nome: 'Funções Trigonométricas'}]}, {id: 'leis-seno-cosseno', nome: 'Leis do Seno e do Cosseno'}]} ] }, { nome: 'Estatística e Lógica', modulos: [ { nome: 'Módulo 1: Análise de Dados', assuntos: [{id: 'analise-combinatoria', nome: 'Análise Combinatória', subconteudos: [{id: 'pfc', nome: 'Princípio Fundamental da Contagem'}, {id: 'arr-perm-comb', nome: 'Arranjo, Permutação e Combinação'}]}, {id: 'probabilidade', nome: 'Probabilidade'},{id: 'estatistica-descritiva', nome: 'Estatística Descritiva', subconteudos: [{id: 'medidas-tend-central', nome: 'Medidas de Tendência Central'}, {id: 'medidas-dispersao', nome: 'Medidas de Dispersão'}]}]}, { nome: 'Módulo 2: Matemática Financeira e Sequências', assuntos: [{id: 'juros', nome: 'Juros Simples e Compostos'},{id: 'pa-pg', nome: 'Progressões (PA e PG)'},{id: 'sequencias-numericas', nome: 'Sequências Numéricas'},{id: 'raciocinio-logico', nome: 'Raciocínio Lógico'}]} ] } ]},
+                    {id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800', frentes: [{ nome: 'Mecânica', modulos: [{ nome: 'Módulo 1: Cinemática', assuntos: [{id: 'cinematica', nome: 'Cinemática', subconteudos: [{id: 'mru', nome: 'MRU'}, {id: 'mruv', nome: 'MRUV'}, {id: 'mov-circular', nome: 'Movimento Circular'}]}]}, { nome: 'Módulo 2: Leis de Newton e Dinâmica', assuntos: [{id: 'leis-newton', nome: 'Leis de Newton', subconteudos: [{id: 'primeira-lei', nome: '1ª Lei (Inércia)'}, {id: 'segunda-lei', nome: '2ª Lei (Princípio Fundamental)'}, {id: 'terceira-lei', nome: '3ª Lei (Ação e Reação)'}, {id: 'forcas', nome: 'Forças Fundamentais'}]}]}, { nome: 'Módulo 3: Trabalho, Energia e Potência', assuntos: [{id: 'trabalho-energia-potencia', nome: 'Trabalho, Energia e Potência', subconteudos: [{id: 'trab-forca', nome: 'Trabalho de uma Força'}, {id: 'energia-cin-pot', nome: 'Energia Cinética e Potencial'}, {id: 'conservacao-energia', nome: 'Conservação de Energia'}]}]}, { nome: 'Módulo 4: Impulso e Quantidade de Movimento', assuntos: [{id: 'impulso-quantidade-movimento', nome: 'Impulso e Colisões'}]}, { nome: 'Módulo 5: Estática e Hidrostática', assuntos: [{id: 'estatica-hidrostatica', nome: 'Estática e Hidrostática', subconteudos: [{id: 'equilibrio-corpos', nome: 'Equilíbrio de Corpos'}, {id: 'empuxo-pascal', nome: 'Princípios de Pascal, Arquimedes e Stevin'}]}]}, { nome: 'Módulo 6: Gravitação Universal', assuntos: [{id: 'gravitacao-universal', nome: 'Gravitação Universal', subconteudos: [{id: 'leis-kepler', nome: 'Leis de Kepler'}, {id: 'lei-grav-newton', nome: 'Lei da Gravitação de Newton'}]}]} ] }, { nome: 'Termologia e Óptica', modulos: [ { nome: 'Módulo 1: Termometria e Calorimetria', assuntos: [{id: 'termometria-calorimetria', nome: 'Termometria e Calorimetria', subconteudos: [{id: 'escalas-term', nome: 'Escalas Termométricas'}, {id: 'calor-sens-lat', nome: 'Calor Sensível e Latente'}, {id: 'transm-calor', nome: 'Transmissão de Calor'}]}]}, { nome: 'Módulo 2: Termodinâmica e Gases', assuntos: [{id: 'termodinamica-gases', nome: 'Termodinâmica e Gases', subconteudos: [{id: 'gases-ideais', nome: 'Gases Ideais'}, {id: 'leis-termo', nome: 'Leis da Termodinâmica'}]}]}, { nome: 'Módulo 3: Óptica Geométrica', assuntos: [{id: 'optica-geometrica', nome: 'Óptica Geométrica', subconteudos: [{id: 'reflexao-espelhos', nome: 'Reflexão e Espelhos'}, {id: 'refracao-lentes', nome: 'Refração e Lentes'}]}]} ] }, { nome: 'Ondulatória e Eletromagnetismo', modulos: [ { nome: 'Módulo 1: Ondulatória', assuntos: [{id: 'ondulatoria', nome: 'Ondulatória', subconteudos: [{id: 'fen-ondul', nome: 'Fenômenos Ondulatórios'}, {id: 'acustica', nome: 'Acústica'}]}]}, { nome: 'Módulo 2: Eletrostática', assuntos: [{id: 'eletrostatica', nome: 'Eletrostática'}]}, { nome: 'Módulo 3: Eletrodinâmica', assuntos: [{id: 'eletrodinamica', nome: 'Eletrodinâmica', subconteudos: [{id: 'corrente-resist', nome: 'Corrente e Resistores'}, {id: 'circuitos', nome: 'Circuitos Elétricos'}, {id: 'pot-ele', nome: 'Potência Elétrica'}]}]}, { nome: 'Módulo 4: Magnetismo e Eletromagnetismo', assuntos: [{id: 'magnetismo-eletromagnetismo', nome: 'Magnetismo e Eletromagnetismo', subconteudos: [{id: 'campo-magnetico', nome: 'Campo Magnético'}, {id: 'forca-magnetica', nome: 'Força Magnética'}, {id: 'inducao-eletromagnetica', nome: 'Indução Eletromagnética'}]}]}, { nome: 'Módulo 5: Física Moderna', assuntos: [{id: 'fisica-moderna', nome: 'Física Moderna'}]} ] } ]},
                     {
                         id: 'quimica', nome: 'Química', icone: 'flask-conical', cor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
                         frentes: [
                              {
                                 nome: 'Frente A: Geral e Físico-Química',
                                 modulos: [
-                                    { nome: 'Soluções e Propriedades', assuntos: [
-                                        {id: 'dispersoes', nome: 'Dispersões (Coloides/Suspensões)'},
-                                        {id: 'solucoes', nome: 'Soluções (Solubilidade)'},
-                                        {id: 'concentracao', nome: 'Concentração (Comum, Molar, Título)'},
-                                        {id: 'diluicao', nome: 'Diluição e Mistura de Soluções'},
-                                        {id: 'propriedades-coligativas', nome: 'Propriedades Coligativas'}
-                                    ]},
-                                    { nome: 'Termoquímica e Cinética', assuntos: [
-                                        {id: 'termo-1', nome: 'Termoquímica I (Entalpia)'},
-                                        {id: 'termo-2', nome: 'Termoquímica II (Lei de Hess)'},
-                                        {id: 'termo-3', nome: 'Termoquímica III (Energia de Ligação)'},
-                                        {id: 'cinetica', nome: 'Cinética Química (Velocidade e Fatores)'},
-                                        {id: 'radioatividade', nome: 'Radioatividade'}
-                                    ]},
-                                    { nome: 'Equilíbrio Químico', assuntos: [
-                                        {id: 'equilibrio', nome: 'Equilíbrio Químico (Kc/Kp)'},
-                                        {id: 'deslocamento', nome: 'Deslocamento de Equilíbrio'},
-                                        {id: 'equilibrio-ionico', nome: 'Equilíbrio Iônico (pH/pOH)'},
-                                        {id: 'hidrolise', nome: 'Hidrólise Salina e Tampão'},
-                                        {id: 'kps', nome: 'Produto de Solubilidade (Kps)'}
-                                    ]},
-                                    { nome: 'Eletroquímica', assuntos: [
-                                        {id: 'pilhas', nome: 'Pilhas (Células Galvânicas)'},
-                                        {id: 'eletrolise', nome: 'Eletrólise (Ígnea/Aquosa)'},
-                                        {id: 'corrosao', nome: 'Corrosão e Proteção'},
-                                        {id: 'leis-faraday', nome: 'Leis de Faraday'}
-                                    ]}
+                                    { 
+                                        nome: 'Módulo 1: Soluções e Propriedades', 
+                                        assuntos: [
+                                            {id: 'dispersoes', nome: 'Dispersões', subconteudos: [{id: 'coloides', nome: 'Coloides'}, {id: 'suspensoes', nome: 'Suspensões'}]},
+                                            {id: 'solucoes', nome: 'Soluções', subconteudos: [{id: 'coeficiente', nome: 'Coeficiente de Solubilidade'}, {id: 'classificacao', nome: 'Saturada, Insaturada e Supersaturada'}]},
+                                            {id: 'concentracao', nome: 'Concentração das Soluções', subconteudos: [{id: 'comum', nome: 'Concentração Comum'}, {id: 'molaridade', nome: 'Molaridade'}, {id: 'titulo', nome: 'Título e ppm'}]},
+                                            {id: 'diluicao', nome: 'Diluição das Soluções', subconteudos: [{id: 'diluicao-calc', nome: 'Cálculo de Diluição'}]},
+                                            {id: 'mistura-sem-reacao', nome: 'Mistura sem Reação', subconteudos: [{id: 'mesmo-soluto', nome: 'Mesmo Soluto'}, {id: 'solutos-diferentes', nome: 'Solutos Diferentes (Sem reação)'}]},
+                                            {id: 'mistura-com-reacao', nome: 'Mistura com Reação', subconteudos: [{id: 'titulacao', nome: 'Titulação'}]},
+                                            {id: 'propriedades-coligativas', nome: 'Propriedades Coligativas', subconteudos: [{id: 'tonoscopia', nome: 'Tonoscopia'}, {id: 'ebulioscopia', nome: 'Ebulioscopia'}, {id: 'crioscopia', nome: 'Crioscopia'}, {id: 'osmoscopia', nome: 'Osmoscopia'}]}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 2: Termoquímica e Cinética', 
+                                        assuntos: [
+                                            {id: 'termo-1', nome: 'Termoquímica I (Entalpia)'},
+                                            {id: 'termo-2', nome: 'Termoquímica II (Lei de Hess)'},
+                                            {id: 'termo-3', nome: 'Termoquímica III (Energia de Ligação)'},
+                                            {id: 'cinetica-1', nome: 'Cinética I (Velocidade Média)'},
+                                            {id: 'cinetica-2', nome: 'Cinética II (Fatores da Velocidade)'},
+                                            {id: 'cinetica-3', nome: 'Cinética III (Lei da Velocidade)'},
+                                            {id: 'radioatividade', nome: 'Radioatividade'}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 3: Equilíbrio Químico', 
+                                        assuntos: [
+                                            {id: 'equilibrio', nome: 'Equilíbrio Químico (Kc/Kp)'},
+                                            {id: 'deslocamento', nome: 'Deslocamento de Equilíbrio'},
+                                            {id: 'equilibrio-ionico', nome: 'Equilíbrio Iônico (pH e pOH)'},
+                                            {id: 'hidrolise', nome: 'Hidrólise Salina e Tampão'},
+                                            {id: 'kps', nome: 'Produto de Solubilidade (Kps)'}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 4: Eletroquímica', 
+                                        assuntos: [
+                                            {id: 'eletro-1', nome: 'Potencial Padrão de Redução'},
+                                            {id: 'eletro-2', nome: 'Corrosão e Proteção'},
+                                            {id: 'eletro-3', nome: 'Pilhas (Células Galvânicas)'},
+                                            {id: 'eletro-4', nome: 'Eletrólise'},
+                                            {id: 'eletro-5', nome: 'Aspectos Quantitativos (Faraday)'}
+                                        ]
+                                    }
                                 ]
                             },
                             {
                                 nome: 'Frente B: Química Orgânica',
                                 modulos: [
-                                    { nome: 'Introdução', assuntos: [
-                                        {id: 'intro-org', nome: 'Introdução à Orgânica (Cadeias/Hibridização)'},
-                                        {id: 'funcoes-ident', nome: 'Identificação de Funções'},
-                                        {id: 'hidrocarbonetos', nome: 'Hidrocarbonetos e Nomenclatura'},
-                                        {id: 'aromaticidade', nome: 'Ressonância e Aromaticidade'}
-                                    ]},
-                                    { nome: 'Funções Orgânicas', assuntos: [
-                                        {id: 'combustiveis', nome: 'Combustíveis (Petróleo/Bio)'},
-                                        {id: 'funcoes-ox-1', nome: 'Funções Oxigenadas I (Álcoois/Fenóis/Éteres)'},
-                                        {id: 'funcoes-ox-2', nome: 'Funções Oxigenadas II (Ácidos/Aldeídos/Cetonas)'},
-                                        {id: 'funcoes-ox-3', nome: 'Funções Oxigenadas III (Derivados)'},
-                                        {id: 'nitrogenadas', nome: 'Nitrogenadas e Haletos'}
-                                    ]},
-                                    { nome: 'Isomeria', assuntos: [
-                                        {id: 'isomeria-plana', nome: 'Isomeria Constitucional'},
-                                        {id: 'isomeria-geo', nome: 'Isomeria Geométrica'},
-                                        {id: 'isomeria-optica', nome: 'Isomeria Óptica'}
-                                    ]},
-                                    { nome: 'Reações Orgânicas', assuntos: [
-                                        {id: 'reacoes-adicao', nome: 'Reações de Adição'},
-                                        {id: 'reacoes-subst', nome: 'Reações de Substituição'},
-                                        {id: 'reacoes-aromaticos', nome: 'Substituição em Aromáticos'},
-                                        {id: 'reacoes-redox', nome: 'Oxirredução em Orgânica'},
-                                        {id: 'reacoes-elim', nome: 'Eliminação e Esterificação'},
-                                        {id: 'polimeros', nome: 'Polímeros'}
-                                    ]}
+                                    { 
+                                        nome: 'Módulo 1: Introdução', 
+                                        assuntos: [
+                                            {id: 'intro-org', nome: 'Introdução à Orgânica'},
+                                            {id: 'cadeias', nome: 'Estudo das Cadeias Carbônicas'},
+                                            {id: 'hibridizacao', nome: 'Hibridização do Carbono'},
+                                            {id: 'funcoes-ident', nome: 'Identificação de Funções'},
+                                            {id: 'nomenclatura', nome: 'Regras de Nomenclatura'},
+                                            {id: 'hidrocarbonetos', nome: 'Hidrocarbonetos'},
+                                            {id: 'ressonancia', nome: 'Ressonância e Aromaticidade'}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 2: Funções e Combustíveis', 
+                                        assuntos: [
+                                            {id: 'combustiveis-1', nome: 'Petróleo e Fósseis'},
+                                            {id: 'combustiveis-2', nome: 'Biocombustíveis'},
+                                            {id: 'impactos', nome: 'Impactos Ambientais'},
+                                            {id: 'funcoes-ox-1', nome: 'Funções Oxigenadas I (Álcoois/Fenóis/Éteres)'},
+                                            {id: 'funcoes-ox-2', nome: 'Funções Oxigenadas II (Ácidos/Aldeídos/Cetonas)'},
+                                            {id: 'funcoes-ox-3', nome: 'Funções Oxigenadas III (Derivados de Ácidos)'},
+                                            {id: 'nitrogenadas', nome: 'Nitrogenadas e Haletos'}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 3: Isomeria', 
+                                        assuntos: [
+                                            {id: 'isomeria-plana', nome: 'Isomeria Constitucional (Plana)'},
+                                            {id: 'isomeria-geo', nome: 'Isomeria Geométrica'},
+                                            {id: 'isomeria-optica', nome: 'Isomeria Óptica'}
+                                        ]
+                                    },
+                                    { 
+                                        nome: 'Módulo 4: Reações', 
+                                        assuntos: [
+                                            {id: 'reacoes-intro', nome: 'Introdução às Reações'},
+                                            {id: 'reacoes-adicao', nome: 'Reações de Adição'},
+                                            {id: 'reacoes-subst', nome: 'Reações de Substituição'},
+                                            {id: 'reacoes-aromaticos', nome: 'Substituição em Aromáticos'},
+                                            {id: 'reacoes-redox', nome: 'Oxirredução em Orgânica'},
+                                            {id: 'reacoes-elim', nome: 'Eliminação e Esterificação'},
+                                            {id: 'polimeros', nome: 'Polímeros'}
+                                        ]
+                                    }
                                 ]
                             }
                         ]
                     },
-                    // BIOLOGIA
-                    {
-                        id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800',
+                    { 
+                        id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800', 
                         frentes: [
-                            { nome: 'Celular e Molecular', modulos: [
-                                { nome: 'Bioquímica', assuntos: [{id: 'agua-sais', nome: 'Água e Sais Minerais'}, {id: 'carb-lipid', nome: 'Carboidratos e Lipídios'}, {id: 'prot-enz', nome: 'Proteínas e Enzimas'}, {id: 'ac-nucl', nome: 'Ácidos Nucleicos'}] },
-                                { nome: 'Citologia', assuntos: [{id: 'membrana', nome: 'Membrana Plasmática'}, {id: 'citoplasma', nome: 'Citoplasma e Organelas'}, {id: 'div-cel', nome: 'Divisão Celular (Mitose/Meiose)'}, {id: 'metabolismo', nome: 'Metabolismo Energético'}] }
-                            ]},
-                            { nome: 'Genética e Evolução', modulos: [
-                                { nome: 'Genética', assuntos: [{id: 'mendel', nome: 'Leis de Mendel'}, {id: 'interacao-genica', nome: 'Interação Gênica'}, {id: 'biotec', nome: 'Biotecnologia'}] },
-                                { nome: 'Evolução', assuntos: [{id: 'teorias-evol', nome: 'Teorias Evolutivas'}, {id: 'especiacao', nome: 'Especiação'}] }
-                            ]},
-                            { nome: 'Seres Vivos e Fisiologia', modulos: [
-                                { nome: 'Reinos', assuntos: [{id: 'virus-bact', nome: 'Vírus e Bactérias'}, {id: 'prot-fungi', nome: 'Protistas e Fungos'}, {id: 'botanica', nome: 'Botânica (Reino Plantae)'}, {id: 'zoologia', nome: 'Zoologia (Reino Animalia)'}] },
-                                { nome: 'Fisiologia Humana', assuntos: [{id: 'dig-resp', nome: 'Sistemas Digestório e Respiratório'}, {id: 'circ-exc', nome: 'Sistemas Circulatório e Excretor'}, {id: 'nerv-endo', nome: 'Sistemas Nervoso e Endócrino'}, {id: 'imune', nome: 'Sistema Imune'}] }
-                            ]},
-                            { nome: 'Ecologia', modulos: [
-                                { nome: 'Fundamentos', assuntos: [{id: 'cadeias', nome: 'Cadeias e Teias Alimentares'}, {id: 'populacoes', nome: 'Dinâmica de Populações'}, {id: 'relacoes', nome: 'Relações Ecológicas'}] },
-                                { nome: 'Biomas e Impactos', assuntos: [{id: 'biomas', nome: 'Biomas e Ciclos Biogeoquímicos'}, {id: 'impactos', nome: 'Impactos Ambientais'}] }
-                            ] }
-                        ]
-                    },
-                    // HISTÓRIA
-                    {
-                        id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800',
-                        frentes: [
-                            { nome: 'História Geral', modulos: [
-                                { nome: 'Antiguidade', assuntos: [{id: 'antiga-oriental', nome: 'Antiguidade Oriental'}, {id: 'grecia', nome: 'Grécia Antiga'}, {id: 'roma', nome: 'Roma Antiga'}] },
-                                { nome: 'Média e Moderna', assuntos: [{id: 'id-media', nome: 'Idade Média'}, {id: 'renascimento', nome: 'Renascimento e Reformas'}, {id: 'absolutismo', nome: 'Absolutismo e Iluminismo'}] },
-                                { nome: 'Contemporânea', assuntos: [{id: 'rev-ind-fran', nome: 'Revoluções (Industrial e Francesa)'}, {id: 'séc-xix', nome: 'Século XIX (Imperialismo)'}, {id: 'guerras', nome: 'Grandes Guerras e Totalitarismo'}, {id: 'guerra-fria', nome: 'Guerra Fria e Mundo Atual'}] }
-                            ]},
-                            { nome: 'História do Brasil', modulos: [
-                                { nome: 'Colônia', assuntos: [{id: 'br-pre', nome: 'Brasil Pré-Colonial'}, {id: 'br-colonia-eco', nome: 'Economia e Sociedade Colonial'}, {id: 'br-crise', nome: 'Crise do Sistema Colonial'}] },
-                                { nome: 'Império', assuntos: [{id: 'br-indep', nome: 'Processo de Independência'}, {id: 'br-1-reinado', nome: 'Primeiro Reinado e Regência'}, {id: 'br-2-reinado', nome: 'Segundo Reinado'}] },
-                                { nome: 'República', assuntos: [{id: 'br-rep-velha', nome: 'República Velha'}, {id: 'br-vargas', nome: 'Era Vargas'}, {id: 'br-ditadura', nome: 'Regime Militar'}, {id: 'br-nova-rep', nome: 'Nova República'}] }
-                            ]}
-                        ]
-                    },
-                    // GEOGRAFIA (ATUALIZADA COM EXTRAS)
-                    {
-                        id: 'geografia', nome: 'Geografia', icone: 'globe', cor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800',
-                        frentes: [
-                            { nome: 'Geografia Geral e Econômica', modulos: [
-                                { nome: 'Espaço Rural e Agrário', assuntos: [{id: 'producao-rural', nome: 'A Produção dos Espaços Rurais'}, {id: 'agrario-desenv', nome: 'Espaço Agrário (Desenvolvidos vs Sub)'}, {id: 'reforma-agraria', nome: 'Questão da Reforma Agrária'}] },
-                                { nome: 'Dinâmicas Socioeconômicas', assuntos: [{id: 'desigualdades', nome: 'Desigualdades Mundiais'}, {id: 'globalizacao', nome: 'Contradições da Globalização'}, {id: 'populacao', nome: 'Estrutura Populacional e Migrações'}] },
-                                { nome: 'Redes e Fluxos', assuntos: [{id: 'transportes', nome: 'Redes de Transporte'}, {id: 'turismo', nome: 'Turismo'}, {id: 'comercio-financas', nome: 'Comércio e Sistema Financeiro Global'}] }
-                            ]},
-                            { nome: 'Geopolítica e Brasil', modulos: [
-                                { nome: 'Geopolítica', assuntos: [{id: 'ordem-mundial', nome: 'Ordem Mundial e ONU'}, {id: 'conflitos', nome: 'Conflitos Regionais e Terrorismo'}, {id: 'nacionalismos', nome: 'Nacionalismos e Tensões'}] },
-                                { nome: 'Geografia do Brasil', assuntos: [{id: 'br-fisica', nome: 'Brasil Físico (Clima, Relevo)'}, {id: 'br-regional', nome: 'Regionalização do Brasil'}, {id: 'br-economica', nome: 'Economia Brasileira'}] }
-                            ]},
-                            { nome: 'Conteúdos Extras', modulos: [
-                                { nome: 'Temas Contemporâneos', assuntos: [{id: 'meio-ambiente', nome: 'Questões Ambientais'}, {id: 'energia', nome: 'Fontes de Energia'}, {id: 'urbanizacao', nome: 'Urbanização e Cidades'}] }
-                            ]}
-                        ]
-                    },
-                    // FILOSOFIA E SOCIOLOGIA (ATUALIZADAS)
-                    {
-                        id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800',
-                        frentes: [
-                            { nome: 'Fundamentos e Antiga', modulos: [
-                                { nome: 'Introdução', assuntos: [{id: 'oque-filosofia', nome: 'O que é Filosofia'}] },
-                                { nome: 'Pensamento Antigo', assuntos: [{id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'classicos', nome: 'Socráticos (Sócrates, Platão, Aristóteles)'}, {id: 'felicidade', nome: 'Felicidade e Filosofia Antiga'}, {id: 'eros', nome: 'Eros e Filosofia'}] }
-                            ]},
-                            { nome: 'Temáticas e Contemporânea', modulos: [
-                                { nome: 'Ética e Política', assuntos: [{id: 'etica', nome: 'Ética'}, {id: 'politica', nome: 'Filosofia Política'}, {id: 'bioetica', nome: 'Filosofia e Bioética'}, {id: 'tec-sociedade', nome: 'Tecnologia e Sociedade'}, {id: 'religiao-estado', nome: 'Religião e Estado'}] },
-                                { nome: 'Metafísica', assuntos: [{id: 'metafisica', nome: 'Metafísica (História e Crítica)'}, {id: 'pos-critica', nome: 'Metafísica após a Crítica'}] }
-                            ]}
+                            {
+                                nome: 'Base da Vida',
+                                modulos: [
+                                    { nome: 'Módulo 1: Origem da Vida e Bioquímica', assuntos: [{id: 'origem-vida-bioquimica', nome: 'Origem da Vida e Bioquímica'}]},
+                                    { nome: 'Módulo 2: Citologia', assuntos: [{id: 'citologia', nome: 'Citologia', subconteudos: [{id: 'organelas', nome: 'Organelas'}, {id: 'metabolismo-cel', nome: 'Metabolismo Celular'}, {id: 'divisao-cel', nome: 'Divisão Celular'}]}]},
+                                    { nome: 'Módulo 3: Biologia Molecular', assuntos: [{id: 'biologia-molecular', nome: 'Biologia Molecular'}]},
+                                    { nome: 'Módulo 4: Histologia e Embriologia', assuntos: [{id: 'histologia-embriologia', nome: 'Histologia e Embriologia'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Genética e Evolução',
+                                modulos: [
+                                    { nome: 'Módulo 1: Genética', assuntos: [{id: 'genetica', nome: 'Genética Mendeliana e Pós-Mendeliana', subconteudos: [{id: 'leis-mendel', nome: 'Leis de Mendel'}, {id: 'heranca-sexual', nome: 'Herança Ligada ao Sexo'}]}]},
+                                    { nome: 'Módulo 2: Evolução', assuntos: [{id: 'evolucao', nome: 'Evolução', subconteudos: [{id: 'teorias-evol', nome: 'Teorias Evolutivas'}, {id: 'especiacao', nome: 'Especiação'}]}]},
+                                    { nome: 'Módulo 3: Biotecnologia', assuntos: [{id: 'biotecnologia', nome: 'Biotecnologia'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Fisiologia e Seres Vivos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fisiologia Humana', assuntos: [{id: 'fisiologia-humana', nome: 'Fisiologia Humana', subconteudos: [{id: 'sist-digest', nome: 'Sistema Digestório'}, {id: 'sist-resp', nome: 'Sistema Respiratório'}, {id: 'sist-circ', nome: 'Sistema Circulatório'}, {id: 'sist-nerv-endoc', nome: 'Sistemas Nervoso e Endócrino'}]}]},
+                                    { nome: 'Módulo 2: Microbiologia e Parasitologia', assuntos: [{id: 'micro-parasito', nome: 'Microbiologia e Parasitologia'}]},
+                                    { nome: 'Módulo 3: Zoologia', assuntos: [{id: 'zoologia', nome: 'Zoologia'}]},
+                                    { nome: 'Módulo 4: Botânica', assuntos: [{id: 'botanica', nome: 'Botânica'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Ecologia',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos da Ecologia', assuntos: [{id: 'fundamentos-ecologia', nome: 'Conceitos e Cadeias Alimentares'}]},
+                                    { nome: 'Módulo 2: Populações e Comunidades', assuntos: [{id: 'populacoes-comunidades', nome: 'Dinâmica de Populações e Relações'}]},
+                                    { nome: 'Módulo 3: Biomas e Sucessão', assuntos: [{id: 'biomas-sucessao', nome: 'Biomas e Sucessão Ecológica'}]},
+                                    { nome: 'Módulo 4: Ecologia Aplicada', assuntos: [{id: 'impactos-ambientais', nome: 'Impactos Ambientais'}]}
+                                ]
+                            }
                         ]
                     },
                     {
-                        id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800',
+                        id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800', 
                         frentes: [
-                            { nome: 'Teoria Sociológica', modulos: [
-                                { nome: 'Conceitos Básicos', assuntos: [{id: 'individuo-sociedade', nome: 'Indivíduo e Sociedade'}, {id: 'cultura', nome: 'Cultura e Ideologia'}, {id: 'estratificacao', nome: 'Estratificação Social'}] },
-                                { nome: 'Clássicos', assuntos: [{id: 'comte', nome: 'Augusto Comte (Positivismo)'}, {id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}] }
-                            ]},
-                            { nome: 'Temas Sociais', modulos: [
-                                { nome: 'Trabalho e Política', assuntos: [{id: 'trabalho', nome: 'Mundo do Trabalho'}, {id: 'poder-estado', nome: 'Poder, Estado e Política'}, {id: 'movimentos', nome: 'Movimentos Sociais'}] },
-                                { nome: 'Diversidade e Cidadania', assuntos: [{id: 'cidadania', nome: 'Direitos e Cidadania'}, {id: 'desigualdade-br', nome: 'Desigualdade no Brasil'}] }
-                            ]}
-                        ]
-                    },
-                    // LINGUAGENS
-                    {
-                        id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800',
-                        frentes: [
-                            { nome: 'Gramática', modulos: [{ nome: 'Estrutura', assuntos: [{id: 'morfologia', nome: 'Morfologia'}, {id: 'sintaxe', nome: 'Sintaxe'}, {id: 'semantica', nome: 'Semântica'}] }] },
-                            { nome: 'Interpretação', modulos: [{ nome: 'Texto', assuntos: [{id: 'interpretacao', nome: 'Interpretação de Texto'}, {id: 'generos', nome: 'Gêneros Textuais'}, {id: 'figuras', nome: 'Figuras de Linguagem'}] }] }
-                        ]
-                    },
-                    {
-                        id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800',
-                        frentes: [
-                            { nome: 'História da Literatura', modulos: [
-                                { nome: 'Era Colonial', assuntos: [{id: 'quinhentismo', nome: 'Quinhentismo'}, {id: 'barroco', nome: 'Barroco'}, {id: 'arcadismo', nome: 'Arcadismo'}] },
-                                { nome: 'Era Nacional', assuntos: [{id: 'romantismo', nome: 'Romantismo'}, {id: 'realismo', nome: 'Realismo/Naturalismo'}, {id: 'modernismo', nome: 'Modernismo e Contemporâneo'}] }
-                            ]}
+                            {
+                                nome: 'História Geral',
+                                modulos: [
+                                    { nome: 'Módulo 1: Antiguidade e Idade Média', assuntos: [{id: 'antiguidade-media', nome: 'Antiguidade e Idade Média', subconteudos: [{id: 'antiguidade-oriental', nome: 'Antiguidade Oriental'}, {id: 'antiguidade-classica', nome: 'Antiguidade Clássica'}, {id: 'alta-idade-media', nome: 'Alta Idade Média'}, {id: 'baixa-idade-media', nome: 'Baixa Idade Média'}]}]},
+                                    { nome: 'Módulo 2: Idade Moderna', assuntos: [{id: 'idade-moderna', nome: 'Idade Moderna', subconteudos: [{id: 'expansao-maritima', nome: 'Expansão Marítima'}, {id: 'renascimento-cultural', nome: 'Renascimento Cultural'}, {id: 'reformas-religiosas', nome: 'Reformas Religiosas'}, {id: 'absolutismo-mercantilismo', nome: 'Absolutismo e Mercantilismo'}, {id: 'iluminismo', nome: 'Iluminismo'}]}]},
+                                    { nome: 'Módulo 3: Idade Contemporânea', assuntos: [{id: 'idade-contemporanea', nome: 'Idade Contemporânea', subconteudos: [{id: 'rev-francesa-era-nap', nome: 'Revolução Francesa e Era Napoleônica'}, {id: 'revolucoes-industriais', nome: 'Revoluções Industriais'}, {id: 'imperialismo', nome: 'Imperialismo'}, {id: 'primeira-guerra', nome: 'Primeira Guerra Mundial'}, {id: 'crise-29-totalitarismo', nome: 'Crise de 1929 e Regimes Totalitários'}, {id: 'segunda-guerra', nome: 'Segunda Guerra Mundial'}, {id: 'guerra-fria', nome: 'Guerra Fria'}]}]}
+                                ]
+                            },
+                            {
+                                nome: 'História do Brasil',
+                                modulos: [
+                                    { nome: 'Módulo 1: Brasil Colônia', assuntos: [{id: 'brasil-colonia', nome: 'Brasil Colônia', subconteudos: [{id: 'periodo-pre-colonial', nome: 'Período Pré-Colonial'}, {id: 'administracao-colonial', nome: 'Administração Colonial'}, {id: 'economia-acucareira', nome: 'Economia Açucareira'}, {id: 'mineracao', nome: 'Mineração'}, {id: 'revoltas-coloniais', nome: 'Revoltas Coloniais'}]}]},
+                                    { nome: 'Módulo 2: Brasil Império', assuntos: [{id: 'brasil-imperio', nome: 'Brasil Império', subconteudos: [{id: 'processo-independencia', nome: 'Processo de Independência'}, {id: 'primeiro-reinado', nome: 'Primeiro Reinado'}, {id: 'periodo-regencial', nome: 'Período Regencial'}, {id: 'segundo-reinado', nome: 'Segundo Reinado'}, {id: 'crise-imperio', nome: 'Crise do Império'}]}]},
+                                    { nome: 'Módulo 3: Brasil República', assuntos: [{id: 'brasil-republica', nome: 'Brasil República', subconteudos: [{id: 'republica-velha', nome: 'República Velha'}, {id: 'era-vargas', nome: 'Era Vargas'}, {id: 'republica-populista', nome: 'República Populista'}, {id: 'ditadura-militar', nome: 'Ditadura Militar'}, {id: 'nova-republica', nome: 'Nova República'}]}]}
+                                ]
+                            }
                         ]
                     },
                     {
-                        id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800',
+                        id: 'geografia', nome: 'Geografia', icone: 'globe', cor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800', 
                         frentes: [
-                            { nome: 'Língua Inglesa', modulos: [
-                                { nome: 'Gramática', assuntos: [{id: 'verbos', nome: 'Tempos Verbais'}, {id: 'conectivos', nome: 'Conectivos e Pronomes'}] },
-                                { nome: 'Leitura', assuntos: [{id: 'compreensao', nome: 'Compreensão de Texto (Reading)'}, {id: 'vocabulario', nome: 'Vocabulário Essencial'}] }
-                            ]}
+                             {
+                                nome: 'Geografia Geral e Econômica',
+                                modulos: [
+                                    { nome: 'Módulo 1: Espaço Rural e Agrário', assuntos: [
+                                        {id: 'producao-rural', nome: 'Produção dos Espaços Rurais'},
+                                        {id: 'agrario-desenvolvidos', nome: 'Espaço Agrário em Países Desenvolvidos'},
+                                        {id: 'agrario-desenvolvimento', nome: 'Espaço Agrário em Países em Desenvolvimento'},
+                                        {id: 'reforma-agraria', nome: 'Questão da Reforma Agrária'}
+                                    ]},
+                                    { nome: 'Módulo 2: Dinâmicas Socioeconômicas', assuntos: [
+                                        {id: 'desigualdades', nome: 'Desigualdades Socioeconômicas'},
+                                        {id: 'contradicoes', nome: 'Contradições da Globalização'},
+                                        {id: 'regionalizacao', nome: 'Regionalização do Brasil'}
+                                    ]},
+                                    { nome: 'Módulo 3: Redes e Fluxos', assuntos: [
+                                        {id: 'transportes', nome: 'Rede de Transportes'},
+                                        {id: 'turismo', nome: 'Expansão do Turismo'},
+                                        {id: 'comercio', nome: 'Comércio Global'},
+                                        {id: 'financeiro', nome: 'Sistema Financeiro Mundial'}
+                                    ]}
+                                ]
+                            },
+                            {
+                                nome: 'Demografia e Cultura',
+                                modulos: [
+                                    { nome: 'Módulo 1: População e Migrações', assuntos: [
+                                        {id: 'estrutura-pop', nome: 'Estrutura Populacional'},
+                                        {id: 'cultura-migracoes', nome: 'Cultura e Migrações'},
+                                        {id: 'tensoes-migratorias', nome: 'Tensões Migratórias e Xenofobia'}
+                                    ]}
+                                ]
+                            },
+                            {
+                                nome: 'Geopolítica Contemporânea',
+                                modulos: [
+                                    { nome: 'Módulo 1: Poder e Organizações', assuntos: [
+                                        {id: 'onu', nome: 'Estrutura da ONU'},
+                                        {id: 'blocos', nome: 'Blocos Econômicos'},
+                                        {id: 'brasil-comercio', nome: 'Brasil no Comércio'},
+                                        {id: 'terceiro-setor', nome: 'Terceiro Setor'},
+                                        {id: 'impasses', nome: 'Impasses Globais'}
+                                    ]},
+                                    { nome: 'Módulo 2: Conflitos e Tensões', assuntos: [
+                                        {id: 'nacionalismos', nome: 'Nacionalismos'},
+                                        {id: 'oriente-medio', nome: 'Oriente Médio'},
+                                        {id: 'guerra-fria-xxi', nome: 'Herança da Guerra Fria'},
+                                        {id: 'terrorismo', nome: 'Terrorismo Internacional'},
+                                        {id: 'conflitos-regionais', nome: 'Conflitos Regionais'}
+                                    ]}
+                                ]
+                            },
+                             {
+                                nome: 'Conteúdos Extras',
+                                modulos: [
+                                    { nome: 'Módulo Extra: Agrário e Rural', assuntos: [{ id: 'espaco-agrario-geral', nome: 'Espaço Agrário', subconteudos: [{ id: 'producao-rural', nome: 'A produção dos espaços rurais' }, { id: 'agrario-desenvolvidos', nome: 'Espaço agrário em países desenvolvidos' }, { id: 'agrario-desenvolvimento', nome: 'Espaço agrário em países em desenvolvimento' }, { id: 'reforma-agraria', nome: 'A questão da reforma agrária' }] }] },
+                                    { nome: 'Módulo Extra: Dinâmica Socioeconômica', assuntos: [{ id: 'dinamica-socioeconomica', nome: 'Dinâmica Socioeconômica', subconteudos: [{ id: 'desigualdades-socioeconomicas', nome: 'Desigualdades socioeconômicas: vários mundos' }, { id: 'contradicoes-globalizacao', nome: 'Contradições do mundo globalizado' }, { id: 'regionalizacao-br', nome: 'Regionalização do território brasileiro' }, { id: 'estrutura-populacional', nome: 'Estrutura e distribuição populacional' }, { id: 'cultura-migracoes', nome: 'Cultura e migrações' }, { id: 'tensa-migratoria', nome: 'Tensões migratórias e xenofobia' }] }] },
+                                    { nome: 'Módulo Extra: Redes e Fluxos', assuntos: [{ id: 'redes-fluxos', nome: 'Redes e Fluxos Globais', subconteudos: [{ id: 'rede-transportes', nome: 'Rede de transportes mundial' }, { id: 'turismo', nome: 'Expansão do turismo no Brasil e mundo' }, { id: 'comercio-global', nome: 'Comércio global: fluxo de mercadorias' }, { id: 'sistema-financeiro', nome: 'Sistema financeiro mundial' }] }] },
+                                    { nome: 'Módulo Extra: Geopolítica Contemporânea', assuntos: [{ id: 'geopolitica-contemporanea', nome: 'Geopolítica Contemporânea', subconteudos: [{ id: 'onu', nome: 'A estrutura da ONU' }, { id: 'poder-global-blocos', nome: 'Poder global e blocos econômicos' }, { id: 'brasil-comercio', nome: 'Brasil e o comércio multilateral' }, { id: 'terceiro-setor', nome: 'Terceiro setor e mobilizações sociais' }, { id: 'impasses-gestao', nome: 'Impasses na gestão global' }, { id: 'nacionalismos', nome: 'Nacionalismos e tensões políticas' }, { id: 'oriente-medio', nome: 'Oriente Médio' }, { id: 'heranca-guerra-fria', nome: 'Herança da Guerra Fria no séc XXI' }, { id: 'terrorismo', nome: 'Terrorismo internacional' }, { id: 'conflitos-regionais', nome: 'Conflitos regionais e conexões globais' }] }] }
+                                ]
+                            }
                         ]
                     },
                     {
-                        id: 'redacao', nome: 'Redação', icone: 'file-pen-line', cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800',
+                        id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800', 
                         frentes: [
-                            { nome: 'Produção Textual', modulos: [
-                                { nome: 'Técnica', assuntos: [{id: 'estrutura', nome: 'Estrutura Dissertativo-Argumentativa'}, {id: 'competencias', nome: 'As 5 Competências do ENEM'}, {id: 'repertorio', nome: 'Uso de Repertório Sociocultural'}] }
-                            ]}
+                            {
+                                nome: 'Fundamentos e Antiga',
+                                modulos: [
+                                    { nome: 'Introdução', assuntos: [{id: 'oque-filosofia', nome: 'O que é Filosofia'}] },
+                                    { nome: 'Pensamento Antigo', assuntos: [{id: 'felicidade-antiga', nome: 'Felicidade e Filosofia no pensamento antigo'}, {id: 'eros', nome: 'Eros e filosofia'}, {id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'classicos', nome: 'Socráticos (Sócrates, Platão, Aristóteles)'}] }
+                                ]
+                            },
+                            {
+                                nome: 'Ética e Política Contemporânea',
+                                modulos: [
+                                    { nome: 'Bioética e Tecnologia', assuntos: [{id: 'bioetica', nome: 'Filosofia e bioética'}, {id: 'tec-sociedade', nome: 'Tecnologia e sociedade'}] },
+                                    { nome: 'Política e Religião', assuntos: [{id: 'religiao-estado', nome: 'Religião e Estado'}, {id: 'etica', nome: 'Ética'}, {id: 'politica', nome: 'Filosofia Política'}] }
+                                ]
+                            },
+                            {
+                                nome: 'Metafísica e Conhecimento',
+                                modulos: [
+                                    { nome: 'Metafísica', assuntos: [{id: 'metafisica', nome: 'Metafísica'}, {id: 'critica-metafisica', nome: 'Crítica à metafísica'}, {id: 'pos-critica', nome: 'Metafísica após a crítica'}] },
+                                    { nome: 'Teoria do Conhecimento', assuntos: [{id: 'epistemologia', nome: 'Teoria do Conhecimento (Racionalismo/Empirismo)'}] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800', 
+                        frentes: [
+                             {
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social', subconteudos: [{id: 'cultura-ideologia', nome: 'Cultura e Ideologia'}, {id: 'identidade-socializacao', nome: 'Identidade e Socialização'}, {id: 'estratificacao-desigualdade', nome: 'Estratificação e Desigualdade'}]}]},
+                                    { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais', subconteudos: [{id: 'sociologia-trabalho', nome: 'Sociologia do Trabalho'}, {id: 'estado-poder-politica', nome: 'Estado, Poder e Política'}, {id: 'movimentos-sociais', nome: 'Movimentos Sociais'}]}]},
+                                    { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea', subconteudos: [{id: 'comte', nome: 'Augusto Comte'}, {id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800', 
+                        frentes: [
+                            {
+                                nome: 'Gramática',
+                                modulos: [
+                                     { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia', subconteudos: [{id: 'classes-palavras-variaveis', nome: 'Classes de Palavras Variáveis'}, {id: 'classes-palavras-invariaveis', nome: 'Classes de Palavras Invariáveis'}, {id: 'formacao-palavras', nome: 'Processos de Formação de Palavras'}]}]},
+                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe', subconteudos: [{id: 'periodo-simples', nome: 'Período Simples: Termos da Oração'}, {id: 'oracoes-coordenadas', nome: 'Período Composto: Orações Coordenadas'}, {id: 'oracoes-subordinadas-substantivas', nome: 'Orações Subordinadas Substantivas'}, {id: 'oracoes-subordinadas-adjetivas', nome: 'Orações Subordinadas Adjetivas'}, {id: 'oracoes-subordinadas-adverbiais', nome: 'Orações Subordinadas Adverbiais'}]}]},
+                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase', subconteudos: [{id: 'concordancia-verbal', nome: 'Concordância Verbal'}, {id: 'concordancia-nominal', nome: 'Concordância Nominal'}, {id: 'regencia-verbal-nominal', nome: 'Regência Verbal e Nominal'}, {id: 'crase', nome: 'Crase'}]}, {id: 'pontuacao', nome: 'Pontuação'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Texto e Interpretação',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
+                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
+                                    { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística', subconteudos: [{id: 'figuras-linguagem', nome: 'Figuras de Linguagem'}, {id: 'variacao-linguistica', nome: 'Variação Linguística'}, {id: 'funcoes-linguagem', nome: 'Funções da Linguagem'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800', 
+                        frentes: [
+                            {
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Período Colonial', assuntos: [{id: 'literatura-colonial', nome: 'Período Colonial', subconteudos: [{id: 'trovadorismo-classicismo', nome: 'Trovadorismo e Classicismo'}, {id: 'barroco-arcadismo', nome: 'Barroco e Arcadismo'}]}]},
+                                    { nome: 'Módulo 2: Século XIX', assuntos: [{id: 'literatura-seculo-xix', nome: 'Século XIX', subconteudos: [{id: 'romantismo', nome: 'Romantismo (Prosa e Poesia)'}, {id: 'realismo-naturalismo', nome: 'Realismo e Naturalismo'}, {id: 'parnasianismo-simbolismo', nome: 'Parnasianismo e Simbolismo'}]}]},
+                                    { nome: 'Módulo 3: Século XX e XXI', assuntos: [{id: 'literatura-moderna', nome: 'Século XX e XXI', subconteudos: [{id: 'pre-modernismo', nome: 'Pré-Modernismo'}, {id: 'modernismo-br', nome: 'Modernismo no Brasil'}, {id: 'tendencias-contemp', nome: 'Tendências Contemporâneas'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800', 
+                        frentes: [
+                            {
+                                nome: 'Gramática (Grammar)',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Tempos Verbais',
+                                        assuntos: [
+                                            {
+                                                id: 'verb-tenses', nome: 'Tempos Verbais',
+                                                subconteudos: [
+                                                    { id: 'simple-tenses', nome: 'Simple Tenses' },
+                                                    { id: 'continuous-tenses', nome: 'Continuous Tenses' },
+                                                    { id: 'perfect-tenses', nome: 'Perfect Tenses' },
+                                                    { id: 'tenses-comparison', nome: 'Comparativo entre Tempos Verbais' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Estrutura da Frase',
+                                        assuntos: [
+                                            { 
+                                                id: 'prepositions-conjunctions', nome: 'Prepositions and Conjunctions',
+                                                subconteudos: [
+                                                    { id: 'prepositions-time', nome: 'Prepositions of Time' },
+                                                    { id: 'prepositions-place', nome: 'Prepositions of Place' },
+                                                    { id: 'coordinating-conjunctions', nome: 'Coordinating Conjunctions' },
+                                                    { id: 'subordinating-conjunctions', nome: 'Subordinating Conjunctions' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'pronouns-articles', nome: 'Pronouns and Articles',
+                                                subconteudos: [
+                                                    { id: 'subject-object-pronouns', nome: 'Subject & Object Pronouns' },
+                                                    { id: 'possessive-pronouns-adjectives', nome: 'Possessive Pronouns & Adjectives' },
+                                                    { id: 'definite-indefinite-articles', nome: 'Definite & Indefinite Articles' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'reported-speech', nome: 'Reported Speech',
+                                                subconteudos: [
+                                                    { id: 'reported-statements', nome: 'Reported Statements' },
+                                                    { id: 'reported-questions', nome: 'Reported Questions' },
+                                                    { id: 'reporting-verbs', nome: 'Reporting Verbs' },
+                                                    { id: 'tense-pronoun-changes', nome: 'Changes in Tense, Pronouns, and Time' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 3: Verbos Modais e Condicionais',
+                                        assuntos: [
+                                            { 
+                                                id: 'modal-verbs', nome: 'Modal Verbs',
+                                                subconteudos: [
+                                                    { id: 'modals-ability', nome: 'Modals of Ability' },
+                                                    { id: 'modals-obligation', nome: 'Modals of Obligation' },
+                                                    { id: 'modals-possibility', nome: 'Modals of Possibility' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'conditionals', nome: 'Conditionals',
+                                                subconteudos: [
+                                                    { id: 'zero-first-conditional', nome: 'Zero & First Conditional' },
+                                                    { id: 'second-conditional', nome: 'Second Conditional' },
+                                                    { id: 'third-conditional', nome: 'Third Conditional' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'passive-voice', nome: 'Passive Voice',
+                                                subconteudos: [
+                                                    { id: 'passive-voice-tenses', nome: 'Passive Voice in Different Tenses' },
+                                                    { id: 'passive-with-by', nome: 'Using "by" in the Passive Voice' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                nome: 'Vocabulário e Interpretação',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Habilidades de Leitura',
+                                        assuntos: [
+                                            { 
+                                                id: 'skimming-scanning', nome: 'Skimming and Scanning',
+                                                subconteudos: [
+                                                    { id: 'skimming-techniques', nome: 'Techniques for Skimming' },
+                                                    { id: 'scanning-techniques', nome: 'Techniques for Scanning' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'main-idea-inference', nome: 'Main Idea and Inference',
+                                                subconteudos: [
+                                                    { id: 'identifying-main-idea', nome: 'Identifying the Main Idea' },
+                                                    { id: 'making-inferences', nome: 'Making Inferences from Text' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'text-comprehension', nome: 'Interpretação de Textos',
+                                                subconteudos: [
+                                                    { id: 'understanding-context', nome: 'Understanding Context and Tone' },
+                                                    { id: 'identifying-purpose', nome: 'Identifying Author\'s Purpose' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Construção de Vocabulário',
+                                        assuntos: [
+                                            { 
+                                                id: 'phrasal-verbs', nome: 'Phrasal Verbs',
+                                                subconteudos: [
+                                                    { id: 'common-phrasal-verbs', nome: 'Common Phrasal Verbs' },
+                                                    { id: 'separable-inseparable', nome: 'Separable vs. Inseparable' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'idioms', nome: 'Idiomatic Expressions',
+                                                subconteudos: [
+                                                    { id: 'common-idioms', nome: 'Common English Idioms' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'false-cognates', nome: 'False Cognates',
+                                                subconteudos: [
+                                                    { id: 'common-false-friends', nome: 'Common False Friends' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'redacao',
+                        nome: 'Redação',
+                        icone: 'file-pen-line', 
+                        cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800', 
+                        frentes: [
+                            {
+                                nome: 'Módulos',
+                                modulos: [
+                                     { nome: 'Módulo 1: Estrutura e Competências', assuntos: [{id: 'estrutura-dissertativa', nome: 'Estrutura Dissertativo-Argumentativa'}, {id: 'competencias-enem', nome: 'Competências do ENEM'}]}
+                                ]
+                            }
                         ]
                     }
                 ],
@@ -654,6 +987,7 @@
                     if(m) {
                         const assuntos = [];
                         m.frentes.forEach(f => f.modulos.forEach(md => md.assuntos.forEach(a => assuntos.push(a))));
+                        assuntos.sort((a, b) => a.nome.localeCompare(b.nome));
                         document.getElementById('filtro-conteudo').innerHTML = '<option value="">Selecione</option>' + assuntos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
                         document.getElementById('filtro-conteudo').disabled = false;
                         this.currentAssuntos = assuntos;
@@ -713,7 +1047,7 @@
                 const prompt = `
                 Elaborador ENEM. Tópico: "${topico}" (${disc}). Nível: ${dif}.
                 ${protocolo}
-                ${contextoPrompt}
+                ${contextPrompt}
                 REGRA: 5 questões inéditas. Alternativas únicas. Resolução didática.
                 JSON OBRIGATÓRIO (Use \\n para quebras): 
                 { "questoes": [ { "enunciado": "...", "alternativas": [{"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."}...], "resolucao": "..." } ] }
