@@ -9,7 +9,13 @@
     <script>
         tailwind.config = {
             darkMode: 'class',
-            theme: { extend: { colors: { primary: '#4338ca' } } }
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#4338ca',
+                    }
+                }
+            }
         }
     </script>
 
@@ -82,50 +88,27 @@
 
     <!-- MAIN CONTENT -->
     <main class="container mx-auto px-4 py-8 md:py-12">
-        
-        <!-- 1. INÍCIO -->
         <section id="inicio" class="content-section active">
             <div class="text-center py-16 md:py-24 bg-gradient-to-b from-indigo-50 to-white dark:from-gray-800 dark:to-gray-900 rounded-2xl shadow-sm border border-indigo-100 dark:border-gray-700 transition-colors duration-300">
                 <h1 class="text-4xl md:text-6xl font-bold text-indigo-600 dark:text-indigo-400 mb-6">Bem-vindo ao InsFlow</h1>
                 <p class="text-lg md:text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">Sua plataforma inteligente de estudos.</p>
-                <div class="flex flex-col sm:flex-row justify-center gap-4">
-                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">
-                        Explorar Matérias
-                    </button>
-                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">
-                        Praticar Questões
-                    </button>
+                <div class="flex justify-center gap-4">
+                    <button class="bg-indigo-600 text-white py-3 px-8 rounded-lg shadow hover:bg-indigo-700 font-semibold transition" onclick="window.app.navigateTo('materias')">Explorar Matérias</button>
+                    <button class="bg-white dark:bg-gray-700 text-gray-800 dark:text-white border border-gray-200 dark:border-gray-600 py-3 px-8 rounded-lg shadow hover:bg-gray-50 dark:hover:bg-gray-600 font-semibold transition" onclick="window.app.navigateTo('questoes')">Praticar Questões</button>
                 </div>
             </div>
         </section>
 
-        <!-- 2. MATÉRIAS (COM AUDITORIA) -->
+        <!-- 2. MATÉRIAS -->
         <section id="materias" class="content-section">
             <div id="materias-home">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Matérias</h2>
-                    <!-- Botão de Auditoria -->
-                    <button id="btn-audit" onclick="window.app.runContentAudit()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold py-3 px-6 rounded-lg shadow-sm flex items-center gap-2 transition transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed">
-                        <i data-lucide="file-search"></i> 
-                        <span>Auditar Conteúdo vs. ENEM (IA)</span>
-                    </button>
-                </div>
-
-                <!-- Painel de Resultado da Auditoria -->
-                <div id="audit-panel" class="hidden mb-8 animate-fade-in">
-                    <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 p-6 rounded-xl">
-                        <h3 class="text-lg font-bold text-amber-800 dark:text-amber-400 mb-2 flex items-center gap-2">
-                            <i data-lucide="clipboard-list"></i> Relatório de Auditoria (IA)
-                        </h3>
-                        <!-- Loading -->
-                        <div id="audit-loading" class="hidden text-center py-8">
-                            <div class="inline-block animate-spin w-6 h-6 border-4 border-yellow-500 border-t-transparent rounded-full mb-2"></div>
-                            <p class="text-yellow-700 dark:text-yellow-300 text-sm animate-pulse">O Agente está lendo as provas (2020-2024) e comparando com o banco de dados...</p>
-                        </div>
-                        <!-- Output -->
-                        <div id="audit-content" class="prose dark:prose-invert max-w-none text-sm text-gray-700 dark:text-gray-300 mb-4 hidden"></div>
-                        
-                        <button onclick="document.getElementById('audit-panel').classList.add('hidden')" class="mt-4 text-yellow-700 dark:text-yellow-500 underline text-xs font-bold">Fechar Relatório</button>
+                    
+                    <!-- Barra de Pesquisa na Aba Matérias -->
+                    <div class="relative w-full md:w-64">
+                        <input type="text" id="search-materias" oninput="window.app.filterSubjects(this.value)" class="w-full p-3 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 text-sm" placeholder="Filtrar matéria...">
+                        <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4"></i>
                     </div>
                 </div>
 
@@ -188,7 +171,7 @@
                         <button id="btn-gerar-questoes" class="flex-1 bg-indigo-600 text-white font-bold py-3 px-6 rounded-lg hover:bg-indigo-700 transition disabled:bg-gray-400 disabled:cursor-not-allowed shadow-md flex items-center justify-center gap-2">
                             <i data-lucide="plus-circle" class="w-5 h-5"></i> Gerar 5 Novas Questões
                         </button>
-                        <button onclick="window.app.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg transition" title="Limpar lista">
+                        <button onclick="window.app.clearQuestions()" class="bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 font-bold py-3 px-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition border border-gray-200 dark:border-gray-600" title="Limpar lista">
                             <i data-lucide="trash-2" class="w-5 h-5"></i>
                         </button>
                     </div>
@@ -256,12 +239,11 @@
             cloudFilesList: [],
             firebaseUtils: null,
             
-            // BASE DE DADOS COMPLETA (100% DETALHADA)
+            // BASE DE DADOS COMPLETA
             db: {
                 materias: [
                     {id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800', frentes: [{ nome: 'Matemática Básica', modulos: [{ nome: 'Fundamentos', assuntos: [{id: 'operacoes', nome: 'Operações Básicas'}, {id: 'fracoes', nome: 'Frações e Decimais'}, {id: 'porcentagem', nome: 'Porcentagem'}]}] }, { nome: 'Geometria', modulos: [{ nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'circulos', nome: 'Círculos'}] }, { nome: 'Espacial', assuntos: [{id: 'prismas', nome: 'Prismas'}, {id: 'cilindros', nome: 'Cilindros'}] }] }]},
                     {id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800', frentes: [{ nome: 'Mecânica', modulos: [{ nome: 'Cinemática', assuntos: [{id: 'mru', nome: 'Movimento Uniforme'}]}] }]},
-                    // QUÍMICA (ATUALIZADA) - Capítulos removidos dos nomes
                     {
                         id: 'quimica', nome: 'Química', icone: 'flask-conical', cor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
                         frentes: [
@@ -365,9 +347,67 @@
                             }
                         ]
                     },
-                    {id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800', frentes: [{ nome: 'Citologia', modulos: [{ nome: 'Células', assuntos: [{id: 'celula', nome: 'Estrutura Celular'}]}] }]},
-                    {id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800', frentes: [{ nome: 'Geral', modulos: [{ nome: 'Antiga', assuntos: [{id: 'roma', nome: 'Roma Antiga'}]}] }]},
-                    // GEOGRAFIA (ATUALIZADA) - Capítulos removidos
+                    { 
+                        id: 'biologia', nome: 'Biologia', icone: 'leaf', cor: 'bg-green-50 text-green-700 border-green-200 dark:bg-green-900/20 dark:text-green-300 dark:border-green-800', 
+                        frentes: [
+                            {
+                                nome: 'Base da Vida',
+                                modulos: [
+                                    { nome: 'Módulo 1: Origem da Vida e Bioquímica', assuntos: [{id: 'origem-vida-bioquimica', nome: 'Origem da Vida e Bioquímica'}]},
+                                    { nome: 'Módulo 2: Citologia', assuntos: [{id: 'citologia', nome: 'Citologia', subconteudos: [{id: 'organelas', nome: 'Organelas'}, {id: 'metabolismo-cel', nome: 'Metabolismo Celular'}, {id: 'divisao-cel', nome: 'Divisão Celular'}]}]},
+                                    { nome: 'Módulo 3: Biologia Molecular', assuntos: [{id: 'biologia-molecular', nome: 'Biologia Molecular'}]},
+                                    { nome: 'Módulo 4: Histologia e Embriologia', assuntos: [{id: 'histologia-embriologia', nome: 'Histologia e Embriologia'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Genética e Evolução',
+                                modulos: [
+                                    { nome: 'Módulo 1: Genética', assuntos: [{id: 'genetica', nome: 'Genética Mendeliana e Pós-Mendeliana', subconteudos: [{id: 'leis-mendel', nome: 'Leis de Mendel'}, {id: 'heranca-sexual', nome: 'Herança Ligada ao Sexo'}]}]},
+                                    { nome: 'Módulo 2: Evolução', assuntos: [{id: 'evolucao', nome: 'Evolução', subconteudos: [{id: 'teorias-evol', nome: 'Teorias Evolutivas'}, {id: 'especiacao', nome: 'Especiação'}]}]},
+                                    { nome: 'Módulo 3: Biotecnologia', assuntos: [{id: 'biotecnologia', nome: 'Biotecnologia'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Fisiologia e Seres Vivos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fisiologia Humana', assuntos: [{id: 'fisiologia-humana', nome: 'Fisiologia Humana', subconteudos: [{id: 'sist-digest', nome: 'Sistema Digestório'}, {id: 'sist-resp', nome: 'Sistema Respiratório'}, {id: 'sist-circ', nome: 'Sistema Circulatório'}, {id: 'sist-nerv-endoc', nome: 'Sistemas Nervoso e Endócrino'}]}]},
+                                    { nome: 'Módulo 2: Microbiologia e Parasitologia', assuntos: [{id: 'micro-parasito', nome: 'Microbiologia e Parasitologia'}]},
+                                    { nome: 'Módulo 3: Zoologia', assuntos: [{id: 'zoologia', nome: 'Zoologia'}]},
+                                    { nome: 'Módulo 4: Botânica', assuntos: [{id: 'botanica', nome: 'Botânica'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Ecologia',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos da Ecologia', assuntos: [{id: 'fundamentos-ecologia', nome: 'Conceitos e Cadeias Alimentares'}]},
+                                    { nome: 'Módulo 2: Populações e Comunidades', assuntos: [{id: 'populacoes-comunidades', nome: 'Dinâmica de Populações e Relações'}]},
+                                    { nome: 'Módulo 3: Biomas e Sucessão', assuntos: [{id: 'biomas-sucessao', nome: 'Biomas e Sucessão Ecológica'}]},
+                                    { nome: 'Módulo 4: Ecologia Aplicada', assuntos: [{id: 'impactos-ambientais', nome: 'Impactos Ambientais'}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'historia', nome: 'História', icone: 'landmark', cor: 'bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/20 dark:text-yellow-300 dark:border-yellow-800', 
+                        frentes: [
+                            {
+                                nome: 'História Geral',
+                                modulos: [
+                                    { nome: 'Módulo 1: Antiguidade e Idade Média', assuntos: [{id: 'antiguidade-media', nome: 'Antiguidade e Idade Média', subconteudos: [{id: 'antiguidade-oriental', nome: 'Antiguidade Oriental'}, {id: 'antiguidade-classica', nome: 'Antiguidade Clássica'}, {id: 'alta-idade-media', nome: 'Alta Idade Média'}, {id: 'baixa-idade-media', nome: 'Baixa Idade Média'}]}]},
+                                    { nome: 'Módulo 2: Idade Moderna', assuntos: [{id: 'idade-moderna', nome: 'Idade Moderna', subconteudos: [{id: 'expansao-maritima', nome: 'Expansão Marítima'}, {id: 'renascimento-cultural', nome: 'Renascimento Cultural'}, {id: 'reformas-religiosas', nome: 'Reformas Religiosas'}, {id: 'absolutismo-mercantilismo', nome: 'Absolutismo e Mercantilismo'}, {id: 'iluminismo', nome: 'Iluminismo'}]}]},
+                                    { nome: 'Módulo 3: Idade Contemporânea', assuntos: [{id: 'idade-contemporanea', nome: 'Idade Contemporânea', subconteudos: [{id: 'rev-francesa-era-nap', nome: 'Revolução Francesa e Era Napoleônica'}, {id: 'revolucoes-industriais', nome: 'Revoluções Industriais'}, {id: 'imperialismo', nome: 'Imperialismo'}, {id: 'primeira-guerra', nome: 'Primeira Guerra Mundial'}, {id: 'crise-29-totalitarismo', nome: 'Crise de 1929 e Regimes Totalitários'}, {id: 'segunda-guerra', nome: 'Segunda Guerra Mundial'}, {id: 'guerra-fria', nome: 'Guerra Fria'}]}]}
+                                ]
+                            },
+                            {
+                                nome: 'História do Brasil',
+                                modulos: [
+                                    { nome: 'Módulo 1: Brasil Colônia', assuntos: [{id: 'brasil-colonia', nome: 'Brasil Colônia', subconteudos: [{id: 'periodo-pre-colonial', nome: 'Período Pré-Colonial'}, {id: 'administracao-colonial', nome: 'Administração Colonial'}, {id: 'economia-acucareira', nome: 'Economia Açucareira'}, {id: 'mineracao', nome: 'Mineração'}, {id: 'revoltas-coloniais', nome: 'Revoltas Coloniais'}]}]},
+                                    { nome: 'Módulo 2: Brasil Império', assuntos: [{id: 'brasil-imperio', nome: 'Brasil Império', subconteudos: [{id: 'processo-independencia', nome: 'Processo de Independência'}, {id: 'primeiro-reinado', nome: 'Primeiro Reinado'}, {id: 'periodo-regencial', nome: 'Período Regencial'}, {id: 'segundo-reinado', nome: 'Segundo Reinado'}, {id: 'crise-imperio', nome: 'Crise do Império'}]}]},
+                                    { nome: 'Módulo 3: Brasil República', assuntos: [{id: 'brasil-republica', nome: 'Brasil República', subconteudos: [{id: 'republica-velha', nome: 'República Velha'}, {id: 'era-vargas', nome: 'Era Vargas'}, {id: 'republica-populista', nome: 'República Populista'}, {id: 'ditadura-militar', nome: 'Ditadura Militar'}, {id: 'nova-republica', nome: 'Nova República'}]}]}
+                                ]
+                            }
+                        ]
+                    },
                     {
                         id: 'geografia', nome: 'Geografia', icone: 'globe', cor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-900/20 dark:text-indigo-300 dark:border-indigo-800', 
                         frentes: [
@@ -433,21 +473,239 @@
                             }
                         ]
                     },
-                    {id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800', frentes: [{ nome: 'Fundamentos', modulos: [{ nome: 'Introdução', assuntos: [{id: 'oque-filosofia', nome: 'O que é Filosofia'}] }] }]},
-                    {id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800', frentes: [{ nome: 'Teoria', modulos: [{ nome: 'Clássicos', assuntos: [{id: 'comte', nome: 'Augusto Comte'}] }] }]},
-                    {id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800', frentes: [{ nome: 'Gramática', modulos: [{ nome: 'Morfologia', assuntos: [{id: 'classes', nome: 'Classes de Palavras'}]}] }]},
-                    {id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800', frentes: [{ nome: 'Escolas', modulos: [{ nome: 'Brasil', assuntos: [{id: 'modernismo', nome: 'Modernismo'}]}] }]},
-                    {id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800', frentes: [{ nome: 'Gramática', modulos: [{ nome: 'Verbos', assuntos: [{id: 'verbos', nome: 'Tempos Verbais'}]}] }]},
-                    {id: 'redacao', nome: 'Redação', icone: 'file-pen-line', cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800', frentes: [{ nome: 'Técnica', modulos: [{ nome: 'Estrutura', assuntos: [{id: 'enem-red', nome: 'Modelo ENEM'}]}] }]}
+                    {
+                        id: 'filosofia', nome: 'Filosofia', icone: 'brain-circuit', cor: 'bg-teal-50 text-teal-700 border-teal-200 dark:bg-teal-900/20 dark:text-teal-300 dark:border-teal-800', 
+                        frentes: [
+                            {
+                                nome: 'Fundamentos e Antiga',
+                                modulos: [
+                                    { nome: 'Introdução', assuntos: [{id: 'oque-filosofia', nome: 'O que é Filosofia'}] },
+                                    { nome: 'Pensamento Antigo', assuntos: [{id: 'felicidade-antiga', nome: 'Felicidade e Filosofia no pensamento antigo'}, {id: 'eros', nome: 'Eros e filosofia'}, {id: 'pre-socraticos', nome: 'Pré-Socráticos'}, {id: 'classicos', nome: 'Socráticos (Sócrates, Platão, Aristóteles)'}] }
+                                ]
+                            },
+                            {
+                                nome: 'Ética e Política Contemporânea',
+                                modulos: [
+                                    { nome: 'Bioética e Tecnologia', assuntos: [{id: 'bioetica', nome: 'Filosofia e bioética'}, {id: 'tec-sociedade', nome: 'Tecnologia e sociedade'}] },
+                                    { nome: 'Política e Religião', assuntos: [{id: 'religiao-estado', nome: 'Religião e Estado'}, {id: 'etica', nome: 'Ética'}, {id: 'politica', nome: 'Filosofia Política'}] }
+                                ]
+                            },
+                            {
+                                nome: 'Metafísica e Conhecimento',
+                                modulos: [
+                                    { nome: 'Metafísica', assuntos: [{id: 'metafisica', nome: 'Metafísica'}, {id: 'critica-metafisica', nome: 'Crítica à metafísica'}, {id: 'pos-critica', nome: 'Metafísica após a crítica'}] },
+                                    { nome: 'Teoria do Conhecimento', assuntos: [{id: 'epistemologia', nome: 'Teoria do Conhecimento (Racionalismo/Empirismo)'}] }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'sociologia', nome: 'Sociologia', icone: 'users', cor: 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-900/20 dark:text-cyan-300 dark:border-cyan-800', 
+                        frentes: [
+                             {
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Conceitos Fundamentais', assuntos: [{id: 'conceitos-sociologicos', nome: 'Cultura, Identidade e Estratificação Social', subconteudos: [{id: 'cultura-ideologia', nome: 'Cultura e Ideologia'}, {id: 'identidade-socializacao', nome: 'Identidade e Socialização'}, {id: 'estratificacao-desigualdade', nome: 'Estratificação e Desigualdade'}]}]},
+                                    { nome: 'Módulo 2: Estruturas Sociais', assuntos: [{id: 'estruturas-sociais', nome: 'Trabalho, Política e Movimentos Sociais', subconteudos: [{id: 'sociologia-trabalho', nome: 'Sociologia do Trabalho'}, {id: 'estado-poder-politica', nome: 'Estado, Poder e Política'}, {id: 'movimentos-sociais', nome: 'Movimentos Sociais'}]}]},
+                                    { nome: 'Módulo 3: Pensadores da Sociologia', assuntos: [{id: 'pensadores-sociologia', nome: 'Sociologia Clássica e Contemporânea', subconteudos: [{id: 'comte', nome: 'Augusto Comte'}, {id: 'durkheim', nome: 'Émile Durkheim'}, {id: 'weber', nome: 'Max Weber'}, {id: 'marx', nome: 'Karl Marx'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'portugues', nome: 'Português', icone: 'book-a', cor: 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-900/20 dark:text-orange-300 dark:border-orange-800', 
+                        frentes: [
+                            {
+                                nome: 'Gramática',
+                                modulos: [
+                                     { nome: 'Módulo 1: Morfologia', assuntos: [{id: 'morfologia', nome: 'Morfologia', subconteudos: [{id: 'classes-palavras-variaveis', nome: 'Classes de Palavras Variáveis'}, {id: 'classes-palavras-invariaveis', nome: 'Classes de Palavras Invariáveis'}, {id: 'formacao-palavras', nome: 'Processos de Formação de Palavras'}]}]},
+                                     { nome: 'Módulo 2: Sintaxe', assuntos: [{id: 'sintaxe', nome: 'Sintaxe', subconteudos: [{id: 'periodo-simples', nome: 'Período Simples: Termos da Oração'}, {id: 'oracoes-coordenadas', nome: 'Período Composto: Orações Coordenadas'}, {id: 'oracoes-subordinadas-substantivas', nome: 'Orações Subordinadas Substantivas'}, {id: 'oracoes-subordinadas-adjetivas', nome: 'Orações Subordinadas Adjetivas'}, {id: 'oracoes-subordinadas-adverbiais', nome: 'Orações Subordinadas Adverbiais'}]}]},
+                                     { nome: 'Módulo 3: Normas e Pontuação', assuntos: [{id: 'concordancia-regencia-crase', nome: 'Concordância, Regência e Crase', subconteudos: [{id: 'concordancia-verbal', nome: 'Concordância Verbal'}, {id: 'concordancia-nominal', nome: 'Concordância Nominal'}, {id: 'regencia-verbal-nominal', nome: 'Regência Verbal e Nominal'}, {id: 'crase', nome: 'Crase'}]}, {id: 'pontuacao', nome: 'Pontuação'}]}
+                                ]
+                            },
+                            {
+                                nome: 'Texto e Interpretação',
+                                modulos: [
+                                    { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
+                                    { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
+                                    { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística', subconteudos: [{id: 'figuras-linguagem', nome: 'Figuras de Linguagem'}, {id: 'variacao-linguistica', nome: 'Variação Linguística'}, {id: 'funcoes-linguagem', nome: 'Funções da Linguagem'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'literatura', nome: 'Literatura', icone: 'book-open', cor: 'bg-lime-50 text-lime-700 border-lime-200 dark:bg-lime-900/20 dark:text-lime-300 dark:border-lime-800', 
+                        frentes: [
+                            {
+                                nome: 'Módulos',
+                                modulos: [
+                                    { nome: 'Módulo 1: Período Colonial', assuntos: [{id: 'literatura-colonial', nome: 'Período Colonial', subconteudos: [{id: 'trovadorismo-classicismo', nome: 'Trovadorismo e Classicismo'}, {id: 'barroco-arcadismo', nome: 'Barroco e Arcadismo'}]}]},
+                                    { nome: 'Módulo 2: Século XIX', assuntos: [{id: 'literatura-seculo-xix', nome: 'Século XIX', subconteudos: [{id: 'romantismo', nome: 'Romantismo (Prosa e Poesia)'}, {id: 'realismo-naturalismo', nome: 'Realismo e Naturalismo'}, {id: 'parnasianismo-simbolismo', nome: 'Parnasianismo e Simbolismo'}]}]},
+                                    { nome: 'Módulo 3: Século XX e XXI', assuntos: [{id: 'literatura-moderna', nome: 'Século XX e XXI', subconteudos: [{id: 'pre-modernismo', nome: 'Pré-Modernismo'}, {id: 'modernismo-br', nome: 'Modernismo no Brasil'}, {id: 'tendencias-contemp', nome: 'Tendências Contemporâneas'}]}]}
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'ingles', nome: 'Inglês', icone: 'languages', cor: 'bg-pink-50 text-pink-700 border-pink-200 dark:bg-pink-900/20 dark:text-pink-300 dark:border-pink-800', 
+                        frentes: [
+                            {
+                                nome: 'Gramática (Grammar)',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Tempos Verbais',
+                                        assuntos: [
+                                            {
+                                                id: 'verb-tenses', nome: 'Tempos Verbais',
+                                                subconteudos: [
+                                                    { id: 'simple-tenses', nome: 'Simple Tenses' },
+                                                    { id: 'continuous-tenses', nome: 'Continuous Tenses' },
+                                                    { id: 'perfect-tenses', nome: 'Perfect Tenses' },
+                                                    { id: 'tenses-comparison', nome: 'Comparativo entre Tempos Verbais' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Estrutura da Frase',
+                                        assuntos: [
+                                            { 
+                                                id: 'prepositions-conjunctions', nome: 'Prepositions and Conjunctions',
+                                                subconteudos: [
+                                                    { id: 'prepositions-time', nome: 'Prepositions of Time' },
+                                                    { id: 'prepositions-place', nome: 'Prepositions of Place' },
+                                                    { id: 'coordinating-conjunctions', nome: 'Coordinating Conjunctions' },
+                                                    { id: 'subordinating-conjunctions', nome: 'Subordinating Conjunctions' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'pronouns-articles', nome: 'Pronouns and Articles',
+                                                subconteudos: [
+                                                    { id: 'subject-object-pronouns', nome: 'Subject & Object Pronouns' },
+                                                    { id: 'possessive-pronouns-adjectives', nome: 'Possessive Pronouns & Adjectives' },
+                                                    { id: 'definite-indefinite-articles', nome: 'Definite & Indefinite Articles' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'reported-speech', nome: 'Reported Speech',
+                                                subconteudos: [
+                                                    { id: 'reported-statements', nome: 'Reported Statements' },
+                                                    { id: 'reported-questions', nome: 'Reported Questions' },
+                                                    { id: 'reporting-verbs', nome: 'Reporting Verbs' },
+                                                    { id: 'tense-pronoun-changes', nome: 'Changes in Tense, Pronouns, and Time' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 3: Verbos Modais e Condicionais',
+                                        assuntos: [
+                                            { 
+                                                id: 'modal-verbs', nome: 'Modal Verbs',
+                                                subconteudos: [
+                                                    { id: 'modals-ability', nome: 'Modals of Ability' },
+                                                    { id: 'modals-obligation', nome: 'Modals of Obligation' },
+                                                    { id: 'modals-possibility', nome: 'Modals of Possibility' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'conditionals', nome: 'Conditionals',
+                                                subconteudos: [
+                                                    { id: 'zero-first-conditional', nome: 'Zero & First Conditional' },
+                                                    { id: 'second-conditional', nome: 'Second Conditional' },
+                                                    { id: 'third-conditional', nome: 'Third Conditional' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'passive-voice', nome: 'Passive Voice',
+                                                subconteudos: [
+                                                    { id: 'passive-voice-tenses', nome: 'Passive Voice in Different Tenses' },
+                                                    { id: 'passive-with-by', nome: 'Using "by" in the Passive Voice' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            },
+                            {
+                                nome: 'Vocabulário e Interpretação',
+                                modulos: [
+                                    {
+                                        nome: 'Módulo 1: Habilidades de Leitura',
+                                        assuntos: [
+                                            { 
+                                                id: 'skimming-scanning', nome: 'Skimming and Scanning',
+                                                subconteudos: [
+                                                    { id: 'skimming-techniques', nome: 'Techniques for Skimming' },
+                                                    { id: 'scanning-techniques', nome: 'Techniques for Scanning' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'main-idea-inference', nome: 'Main Idea and Inference',
+                                                subconteudos: [
+                                                    { id: 'identifying-main-idea', nome: 'Identifying the Main Idea' },
+                                                    { id: 'making-inferences', nome: 'Making Inferences from Text' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'text-comprehension', nome: 'Interpretação de Textos',
+                                                subconteudos: [
+                                                    { id: 'understanding-context', nome: 'Understanding Context and Tone' },
+                                                    { id: 'identifying-purpose', nome: 'Identifying Author\'s Purpose' }
+                                                ]
+                                            }
+                                        ]
+                                    },
+                                    {
+                                        nome: 'Módulo 2: Construção de Vocabulário',
+                                        assuntos: [
+                                            { 
+                                                id: 'phrasal-verbs', nome: 'Phrasal Verbs',
+                                                subconteudos: [
+                                                    { id: 'common-phrasal-verbs', nome: 'Common Phrasal Verbs' },
+                                                    { id: 'separable-inseparable', nome: 'Separable vs. Inseparable' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'idioms', nome: 'Idiomatic Expressions',
+                                                subconteudos: [
+                                                    { id: 'common-idioms', nome: 'Common English Idioms' }
+                                                ]
+                                            },
+                                            { 
+                                                id: 'false-cognates', nome: 'False Cognates',
+                                                subconteudos: [
+                                                    { id: 'common-false-friends', nome: 'Common False Friends' }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                ]
+                            }
+                        ]
+                    },
+                    {
+                        id: 'redacao',
+                        nome: 'Redação',
+                        icone: 'file-pen-line', 
+                        cor: 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-900/20 dark:text-rose-300 dark:border-rose-800', 
+                        frentes: [
+                            {
+                                nome: 'Módulos',
+                                modulos: [
+                                     { nome: 'Módulo 1: Estrutura e Competências', assuntos: [{id: 'estrutura-dissertativa', nome: 'Estrutura Dissertativo-Argumentativa'}, {id: 'competencias-enem', nome: 'Competências do ENEM'}]}
+                                ]
+                            }
+                        ]
+                    }
                 ],
                 questoes: []
             },
-
-            // INÍCIO DO CÓDIGO DE LÓGICA E EVENTOS (Mantido inalterado e funcional)
+            
             searchIndex: [],
             currentAssuntos: [], 
 
-            init: function() {
+            init: async function() {
                 if (typeof lucide !== 'undefined') lucide.createIcons();
                 
                 if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -462,9 +720,7 @@
                     } catch(e) { console.error("Cache inválido", e); }
                 }
 
-                if (typeof app.initFirebase === 'function') {
-                    app.initFirebase();
-                }
+                await this.initFirebase();
 
                 this.setupNavigation();
                 this.setupMobileMenu();
@@ -474,21 +730,23 @@
                 this.setupSearch();
             },
 
-            // --- FIREBASE ---
+            // --- FIREBASE & CLOUD STORAGE ---
             initFirebase: async function() {
-                const firebaseConfig = {
-                    apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
-                    authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
-                    projectId: "genius---plataforma-de-estudos",
-                    storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
-                    messagingSenderId: "410977832662",
-                    appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
-                };
-
+                const statusEl = document.getElementById('cloud-status');
+                
                 try {
                     const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js");
                     const { getAuth, signInAnonymously, onAuthStateChanged } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js");
                     const { getStorage, ref, listAll, getBytes } = await import("https://www.gstatic.com/firebasejs/10.8.0/firebase-storage.js");
+
+                    const firebaseConfig = {
+                        apiKey: "AIzaSyCdXO82z5x01QtD5G4gxoL1qosa8e0QIp4",
+                        authDomain: "genius---plataforma-de-estudos.firebaseapp.com",
+                        projectId: "genius---plataforma-de-estudos",
+                        storageBucket: "genius---plataforma-de-estudos.firebasestorage.app",
+                        messagingSenderId: "410977832662",
+                        appId: "1:410977832662:web:3c98e18c232f33bf4a8377"
+                    };
 
                     const appName = "InsFlow-" + new Date().getTime();
                     const firebaseApp = initializeApp(firebaseConfig, appName);
@@ -498,13 +756,15 @@
                     try {
                         await signInAnonymously(auth);
                     } catch (authError) {
-                        console.warn("Offline", authError);
+                        console.warn("Autenticação anônima falhou. Modo offline ativado.", authError);
+                        if(statusEl) { statusEl.textContent = "Modo Offline"; statusEl.classList.add('bg-yellow-200'); }
                         return; 
                     }
 
                     onAuthStateChanged(auth, (user) => {
                         if (user) {
-                            console.log("Firebase OK");
+                            console.log("Firebase conectado:", user.uid);
+                            if(statusEl) { statusEl.textContent = "Conectado"; statusEl.classList.remove('bg-gray-200'); statusEl.classList.add('bg-green-200', 'text-green-800'); }
                             this.fetchCloudFilesList(ref, listAll);
                         }
                     });
@@ -512,7 +772,8 @@
                     this.firebaseUtils = { ref, getBytes };
 
                 } catch (e) {
-                    console.error("Erro Firebase:", e);
+                    console.error("Erro crítico ao inicializar Firebase:", e);
+                    if(statusEl) { statusEl.textContent = "Erro Conexão"; statusEl.classList.add('bg-red-200'); }
                 }
             },
 
@@ -522,169 +783,185 @@
                     const folderRef = ref(this.storage, 'provas/');
                     const res = await listAll(folderRef);
                     this.cloudFilesList = res.items.filter(item => item.name.includes('_CAD_'));
-                } catch (error) { console.error(error); }
+                    console.log(`${this.cloudFilesList.length} provas encontradas no Storage.`);
+                } catch (error) {
+                    console.error("Erro ao listar arquivos do Storage:", error);
+                }
             },
 
             autoLoadProofContext: async function() {
-                 if(this.activeCloudText) return true;
-                 if(!this.cloudFilesList || !this.cloudFilesList.length) return false;
-                 const ref = this.cloudFilesList[Math.floor(Math.random() * this.cloudFilesList.length)];
-                 this.activeProofName = ref.name;
-                 const btn = document.getElementById('btn-gerar-questoes');
-                 const txt = btn.textContent;
-                 btn.textContent = "Carregando base...";
-                 try {
-                     const blob = await this.firebaseUtils.getBytes(ref);
-                     let pdfTxt = "";
-                     if (typeof pdfjsLib !== 'undefined') {
-                         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
-                         const pdf = await pdfjsLib.getDocument({data: blob}).promise;
-                         for(let i=1; i<=pdf.numPages; i++) { const p = await pdf.getPage(i); const t = await p.getTextContent(); pdfTxt += t.items.map(s=>s.str).join(' ')+'\n'; }
-                     }
-                     this.activeCloudText = pdfTxt;
-                     return true;
-                 } catch(e) { return false; } finally { btn.textContent = txt; }
+                if (this.activeCloudText) return true;
+
+                if (!this.cloudFilesList || this.cloudFilesList.length === 0 || !this.firebaseUtils) {
+                    return false; 
+                }
+
+                const randomFileRef = this.cloudFilesList[Math.floor(Math.random() * this.cloudFilesList.length)];
+                this.activeProofName = randomFileRef.name;
+                
+                const btn = document.getElementById('btn-gerar-questoes');
+                const originalText = btn.textContent;
+                btn.textContent = "Baixando base...";
+                btn.disabled = true;
+
+                try {
+                    const { ref, getBytes } = this.firebaseUtils;
+                    const proofBlob = await getBytes(randomFileRef);
+                    
+                    let gabaritoText = "";
+                    const gabPath = randomFileRef.fullPath.replace("_CAD_", "_GAB_");
+                    try {
+                        const gabRef = ref(this.storage, gabPath);
+                        const gabBlob = await getBytes(gabRef);
+                        
+                        if (typeof pdfjsLib !== 'undefined') {
+                            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+                            const gabPdf = await pdfjsLib.getDocument({ data: gabBlob }).promise;
+                            for (let i = 1; i <= gabPdf.numPages; i++) {
+                                const p = await gabPdf.getPage(i);
+                                const tc = await p.getTextContent();
+                                gabaritoText += tc.items.map(item => item.str).join(' ') + "\n";
+                            }
+                        }
+                    } catch (e) { console.warn("Sem gabarito para esta prova."); }
+
+                    let proofText = "";
+                    if (typeof pdfjsLib !== 'undefined') {
+                        const pdf = await pdfjsLib.getDocument({ data: proofBlob }).promise;
+                        for (let i = 1; i <= pdf.numPages; i++) {
+                            const p = await pdf.getPage(i);
+                            const tc = await p.getTextContent();
+                            proofText += tc.items.map(item => item.str).join(' ') + "\n";
+                        }
+                    }
+
+                    this.activeCloudText = `PROVA (${randomFileRef.name}):\n${proofText}\n\nGABARITO:\n${gabaritoText}`;
+                    console.log("Contexto de prova carregado com sucesso.");
+                    
+                    btn.textContent = originalText;
+                    btn.disabled = false;
+                    return true;
+                } catch (e) {
+                    console.error("Erro autoload:", e);
+                    btn.textContent = "Erro base";
+                    setTimeout(() => { btn.textContent = originalText; btn.disabled = false; }, 2000);
+                    return false;
+                }
             },
 
-            toggleTheme() {
+            toggleTheme: function() {
                 const html = document.documentElement;
                 if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('theme', 'light'); } 
                 else { html.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
             },
 
-            async callAPI(prompt, isJson, agentType = 'default') {
+            callAPI: async function(prompt, isJson, agentType = 'default') {
                 if (!API_KEY) {
-                    const key = window.prompt("Chave API:");
-                    if(key) { API_KEY = key; localStorage.setItem('insflow_openai_key', key); } else throw new Error("Chave necessária");
+                    API_KEY = localStorage.getItem('insflow_openai_key') || "";
+                    if (!API_KEY) {
+                        const key = window.prompt("Insira sua API Key:");
+                        if(key) {
+                            API_KEY = key;
+                            localStorage.setItem('insflow_openai_key', API_KEY);
+                        } else {
+                            throw new Error("Chave necessária.");
+                        }
+                    }
                 }
-                const body = JSON.stringify({ 
+
+                const requestBody = {
                     model: "gpt-4o-mini", 
-                    messages: [{role: "user", content: prompt}], 
-                    response_format: isJson ? {type: "json_object"} : undefined,
-                    agentType: agentType // Suporte a auditoria
-                });
+                    messages: [{ role: "user", content: prompt }],
+                    response_format: isJson ? { type: "json_object" } : undefined,
+                    temperature: 0.7
+                };
 
-                // Backend Vercel com Suporte a Multi-Agentes
                 try {
-                    const r = await fetch('/api/chat', {method: 'POST', headers: {'Content-Type': 'application/json'}, body});
-                    if(r.ok) { 
-                        const j = await r.json(); 
-                        // Se retornou ID de thread, é um agente -> fazer polling
-                        if(j.threadId) return await this.pollAgent(j.threadId, j.runId);
-                        if(j.choices) return j.choices[0].message.content; 
-                        if(j.response) return j.response; 
+                    const response = await fetch('/api/chat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(requestBody)
+                    });
+                    if (response.ok) {
+                        const json = await response.json();
+                        if (json.choices && json.choices.length > 0) {
+                             return json.choices[0].message.content;
+                        }
+                        if (json.response) return json.response; 
                     }
-                } catch(e){}
-
-                // Fallback Direto (Só funciona para chat completion, não auditoria)
-                if (agentType === 'default') {
-                    const r = await fetch("https://api.openai.com/v1/chat/completions", {method: 'POST', headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${API_KEY}`}, body});
-                    if(!r.ok) { if(r.status===401) localStorage.removeItem('insflow_openai_key'); throw new Error(r.status); }
-                    const j = await r.json(); return j.choices[0].message.content;
-                } else {
-                    throw new Error("Auditoria requer Backend Vercel.");
-                }
-            },
-
-            async pollAgent(threadId, runId) {
-                let attempts = 0;
-                while (attempts < 60) {
-                    await new Promise(r => setTimeout(r, 2000));
-                    attempts++;
-                    const check = await fetch(`/api/chat?threadId=${threadId}&runId=${runId}&t=${Date.now()}`);
-                    if(check.ok) {
-                        const data = await check.json();
-                        if(data.status === 'completed') return data.response;
-                        if(data.status === 'failed') throw new Error("Agente falhou");
-                    }
-                }
-                throw new Error("Timeout");
-            },
-
-            getLoadingSpinner(t) { return `<div class="flex flex-col items-center p-6"><div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div><p class="text-indigo-600 animate-pulse">${t}</p></div>`; },
-
-            async generateContent(mat, top, tipo, id) {
-                const el = document.getElementById(id);
-                if(!el) return;
-                el.innerHTML = this.getLoadingSpinner("Gerando...");
-                let fmt = tipo==='resumo'?'Resumo Flashcard':(tipo==='explicacao'?'Aula Didática':'Dossiê Completo');
-                try {
-                    let c = await this.callAPI(`Professor ENEM. Tópico: ${top} (${mat}). Formato: ${fmt}. Use HTML e LaTeX.`, false);
-                    el.innerHTML = c.replace(/```html/g,'').replace(/```/g,'');
-                    if(window.renderMathInElement) renderMathInElement(el);
-                } catch(e) { el.innerHTML = "Erro."; }
-            },
-
-            // --- AUDITORIA (FUNCIONAL) ---
-            async runContentAudit() {
-                const panel = document.getElementById('audit-panel');
-                const output = document.getElementById('audit-content');
-                const loading = document.getElementById('audit-loading');
-                const btn = document.getElementById('btn-audit');
-                
-                panel.classList.remove('hidden');
-                loading.classList.remove('hidden');
-                output.classList.add('hidden');
-                output.innerHTML = ""; 
-                
-                btn.disabled = true;
-                btn.innerHTML = "Auditando...";
-
-                const currentStructure = JSON.stringify(this.db.materias, (key, value) => {
-                    if (key === 'icone' || key === 'cor') return undefined;
-                    return value;
-                });
-
-                const prompt = `
-                [MODO AUDITORIA ATIVADO]
-                Analise o JSON abaixo comparando com os arquivos de prova na sua Vector Store.
-                Liste APENAS o que falta.
-                JSON ATUAL: ${currentStructure}
-                `;
-
-                try {
-                    let res = await this.callAPI(prompt, false, 'auditor');
-                    res = res.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
-                    output.innerHTML = res;
                 } catch (e) {
-                    output.innerHTML = `<div class="text-red-500">Erro na auditoria: ${e.message}</div>`;
-                } finally {
-                    loading.classList.add('hidden');
-                    output.classList.remove('hidden');
-                    btn.disabled = false;
-                    btn.innerHTML = `<i data-lucide="file-search"></i><span>Auditar Conteúdo vs. ENEM (IA)</span>`;
-                    if(typeof lucide !== 'undefined') lucide.createIcons();
+                    console.warn("Backend Vercel falhou. Usando modo direto.");
+                }
+
+                try {
+                    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${API_KEY}` },
+                        body: JSON.stringify(requestBody)
+                    });
+                    if (!response.ok) {
+                        if (response.status === 401) localStorage.removeItem('insflow_openai_key');
+                        throw new Error(`Erro da API (${response.status}): ${errText}`);
+                    }
+                    const json = await response.json();
+                    return json.choices[0].message.content;
+                } catch (e) { throw e; }
+            },
+
+            getLoadingSpinner: function(text) {
+                return `<div class="flex flex-col items-center justify-center p-6 space-y-3"><div class="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div><p class="text-sm text-indigo-600 dark:text-indigo-400 font-medium animate-pulse">${text}</p></div>`;
+            },
+
+            generateContent: async function(materia, topico, tipo, targetId) {
+                const target = document.getElementById(targetId);
+                if(!target) return;
+                target.innerHTML = this.getLoadingSpinner("Gerando conteúdo...");
+
+                let formato = tipo === 'resumo' ? 'Resumo Flashcard (Tópicos)' : (tipo === 'explicacao' ? 'Aula Didática' : 'Dossiê Completo');
+                let extra = ['Sociologia','Filosofia','História'].includes(materia) ? "Foque em conceitos e autores, sem matemática." : "";
+                
+                const prompt = `Professor ENEM. Tópico: ${topico} (${materia}). Formato: ${formato}. ${extra}. Use HTML e LaTeX $$ para fórmulas.`;
+
+                try {
+                    let content = await this.callAPI(prompt, false);
+                    content = content.replace(/```html/g, '').replace(/```/g, '');
+                    target.innerHTML = content;
+                    if(window.renderMathInElement) renderMathInElement(target);
+                } catch (e) {
+                    target.innerHTML = `<div class="text-red-500 p-2 text-xs">Erro: ${e.message}</div>`;
                 }
             },
 
-            populateFilters() {
-                const d = document.getElementById('filtro-disciplina');
-                if(!d) return;
-                d.innerHTML = '<option value="">Selecione</option>' + this.db.materias.map(m=>`<option value="${m.id}">${m.nome}</option>`).join('');
-                const reset = (id) => { const e = document.getElementById(id); e.innerHTML = '<option value="">Selecione</option>'; e.disabled = true; };
+            populateFilters: function() {
+                const discSel = document.getElementById('filtro-disciplina');
+                if(!discSel) return;
+                discSel.innerHTML = '<option value="">Selecione</option>' + this.db.materias.map(m => `<option value="${m.id}">${m.nome}</option>`).join('');
                 
-                d.onchange = () => {
-                    reset('filtro-conteudo'); reset('filtro-subconteudo');
-                    const m = this.db.materias.find(x=>x.id===d.value);
+                const reset = (id, txt) => { const el = document.getElementById(id); el.innerHTML = `<option value="">${txt}</option>`; el.disabled = true; };
+
+                discSel.onchange = () => {
+                    reset('filtro-conteudo', 'Selecione o Conteúdo');
+                    reset('filtro-subconteudo', 'Aguardando Conteúdo');
+                    const m = this.db.materias.find(x => x.id === discSel.value);
                     if(m) {
-                        const as = []; m.frentes.forEach(f=>f.modulos.forEach(md=>md.assuntos.forEach(a=>as.push(a))));
-                        as.sort((a,b)=>a.nome.localeCompare(b.nome));
-                        const c = document.getElementById('filtro-conteudo');
-                        c.innerHTML = '<option value="">Selecione</option>' + as.map(a=>`<option value="${a.id}">${a.nome}</option>`).join('');
-                        c.disabled = false;
-                        this.currentAssuntos = as;
+                        const assuntos = [];
+                        m.frentes.forEach(f => f.modulos.forEach(md => md.assuntos.forEach(a => assuntos.push(a))));
+                        assuntos.sort((a, b) => a.nome.localeCompare(b.nome));
+                        document.getElementById('filtro-conteudo').innerHTML = '<option value="">Selecione</option>' + assuntos.map(a => `<option value="${a.id}">${a.nome}</option>`).join('');
+                        document.getElementById('filtro-conteudo').disabled = false;
+                        this.currentAssuntos = assuntos;
                     }
                 };
-                
+
                 document.getElementById('filtro-conteudo').onchange = () => {
-                    const aid = document.getElementById('filtro-conteudo').value;
-                    const s = document.getElementById('filtro-subconteudo');
-                    reset('filtro-subconteudo');
-                    if(aid) {
-                        const a = this.currentAssuntos.find(x=>x.id===aid);
-                        if(a && a.subconteudos) {
-                            s.innerHTML = '<option value="">Geral</option>' + a.subconteudos.map(x=>`<option value="${x.nome}">${x.nome}</option>`).join('');
-                            s.disabled = false;
+                    const aId = document.getElementById('filtro-conteudo').value;
+                    const sub = document.getElementById('filtro-subconteudo');
+                    reset('filtro-subconteudo', 'Selecione (Opcional)');
+                    if(aId) {
+                        const ass = this.currentAssuntos.find(a => a.id === aId);
+                        if(ass && ass.subconteudos) {
+                            sub.innerHTML = '<option value="">Geral</option>' + ass.subconteudos.map(s => `<option value="${s.nome}">${s.nome}</option>`).join('');
+                            sub.disabled = false;
                         }
                     }
                 };
@@ -692,137 +969,444 @@
                 document.getElementById('btn-gerar-questoes').onclick = () => this.handleGenerateQuestions();
             },
 
-            async handleGenerateQuestions() {
-                const d = document.getElementById('filtro-disciplina');
-                const c = document.getElementById('filtro-conteudo');
-                const search = document.getElementById('search-topic').value.trim();
-                
-                let topic = search, disc = "Geral";
-                if(!search) {
-                    if(!d.value || !c.value) return alert("Selecione filtros.");
-                    disc = d.options[d.selectedIndex].text;
-                    topic = c.options[c.selectedIndex].text;
-                }
-                
+            handleGenerateQuestions: async function() {
+                const discSel = document.getElementById('filtro-disciplina');
+                const contSel = document.getElementById('filtro-conteudo');
+                const subSel = document.getElementById('filtro-subconteudo');
+                const difSel = document.getElementById('filtro-dificuldade');
+                const searchInput = document.getElementById('search-topic');
                 const btn = document.getElementById('btn-gerar-questoes');
-                btn.disabled = true; btn.innerHTML = "Gerando...";
+                
+                const searchVal = searchInput.value.trim();
+                let topico = searchVal, disc = "Geral";
+                
+                if(!searchVal) {
+                    if(!discSel.value || !contSel.value) return alert("Selecione os filtros.");
+                    disc = discSel.options[discSel.selectedIndex].text;
+                    topico = contSel.options[contSel.selectedIndex].text;
+                    if(subSel.value) topico += ": " + subSel.value;
+                }
+
+                btn.disabled = true;
+                btn.innerHTML = "Gerando 5 Questões...";
                 document.getElementById('loading-indicator').classList.remove('hidden');
                 document.getElementById('questoes-placeholder').classList.add('hidden');
-                
+
                 await this.autoLoadProofContext();
-                
-                const dif = document.getElementById('filtro-dificuldade').value;
-                const exatas = ['matematica','fisica','quimica'].includes(d.value);
-                
-                const prompt = `Elaborador ENEM. Tópico: ${topic} (${disc}). Nível: ${dif}. ${exatas?'EXATAS: Resolva antes.':'HUMANAS: Conceitual.'} ${this.activeCloudText?'Baseado em prova real carregada.':''} JSON: { "questoes": [ { "enunciado": "...", "alternativas": [{"letra":"A","texto":"...","correta":false,"justificativa_erro":"..."}...], "resolucao": "..." } ] }`;
-                
+
+                const isExatas = ['matematica','fisica','quimica'].includes(discSel.value);
+                let protocolo = isExatas ? "EXATAS: Resolva matematicamente antes. Alternativa correta = resultado exato." : "HUMANAS: Foco conceitual. Sem cálculos.";
+                let dif = difSel.value === 'facil' ? 'Fácil' : (difSel.value === 'dificil' ? 'Difícil' : 'Médio');
+
+                let contextPrompt = "";
+                if (this.activeCloudText) {
+                    contextPrompt = `\nUSE O SEGUINTE CONTEXTO/TEXTO BASE (Extraído de PDF Oficial):\n"${this.activeCloudText.substring(0, 10000)}"\nBaseie o estilo das questões nisso, mas crie novas.`;
+                }
+
+                const prompt = `
+                Elaborador ENEM. Tópico: "${topico}" (${disc}). Nível: ${dif}.
+                ${protocolo}
+                ${contextoPrompt}
+                REGRA: 5 questões inéditas. Alternativas únicas. Resolução didática.
+                JSON OBRIGATÓRIO (Use \\n para quebras): 
+                { "questoes": [ { "enunciado": "...", "alternativas": [{"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."}...], "resolucao": "..." } ] }
+                `;
+
                 try {
                     let res = await this.callAPI(prompt, true);
-                    res = res.trim().replace(/^```json/,'').replace(/```$/,'');
-                    const data = JSON.parse(res);
+                    res = res.trim().replace(/^```json/i, '').replace(/^```/i, '').replace(/```$/i, '');
+                    let data;
+                    try {
+                        data = JSON.parse(res);
+                    } catch (e) {
+                        const lastClose = res.lastIndexOf('}');
+                        if (lastClose > -1) {
+                             let fixed = res.substring(0, lastClose + 1) + "]}";
+                             fixed = fixed.replace(/,\]\}/, "]}");
+                             try { data = JSON.parse(fixed); } 
+                             catch (e2) { 
+                                 const matches = res.match(/\{"enunciado":.+?"alternativas":\[.+?\]\}/gs);
+                                 if (matches) data = { questoes: matches.map(m => JSON.parse(m)) };
+                                 else throw e; 
+                             }
+                        } else throw e;
+                    }
+
+                    if(!data || !data.questoes) throw new Error("Falha na estrutura.");
+
+                    const startIdx = this.db.questoes.length;
                     this.db.questoes = [...this.db.questoes, ...data.questoes];
-                    localStorage.setItem(this.CACHE_PREFIX+'questoes', JSON.stringify(this.db.questoes));
-                    this.appendQuestoesToDOM(data.questoes, this.db.questoes.length - data.questoes.length);
-                } catch(e) { alert("Erro: "+e.message); }
-                finally { btn.disabled = false; btn.innerHTML = "Gerar"; document.getElementById('loading-indicator').classList.add('hidden'); }
+                    localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                    this.appendQuestoesToDOM(data.questoes, startIdx);
+                } catch(e) {
+                    alert("Erro na geração: " + e.message);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerHTML = "Gerar 5 Novas Questões";
+                    document.getElementById('loading-indicator').classList.add('hidden');
+                }
             },
 
-            appendQuestoesToDOM(qs, start) {
-                const html = qs.map((q,i) => `
-                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow mb-6 border dark:border-gray-700">
-                        <div class="font-bold text-indigo-600 dark:text-indigo-400 mb-2">Q${start+i+1}</div>
-                        <div class="text-gray-800 dark:text-gray-200 mb-4">${q.enunciado}</div>
-                        <div class="space-y-2">
-                            ${q.alternativas.map((alt,idx) => `
-                                <div class="p-3 border rounded hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer relative group dark:border-gray-600" onclick="window.app.selectAlternativa(${start+i}, ${idx})" data-idx="${idx}" data-correct="${alt.correta}">
-                                    <div class="flex justify-between">
-                                        <div class="flex gap-2"><span class="font-bold text-gray-500">${alt.letra})</span> <span class="option-text dark:text-gray-300">${alt.texto}</span></div>
-                                        <button class="text-gray-300 hover:text-red-500" onclick="event.stopPropagation(); window.app.toggleStrike(this)"><i data-lucide="eye-off" class="w-4 h-4"></i></button>
+            appendQuestoesToDOM: function(questoes, startIndex) {
+                const list = document.getElementById('questoes-list');
+                const html = questoes.map((q, i) => {
+                    const idx = startIndex + i;
+                    return `
+                    <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 mb-6 animate-fade-in">
+                        <div class="flex gap-3 mb-4"><span class="bg-indigo-100 text-indigo-700 dark:bg-indigo-900 dark:text-indigo-300 font-bold px-3 py-1 rounded-lg text-sm h-fit whitespace-nowrap">Q${idx+1}</span><div class="text-gray-800 dark:text-gray-200 font-medium text-lg">${q.enunciado}</div></div>
+                        <div class="space-y-2 pl-0 md:pl-10" id="q-options-${idx}">
+                            ${q.alternativas.map((alt, optIdx) => `
+                                <div class="option-item group p-3 border dark:border-gray-600 rounded-lg cursor-pointer hover:bg-gray-50 dark:hover:bg-gray-700 relative" onclick="window.app.selectAlternativa(${idx}, ${optIdx})" data-idx="${optIdx}" data-correct="${alt.correta}">
+                                    <div class="flex justify-between items-center">
+                                        <div class="flex gap-3 items-center flex-1">
+                                            <div class="option-radio w-5 h-5 rounded-full border-2 border-gray-300 flex items-center justify-center"><div class="w-2.5 h-2.5 rounded-full bg-indigo-600 hidden"></div></div>
+                                            <div class="font-bold text-gray-400">${alt.letra})</div>
+                                            <div class="text-gray-700 dark:text-gray-300 option-text">${alt.texto}</div>
+                                        </div>
+                                        <button class="p-2 text-gray-300 hover:text-red-500" onclick="event.stopPropagation(); window.app.toggleStrike(this)"><i data-lucide="eye-off" class="w-4 h-4"></i></button>
                                     </div>
-                                    <div class="feedback hidden mt-2 text-sm text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-900 p-2 rounded">${alt.correta?'Correto!':alt.justificativa_erro}</div>
+                                    <div class="feedback hidden mt-2 text-sm p-2 rounded bg-opacity-50">${!alt.correta ? (alt.justificativa_erro || 'Incorreto.') : 'Correto!'}</div>
                                 </div>
                             `).join('')}
                         </div>
-                        <button class="mt-4 bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition" onclick="window.app.verificarResposta(${start+i}, this)">Responder</button>
-                        <div id="res-${start+i}" class="hidden mt-4 p-3 bg-blue-50 dark:bg-blue-900/20 text-sm dark:text-gray-300 rounded"><b>Resolução:</b> ${q.resolucao}</div>
-                    </div>
-                `).join('');
+                        <div class="mt-6 pl-0 md:pl-10">
+                            <button id="btn-responder-${idx}" onclick="window.app.verificarResposta(${idx})" class="bg-indigo-600 text-white font-semibold py-2 px-6 rounded-lg hover:bg-indigo-700 transition">Responder</button>
+                            <div id="resolucao-${idx}" class="hidden mt-4 p-3 bg-blue-50 dark:bg-gray-700 rounded border border-blue-100 dark:border-gray-600 text-sm text-gray-700 dark:text-gray-300">
+                                <span class="font-bold block mb-1">Resolução:</span>${q.resolucao}
+                            </div>
+                        </div>
+                    </div>`;
+                }).join('');
                 document.getElementById('loading-indicator').insertAdjacentHTML('beforebegin', html);
                 if(window.renderMathInElement) renderMathInElement(document.getElementById('questoes-list'));
                 lucide.createIcons();
             },
 
-            selectAlternativa(qIdx, altIdx) {
-                const c = document.getElementById('q-options-'+qIdx);
-                const sel = c.querySelector(`div[data-idx="${altIdx}"]`);
-                if(sel.classList.contains('strikethrough')) return;
-                c.querySelectorAll('div').forEach(d => d.classList.remove('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900'));
-                sel.classList.add('border-indigo-500', 'bg-indigo-50', 'dark:bg-indigo-900');
-                sel.classList.add('selected');
+            renderQuestoes: function() {
+                if(!this.db.questoes.length) return;
+                document.getElementById('questoes-placeholder').classList.add('hidden');
+                this.appendQuestoesToDOM(this.db.questoes, 0);
             },
 
-            toggleStrike(btn) {
-                const div = btn.closest('div.group');
-                div.classList.toggle('strikethrough');
+            clearQuestions: function() {
+                if(confirm('Deseja apagar todas as questões geradas?')) {
+                    this.db.questoes = [];
+                    localStorage.removeItem(this.CACHE_PREFIX + 'questoes');
+                    document.getElementById('questoes-list').innerHTML = `<div id="questoes-placeholder" class="text-center text-gray-500 py-12"><i data-lucide="book-open" class="mx-auto h-12 w-12 mb-3"></i><p>Inicie a geração.</p></div><div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>`;
+                    lucide.createIcons();
+                }
             },
 
-            verificarResposta(qIdx, btn) {
-                const c = document.getElementById('q-options-'+qIdx);
-                const sel = c.querySelector('.selected');
-                if(!sel) return alert("Selecione uma opção.");
-                btn.disabled = true;
-                btn.classList.add('opacity-50');
+            toggleStrike: function(btn) {
+                const item = btn.closest('.option-item');
+                item.classList.toggle('strikethrough');
+                if (item.classList.contains('selected')) {
+                    item.classList.remove('selected', 'border-indigo-600', 'bg-indigo-50');
+                    item.querySelector('.option-radio').classList.remove('border-indigo-600');
+                    item.querySelector('.option-radio div').classList.add('hidden');
+                }
+            },
+
+            selectAlternativa: function(qIndex, altIndex) {
+                const btn = document.getElementById(`btn-responder-${qIndex}`);
+                if (btn && btn.disabled) return;
+                const container = document.getElementById(`q-options-${qIndex}`);
+                container.querySelectorAll('.option-item').forEach(el => {
+                    el.classList.remove('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+                    el.querySelector('.option-radio').classList.remove('border-indigo-600', 'dark:border-indigo-400');
+                    el.querySelector('.option-radio div').classList.add('hidden');
+                });
+                const selected = container.querySelector(`.option-item[data-idx="${altIndex}"]`);
+                if(selected && !selected.classList.contains('strikethrough')) {
+                    selected.classList.add('selected', 'border-indigo-600', 'dark:border-indigo-400', 'bg-indigo-50', 'dark:bg-indigo-900/30');
+                    selected.querySelector('.option-radio').classList.add('border-indigo-600', 'dark:border-indigo-400');
+                    selected.querySelector('.option-radio div').classList.remove('hidden');
+                }
+            },
+
+            verificarResposta: function(qIndex) {
+                const container = document.getElementById(`q-options-${qIndex}`);
+                const selected = container.querySelector('.option-item.selected');
+                if (!selected) return alert("Selecione uma alternativa.");
                 
-                c.querySelectorAll('div.group').forEach(d => {
-                    const isCorrect = d.getAttribute('data-correct') === 'true';
-                    if(isCorrect) d.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/30');
-                    else if(d.classList.contains('selected')) d.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/30');
-                    
-                    if(d.classList.contains('selected') || isCorrect) d.querySelector('.feedback').classList.remove('hidden');
+                const isCorrect = selected.getAttribute('data-correct') === 'true';
+                const btn = document.getElementById(`btn-responder-${qIndex}`);
+                
+                btn.disabled = true;
+                btn.textContent = isCorrect ? "Correto" : "Incorreto";
+                btn.className = `w-full sm:w-auto font-semibold py-2 px-6 rounded-lg transition text-white ${isCorrect ? 'bg-green-600' : 'bg-red-600'}`;
+
+                container.querySelectorAll('.option-item').forEach(el => {
+                    const correctAttr = el.getAttribute('data-correct') === 'true';
+                    if (correctAttr) {
+                        el.classList.add('border-green-500', 'bg-green-50', 'dark:bg-green-900/20', 'dark:border-green-500');
+                        el.querySelector('.feedback').classList.remove('hidden');
+                        el.querySelector('.feedback').classList.add('text-green-700', 'dark:text-green-400');
+                    } else if (el.classList.contains('selected') && !isCorrect) {
+                        el.classList.add('border-red-500', 'bg-red-50', 'dark:bg-red-900/20', 'dark:border-red-500');
+                        el.querySelector('.feedback').classList.remove('hidden');
+                        el.querySelector('.feedback').classList.add('text-red-700', 'dark:text-red-400');
+                    }
                 });
-                document.getElementById('res-'+qIdx).classList.remove('hidden');
-            },
-            
-            async handleRedacao(type) {
-                 // (Lógica simplificada para caber, mas funcional)
-                 const out = document.getElementById('redacao-output');
-                 out.classList.remove('hidden');
-                 out.innerHTML = "Gerando...";
-                 let p = "";
-                 if(type === 'tema') p = "Gere um tema ENEM.";
-                 // ... outros casos ...
-                 try {
-                     let r = await this.callAPI(p || "Olá", false);
-                     out.innerHTML = r.replace(/```html/g,'').replace(/```/g,'');
-                 } catch(e) { out.innerHTML = "Erro."; }
+                document.getElementById(`resolucao-${qIndex}`).classList.remove('hidden');
             },
 
-            setupNavigation() {
-                document.querySelectorAll('.nav-link').forEach(l => l.onclick = (e) => {
-                    e.preventDefault(); this.navigateTo(l.dataset.target);
+            handleRedacao: async function(tipo) {
+                const input = document.getElementById('redacao-theme');
+                const output = document.getElementById('redacao-output');
+                const texto = document.getElementById('redacao-paragraph').value;
+                output.classList.remove('hidden');
+                output.innerHTML = this.getLoadingSpinner("Processando...");
+                
+                let prompt = "";
+                const tema = input.value;
+                if (tipo === 'tema') prompt = "Gere um tema de redação ENEM.";
+                else if (tipo === 'repertorio') { if(!tema) return alert("Tema?"); prompt = `Repertório para: ${tema}`; }
+                else if (tipo === 'esboco') { if(!tema) return alert("Tema?"); prompt = `Esboço para: ${tema}`; }
+                else if (tipo === 'analise') { if(!texto) return alert("Texto?"); prompt = `Analise parágrafo: ${texto}`; }
+
+                try {
+                    let res = await this.callAPI(prompt, false);
+                    res = res.replace(/```html/g, '').replace(/```/g, '');
+                    if (tipo === 'tema') { input.value = res.replace(/["\n]/g, ''); output.classList.add('hidden'); }
+                    else output.innerHTML = res;
+                } catch (e) { output.innerHTML = `Erro: ${e.message}`; }
+            },
+
+            setupNavigation: function() {
+                document.querySelectorAll('.nav-link').forEach(l => {
+                    l.onclick = (e) => { e.preventDefault(); this.navigateTo(l.getAttribute('data-target')); };
                 });
             },
-            setupMobileMenu() {
-                 document.getElementById('mobile-menu-btn').onclick = () => document.getElementById('mobile-menu').classList.toggle('hidden');
+            setupMobileMenu: function() {
+                const menu = document.getElementById('mobile-menu');
+                document.getElementById('mobile-menu-btn').onclick = () => menu.classList.toggle('hidden');
             },
-            navigateTo(id) {
-                document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+            navigateTo: function(id) {
+                document.querySelectorAll('.content-section').forEach(el => { el.classList.remove('active'); el.style.display = 'none'; });
                 const t = document.getElementById(id);
-                if(t) { t.style.display = 'block'; setTimeout(()=>t.classList.add('active'),10); }
+                if(t) { t.style.display = 'block'; setTimeout(() => t.classList.add('active'), 10); }
+                window.scrollTo(0,0);
             },
             
-            buildSearchIndex() { /* ... */ },
-            setupSearch() { /* ... */ },
-            renderMateriasGrid() {
-                 const g = document.getElementById('materias-grid');
-                 g.innerHTML = this.db.materias.map(m => `<div class="p-6 rounded-lg border cursor-pointer hover:shadow-lg transition ${m.cor} dark:border-gray-700" onclick="window.app.openMateria('${m.id}')"><i data-lucide="${m.icone}" class="mb-3"></i><h3 class="font-bold">${m.nome}</h3></div>`).join('');
-                 lucide.createIcons();
+            renderMateriasGrid: function() {
+                const grid = document.getElementById('materias-grid');
+                if(grid) grid.innerHTML = this.db.materias.map(m => `<div class="p-6 rounded-lg shadow-sm border cursor-pointer flex flex-col items-center hover:shadow-md transition ${m.cor} dark:border-gray-700" onclick="window.app.openMateria('${m.id}')"><i data-lucide="${m.icone}" class="h-10 w-10 mb-3"></i><h3 class="font-bold text-lg">${m.nome}</h3></div>`).join('');
+                lucide.createIcons();
             },
-            openMateria(id) { /* Lógica de abrir detalhes (já detalhada anteriormente) */ },
-            filterSubjectContents(v) { /* ... */ },
-            clearQuestions() {
-                this.db.questoes = [];
-                document.getElementById('questoes-list').innerHTML = '';
+            
+            openMateria: function(id) {
+                const m = this.db.materias.find(x => x.id === id);
+                if(!m) return;
+                const detail = document.getElementById('materia-detalhe');
+                document.getElementById('materias-home').classList.add('hidden');
+                detail.classList.remove('hidden');
+                
+                // Conteúdo Detalhe da Matéria (Adicionado barra de busca interna)
+                detail.innerHTML = `
+                    <div class="max-w-5xl mx-auto">
+                        <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
+                            <button onclick="document.getElementById('materia-detalhe').classList.add('hidden'); document.getElementById('materias-home').classList.remove('hidden');" class="text-indigo-600 dark:text-indigo-400 font-bold flex items-center gap-2 hover:underline">
+                                <i data-lucide="arrow-left" class="w-5 h-5"></i> Voltar
+                            </button>
+                            <h2 class="text-3xl font-bold dark:text-white">${m.nome}</h2>
+                            
+                            <!-- Barra de Pesquisa Interna -->
+                            <div class="relative w-full md:w-72">
+                                <input type="text" placeholder="Buscar neste caderno..." class="w-full p-2 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 dark:text-white focus:ring-2 focus:ring-indigo-500 outline-none transition" oninput="window.app.filterSubjectContents(this.value)">
+                                <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4"></i>
+                            </div>
+                        </div>
+
+                        <div id="materia-conteudos-container" class="space-y-8">
+                            ${m.frentes.map(f => `
+                                <div class="materia-frente">
+                                    <h3 class="text-2xl font-bold border-b pb-2 mb-4 dark:text-gray-200 dark:border-gray-600">${f.nome}</h3>
+                                    <div class="grid gap-4">
+                                        ${f.modulos.map(mod => `
+                                            <div class="materia-modulo bg-white dark:bg-gray-800 p-5 rounded-lg border dark:border-gray-700">
+                                                <h4 class="font-bold text-lg text-indigo-600 dark:text-indigo-400 mb-3">${mod.nome}</h4>
+                                                <div class="space-y-2">
+                                                    ${mod.assuntos.map(a => `
+                                                        <div class="materia-assunto border-t pt-2 dark:border-gray-700">
+                                                            <div class="font-medium dark:text-gray-300">${a.nome}</div>
+                                                            ${a.subconteudos ? 
+                                                                `<div class="pl-4 mt-2 space-y-2 border-l-2 border-indigo-100 dark:border-gray-700">
+                                                                    ${a.subconteudos.map(s => `
+                                                                        <div class="materia-subconteudo">
+                                                                            <div class="text-sm text-gray-600 dark:text-gray-400 mb-1">${s.nome}</div>
+                                                                            <div class="flex flex-wrap gap-2">
+                                                                                <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'resumo', 'res-${s.id}')" class="text-xs bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-3 py-1 rounded hover:bg-indigo-100 transition">Resumo</button>
+                                                                                <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'explicacao', 'res-${s.id}')" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded hover:bg-gray-50 transition">Aula</button>
+                                                                                <button onclick="window.app.generateContent('${m.nome}', '${s.nome}', 'completo', 'res-${s.id}')" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition">Completo</button>
+                                                                            </div>
+                                                                            <div id="res-${s.id}" class="mt-2 text-gray-700 dark:text-gray-300 text-sm leading-relaxed prose max-w-none"></div>
+                                                                        </div>
+                                                                    `).join('')}
+                                                                </div>` 
+                                                                : 
+                                                                `<div class="flex gap-2 mt-2">
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'resumo', 'res-${a.id}')" class="text-xs bg-indigo-50 dark:bg-indigo-900 text-indigo-700 dark:text-indigo-200 px-3 py-1 rounded hover:bg-indigo-100 transition">Resumo</button>
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'explicacao', 'res-${a.id}')" class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 px-3 py-1 rounded hover:bg-gray-50 transition">Aula</button>
+                                                                    <button onclick="window.app.generateContent('${m.nome}', '${a.nome}', 'completo', 'res-${a.id}')" class="text-xs bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition">Completo</button>
+                                                                </div>
+                                                                <div id="res-${a.id}" class="mt-2 text-gray-700 dark:text-gray-300 text-sm leading-relaxed prose max-w-none"></div>`
+                                                            }
+                                                        </div>
+                                                    `).join('')}
+                                                </div>
+                                            </div>
+                                        `).join('')}
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                if(typeof lucide !== 'undefined') lucide.createIcons();
+                window.scrollTo(0,0);
+            },
+
+            // Filtro da tela inicial de matérias
+            filterSubjects(term) {
+                const t = term.toLowerCase().trim();
+                const grid = document.getElementById('materias-grid');
+                if (!grid) return;
+                
+                const cards = grid.children;
+                for (let card of cards) {
+                    const title = card.querySelector('h3');
+                    if (title) {
+                        const name = title.textContent.toLowerCase();
+                        if (name.includes(t)) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    }
+                }
+            },
+
+            // Filtro do conteúdo dentro de uma matéria
+            filterSubjectContents(term) {
+                const t = term.toLowerCase().trim();
+                const container = document.getElementById('materia-conteudos-container');
+                if (!container) return;
+
+                const frentes = container.querySelectorAll('.materia-frente');
+
+                frentes.forEach(frente => {
+                    let frenteVisible = false;
+                    const modulos = frente.querySelectorAll('.materia-modulo');
+
+                    modulos.forEach(modulo => {
+                        let moduloVisible = false;
+                        const assuntos = modulo.querySelectorAll('.materia-assunto');
+
+                        assuntos.forEach(assunto => {
+                            const text = assunto.textContent.toLowerCase();
+                            if (text.includes(t)) {
+                                assunto.classList.remove('hidden');
+                                moduloVisible = true;
+                                if (t.length > 0) {
+                                    const contentDiv = assunto.querySelector('div[id^="cont-"]');
+                                    if (contentDiv) contentDiv.classList.remove('hidden');
+                                }
+                            } else {
+                                assunto.classList.add('hidden');
+                            }
+                        });
+
+                        if (moduloVisible) {
+                            modulo.classList.remove('hidden');
+                            frenteVisible = true;
+                        } else {
+                            modulo.classList.add('hidden');
+                        }
+                    });
+
+                    if (frenteVisible) {
+                        frente.classList.remove('hidden');
+                    } else {
+                        frente.classList.add('hidden');
+                    }
+                });
+            },
+
+            buildSearchIndex: function() {
+                this.searchIndex = [];
+                this.db.materias.forEach(m => m.frentes.forEach(f => f.modulos.forEach(mod => mod.assuntos.forEach(a => {
+                    this.searchIndex.push({
+                        label: a.nome,
+                        type: 'Conteúdo',
+                        context: m.nome,
+                        data: { materiaId: m.id, conteudoId: a.id, subId: '' }
+                    });
+                    if (a.subconteudos) {
+                        a.subconteudos.forEach(s => {
+                            this.searchIndex.push({
+                                label: s.nome,
+                                type: 'Sub-conteúdo',
+                                context: `${m.nome} > ${a.nome}`,
+                                data: { materiaId: m.id, conteudoId: a.id, subId: s.nome } 
+                            });
+                        });
+                    }
+                }))));
+            },
+            
+            setupSearch: function() {
+                const input = document.getElementById('search-topic');
+                const res = document.getElementById('search-results');
+                input.addEventListener('input', (e) => {
+                    const val = e.target.value.toLowerCase();
+                    if(val.length < 2) { res.classList.add('hidden'); return; }
+                    const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
+                    if(hits.length) {
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearchResult(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
+                        res.classList.remove('hidden');
+                    } else {
+                        res.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
+                        res.classList.remove('hidden');
+                    }
+                });
+                document.addEventListener('click', (e) => {
+                    if (!input.contains(e.target) && !res.contains(e.target)) res.classList.add('hidden');
+                });
+                document.getElementById('clear-search').onclick = () => {
+                    input.value = '';
+                    res.classList.add('hidden');
+                };
+            },
+            
+            selectSearchResult: function(data, label) {
+                document.getElementById('search-results').classList.add('hidden');
+                document.getElementById('search-topic').value = label;
+                const disc = document.getElementById('filtro-disciplina');
+                disc.value = data.materiaId;
+                disc.dispatchEvent(new Event('change'));
+                
+                setTimeout(() => {
+                    const cont = document.getElementById('filtro-conteudo');
+                    cont.value = data.conteudoId;
+                    cont.dispatchEvent(new Event('change'));
+                    
+                    if(data.subId) {
+                        setTimeout(() => {
+                            const sub = document.getElementById('filtro-subconteudo');
+                            sub.value = data.subId;
+                        }, 50);
+                    }
+                }, 50);
+            },
+            
+            clearQuestions: function() {
+                if(confirm('Deseja apagar todas as questões geradas?')) {
+                    this.db.questoes = [];
+                    localStorage.removeItem(this.CACHE_PREFIX + 'questoes');
+                    document.getElementById('questoes-list').innerHTML = `<div id="questoes-placeholder" class="text-center text-gray-500 py-12"><i data-lucide="book-open" class="mx-auto h-12 w-12 mb-3"></i><p>Inicie a geração.</p></div><div id="loading-indicator" class="hidden text-center py-8"><div class="inline-block animate-spin w-8 h-8 border-4 border-indigo-500 border-t-transparent rounded-full"></div></div>`;
+                    lucide.createIcons();
+                }
             }
         };
 
