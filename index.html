@@ -79,9 +79,9 @@
         </nav>
         
         <div id="mobile-menu" class="hidden md:hidden bg-white dark:bg-gray-800 border-t dark:border-gray-700 p-4 space-y-2 shadow-lg">
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app.navigateTo('inicio')">Início</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-800 dark:text-gray-200" onclick="window.app.navigateTo('inicio')">Início</a>
             <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app.navigateTo('materias')">Matérias</a>
-            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app.navigateTo('questoes')">Questões</a>
+            <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded text-gray-800 dark:text-gray-200" onclick="window.app.navigateTo('questoes')">Questões</a>
             <a href="#" class="block py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded" onclick="window.app.navigateTo('redacao')">Redação</a>
         </div>
     </header>
@@ -99,14 +99,14 @@
             </div>
         </section>
 
-        <!-- 2. MATÉRIAS -->
+        <!-- 2. MATÉRIAS (COM BARRA DE PESQUISA) -->
         <section id="materias" class="content-section">
             <div id="materias-home">
                 <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
                     <h2 class="text-3xl font-bold text-gray-800 dark:text-white">Matérias</h2>
                     
                     <!-- Barra de Pesquisa na Aba Matérias -->
-                    <div class="relative w-full md:w-64">
+                    <div class="relative w-full md:w-72">
                         <input type="text" id="search-materias" oninput="window.app.filterSubjects(this.value)" class="w-full p-3 pl-10 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm focus:ring-2 focus:ring-indigo-500 outline-none transition bg-white dark:bg-gray-800 dark:text-white dark:placeholder-gray-400 text-sm" placeholder="Filtrar matéria...">
                         <i data-lucide="search" class="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 dark:text-gray-500 w-4 h-4"></i>
                     </div>
@@ -239,10 +239,10 @@
             cloudFilesList: [],
             firebaseUtils: null,
             
-            // BASE DE DADOS COMPLETA
+            // --- BASE DE DADOS COMPLETA (SEM NUMERAÇÃO DE CAPÍTULOS) ---
             db: {
                 materias: [
-                    {id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800', frentes: [{ nome: 'Matemática Básica', modulos: [{ nome: 'Fundamentos', assuntos: [{id: 'operacoes', nome: 'Operações Básicas'}, {id: 'fracoes', nome: 'Frações e Decimais'}, {id: 'porcentagem', nome: 'Porcentagem'}]}] }, { nome: 'Geometria', modulos: [{ nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'circulos', nome: 'Círculos'}] }, { nome: 'Espacial', assuntos: [{id: 'prismas', nome: 'Prismas'}, {id: 'cilindros', nome: 'Cilindros'}] }] }]},
+                    {id: 'matematica', nome: 'Matemática', icone: 'calculator', cor: 'bg-red-50 text-red-700 border-red-200 dark:bg-red-900/20 dark:text-red-300 dark:border-red-800', frentes: [{ nome: 'Matemática Básica', modulos: [{ nome: 'Módulo 1: Fundamentos', assuntos: [{id: 'operacoes-numericas', nome: 'Operações Numéricas', subconteudos: [{id: 'basicas', nome: '4 Operações Básicas'}, {id: 'pot-rad', nome: 'Potenciação e Radiciação'}]}, {id: 'razoes-proporcoes', nome: 'Razões e Proporções', subconteudos: [{id: 'razao-prop', nome: 'Razão e Proporção'}, {id: 'escalas', nome: 'Escalas e Grandezas'}]}, {id: 'regra-de-tres', nome: 'Regra de Três', subconteudos: [{id: 'regra-tres-simples', nome: 'Simples'}, {id: 'regra-tres-composta', nome: 'Composta'}]}, {id: 'porcentagem', nome: 'Porcentagem', subconteudos: [{id: 'calc-porcentagem', nome: 'Cálculos Básicos'}, {id: 'acresc-descontos', nome: 'Acréscimos e Descontos'}]}]}] }, { nome: 'Geometria', modulos: [{ nome: 'Plana', assuntos: [{id: 'triangulos', nome: 'Triângulos'}, {id: 'circulos', nome: 'Círculos'}] }, { nome: 'Espacial', assuntos: [{id: 'prismas', nome: 'Prismas'}, {id: 'cilindros', nome: 'Cilindros'}] }] }]},
                     {id: 'fisica', nome: 'Física', icone: 'atom', cor: 'bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/20 dark:text-blue-300 dark:border-blue-800', frentes: [{ nome: 'Mecânica', modulos: [{ nome: 'Cinemática', assuntos: [{id: 'mru', nome: 'Movimento Uniforme'}]}] }]},
                     {
                         id: 'quimica', nome: 'Química', icone: 'flask-conical', cor: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/20 dark:text-purple-300 dark:border-purple-800',
@@ -901,7 +901,7 @@
                     });
                     if (!response.ok) {
                         if (response.status === 401) localStorage.removeItem('insflow_openai_key');
-                        throw new Error(`Erro da API (${response.status}): ${errText}`);
+                        throw new Error(`Erro API: ${response.status}`);
                     }
                     const json = await response.json();
                     return json.choices[0].message.content;
@@ -917,14 +917,43 @@
                 if(!target) return;
                 target.innerHTML = this.getLoadingSpinner("Gerando conteúdo...");
 
-                let formato = tipo === 'resumo' ? 'Resumo Flashcard (Tópicos)' : (tipo === 'explicacao' ? 'Aula Didática' : 'Dossiê Completo');
-                let extra = ['Sociologia','Filosofia','História'].includes(materia) ? "Foque em conceitos e autores, sem matemática." : "";
+                let formatoInstrucao = "";
+                let loadingMsg = "";
                 
-                const prompt = `Professor ENEM. Tópico: ${topico} (${materia}). Formato: ${formato}. ${extra}. Use HTML e LaTeX $$ para fórmulas.`;
+                if (tipo === 'resumo') {
+                    loadingMsg = "Sintetizando pontos-chave e flashcards...";
+                    formatoInstrucao = `
+                    **FORMATO: RESUMO DIDÁTICO (Foco em Memorização)**
+                    - ESTRUTURA: Definição Concisa > Listas de Propriedades/Fórmulas ESSENCIAIS > Exemplo Prático.
+                    - PEDAGOGIA: Use **negrito** para termos-chave. Mantenha os parágrafos muito curtos.
+                    - SAÍDA: Deve ser um material de revisão rápida.
+                    `;
+                } else if (tipo === 'explicacao') {
+                    loadingMsg = "Preparando aula didática com analogias...";
+                    formatoInstrucao = `
+                    **FORMATO: AULA DETALHADA (Didática e Acessível)**
+                    - ESTRUTURA: Comece com uma **Analogia Simples** (ex: do dia a dia) para introduzir o conceito. Siga com o Desenvolvimento Lógico e finalização com Aplicação no ENEM.
+                    - PEDAGOGIA: Use linguagem profissional, mas com tom engajador. Explique O QUE, COMO e PORQUÊ.
+                    - SAÍDA: Use tags HTML (p, ul, b) para quebrar o texto e facilitar a leitura.
+                    `;
+                } else if (tipo === 'completo') {
+                    loadingMsg = "Elaborando dossiê aprofundado...";
+                    formatoInstrucao = `
+                    **FORMATO: DOSSIÊ COMPLETO (Rigor e Aprofundamento)**
+                    - ESTRUTURA: Detalhes, contexto histórico, deduções e relações interdisciplinares.
+                    - PEDAGOGIA: Rigor acadêmico. Inclua exceções à regra e análise crítica (se aplicável).
+                    - SAÍDA: Material ideal para domínio total do assunto.
+                    `;
+                }
+
+                let extra = ['Sociologia','Filosofia','História'].includes(materia) ? "Foque em conceitos, autores e contexto social. Não use fórmulas ou cálculos." : "";
+                
+                const prompt = `Professor ENEM. Tópico: "${topico}" (${materia}). Formato: ${formatoInstrucao}. ${extra}. Use HTML (p, h3, ul, b) e LaTeX $$ para fórmulas. Responda apenas com o conteúdo gerado.`;
 
                 try {
                     let content = await this.callAPI(prompt, false);
                     content = content.replace(/```html/g, '').replace(/```/g, '');
+                    
                     target.innerHTML = content;
                     if(window.renderMathInElement) renderMathInElement(target);
                 } catch (e) {
@@ -1006,7 +1035,7 @@
                 const prompt = `
                 Elaborador ENEM. Tópico: "${topico}" (${disc}). Nível: ${dif}.
                 ${protocolo}
-                ${contextoPrompt}
+                ${contextPrompt}
                 REGRA: 5 questões inéditas. Alternativas únicas. Resolução didática.
                 JSON OBRIGATÓRIO (Use \\n para quebras): 
                 { "questoes": [ { "enunciado": "...", "alternativas": [{"letra": "A", "texto": "...", "correta": false, "justificativa_erro": "..."}...], "resolucao": "..." } ] }
@@ -1078,7 +1107,7 @@
                     </div>`;
                 }).join('');
                 document.getElementById('loading-indicator').insertAdjacentHTML('beforebegin', html);
-                if(window.renderMathInElement) renderMathInElement(document.getElementById('questoes-list'));
+                if(window.renderMathInElement) renderMathInElement(list);
                 lucide.createIcons();
             },
 
@@ -1202,7 +1231,6 @@
                 document.getElementById('materias-home').classList.add('hidden');
                 detail.classList.remove('hidden');
                 
-                // Conteúdo Detalhe da Matéria (Adicionado barra de busca interna)
                 detail.innerHTML = `
                     <div class="max-w-5xl mx-auto">
                         <div class="flex flex-col md:flex-row justify-between items-center mb-8 gap-4">
@@ -1268,7 +1296,7 @@
             },
 
             // Filtro da tela inicial de matérias
-            filterSubjects(term) {
+            filterSubjects: function(term) {
                 const t = term.toLowerCase().trim();
                 const grid = document.getElementById('materias-grid');
                 if (!grid) return;
@@ -1288,7 +1316,7 @@
             },
 
             // Filtro do conteúdo dentro de uma matéria
-            filterSubjectContents(term) {
+            filterSubjectContents: function(term) {
                 const t = term.toLowerCase().trim();
                 const container = document.getElementById('materia-conteudos-container');
                 if (!container) return;
