@@ -627,11 +627,11 @@
                                             {
                                                 id: 'relative-clauses', nome: 'Relative Clauses',
                                                 subconteudos: [
-                                                    { id: 'who-that', name: 'Uso de WHO e THAT (Pessoas)' },
-                                                    { id: 'which-that', name: 'Uso de WHICH e THAT (Coisas)' },
-                                                    { id: 'whose', name: 'Uso de WHOSE (Posse)' },
-                                                    { id: 'when-where', name: 'Uso de WHEN e WHERE (Tempo e Lugar)' },
-                                                    { id: 'defining-non', name: 'Defining vs. Non-Defining Clauses' }
+                                                    { id: 'who-that', nome: 'Uso de WHO e THAT (Pessoas)' },
+                                                    { id: 'which-that', nome: 'Uso de WHICH e THAT (Coisas)' },
+                                                    { id: 'whose', nome: 'Uso de WHOSE (Posse)' },
+                                                    { id: 'when-where', nome: 'Uso de WHEN e WHERE (Tempo e Lugar)' },
+                                                    { id: 'defining-non', nome: 'Defining vs. Non-Defining Clauses' }
                                                 ]
                                             },
                                             {
@@ -1035,13 +1035,15 @@
                 const searchInput = document.getElementById('search-topic');
                 const btn = document.getElementById('btn-gerar-questoes');
                 
+                const originalBtnContent = btn.innerHTML; // Salva o conteúdo original do botão
+                
                 const searchVal = searchInput.value.trim();
                 let topico = searchVal, disc = "Geral";
                 
                 if(!searchVal) {
                     if(!discSel.value || !contSel.value) return alert("Selecione os filtros.");
                     disc = discSel.options[discSel.selectedIndex].text;
-                    // Lógica para priorizar o sub-conteúdo
+                    
                     if(subSel.value && subSel.value !== 'Geral' && subSel.value !== 'N/A (Tópico Único)') {
                         topico = subSel.value;
                     } else {
@@ -1105,8 +1107,9 @@
                 } catch(e) {
                     alert("Erro na geração: " + e.message);
                 } finally {
+                    // CORREÇÃO: Garante que o botão seja reativado após qualquer erro ou sucesso
                     btn.disabled = false;
-                    btn.innerHTML = "Gerar 5 Novas Questões";
+                    btn.innerHTML = originalBtnContent; 
                     document.getElementById('loading-indicator').classList.add('hidden');
                 }
             },
@@ -1448,7 +1451,7 @@
                     if(val.length < 2) { res.classList.add('hidden'); return; }
                     const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
                     if(hits.length) {
-                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearch(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearchResult(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
                         res.classList.remove('hidden');
                     } else {
                         res.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
