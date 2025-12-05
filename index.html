@@ -137,15 +137,11 @@
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Conteúdo</label>
-                            <select id="filtro-conteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
-                                <option value="">Selecione a Disciplina</option>
-                            </select>
+                            <select id="filtro-conteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled></select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Sub-conteúdo</label>
-                            <select id="filtro-subconteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled>
-                                <option value="">Selecione o Conteúdo</option>
-                            </select>
+                            <select id="filtro-subconteudo" class="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none bg-white dark:bg-gray-700 dark:text-white disabled:opacity-50" disabled></select>
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Dificuldade</label>
@@ -344,18 +340,18 @@
                                         {id: 'aromaticidade', nome: 'Compostos Aromáticos', subconteudos: []}
                                     ] },
                                     { nome: 'Módulo 2: Funções Oxigenadas (Nomenclatura)', assuntos: [
-                                        {id: 'nomenclatura-alcool', nome: 'Álcoois, Fenóis e Éteres', subconteudos: [{id:'alcool', name:'Álcoois'}, {id:'fenois', name:'Fenóis'}, {id:'eteres', name:'Éteres'}]}, 
-                                        {id: 'nomenclatura-acido', nome: 'Ácidos Carboxílicos e Ésteres', subconteudos: [{id:'acidos-c', name:'Ácidos Carboxílicos'}, {id:'esteres-n', name:'Ésteres'}]}, 
-                                        {id: 'nomenclatura-aldeido', nome: 'Aldeídos e Cetonas', subconteudos: [{id:'aldeidos-n', name:'Aldeídos'}, {id:'cetonas-n', name:'Cetonas'}]}, 
-                                        {id: 'outras-funcoes', nome: 'Anidridos e Sais Orgânicos', subconteudos: [{id:'anidridos-n', name:'Anidridos'}, {id:'sais-n', name:'Sais Orgânicos'}]}
+                                        {id: 'nomenclatura-alcool', nome: 'Álcoois, Fenóis e Éteres', subconteudos: [{id:'alcool', nome:'Álcoois'}, {id:'fenois', nome:'Fenóis'}, {id:'eteres', nome:'Éteres'}]}, 
+                                        {id: 'nomenclatura-acido', nome: 'Ácidos Carboxílicos e Ésteres', subconteudos: [{id:'acidos-c', nome:'Ácidos Carboxílicos'}, {id:'esteres-n', nome:'Ésteres'}]}, 
+                                        {id: 'nomenclatura-aldeido', nome: 'Aldeídos e Cetonas', subconteudos: [{id:'aldeidos-n', nome:'Aldeídos'}, {id:'cetonas-n', nome:'Cetonas'}]}, 
+                                        {id: 'outras-funcoes', nome: 'Anidridos e Sais Orgânicos', subconteudos: [{id:'anidridos-n', nome:'Anidridos'}, {id:'sais-n', nome:'Sais Orgânicos'}]}
                                     ] },
                                     { nome: 'Módulo 3: Nitrogenadas e Outras (Nomenclatura)', assuntos: [
-                                        {id: 'nomenclatura-nitro', nome: 'Aminas, Amidas e Nitrilas', subconteudos: [{id:'aminas-n', name:'Aminas'}, {id:'amidas-n', name:'Amidas'}, {id:'nitrilas-n', name:'Nitrilas'}]}, 
-                                        {id: 'haletos', nome: 'Haletos Orgânicos e Grignard', subconteudos: [{id:'haletos-n', name:'Haletos Orgânicos'}, {id:'grignard-n', name:'Compostos de Grignard'}]}
+                                        {id: 'nomenclatura-nitro', nome: 'Aminas, Amidas e Nitrilas', subconteudos: [{id:'aminas-n', nome:'Aminas'}, {id:'amidas-n', nome:'Amidas'}, {id:'nitrilas-n', nome:'Nitrilas'}]}, 
+                                        {id: 'haletos', nome: 'Haletos Orgânicos e Grignard', subconteudos: [{id:'haletos-n', nome:'Haletos Orgânicos'}, {id:'grignard-n', nome:'Compostos de Grignard'}]}
                                     ] },
                                     { nome: 'Módulo 4: Isomeria e Reações', assuntos: [
-                                        {id: 'isomeria-plana', nome: 'Isomeria Plana', subconteudos: [{id:'cadeia', name:'Isomeria de Cadeia'}, {id:'funcao', name:'Isomeria de Função'}, {id:'posicao', name:'Isomeria de Posição'}]}, 
-                                        {id: 'isomeria-espacial', nome: 'Isomeria Espacial', subconteudos: [{id:'geometrica', name:'Isomeria Geométrica'}, {id:'optica', name:'Isomeria Óptica'}]}, 
+                                        {id: 'isomeria-plana', nome: 'Isomeria Plana', subconteudos: [{id:'cadeia', nome:'Isomeria de Cadeia'}, {id:'funcao', nome:'Isomeria de Função'}, {id:'posicao', nome:'Isomeria de Posição'}]}, 
+                                        {id: 'isomeria-espacial', nome: 'Isomeria Espacial', subconteudos: [{id:'geometrica', nome:'Isomeria Geométrica'}, {id:'optica', nome:'Isomeria Óptica'}]}, 
                                         {id: 'reacoes-adicao', nome: 'Reações de Adição', subconteudos: []}, 
                                         {id: 'reacoes-subst', nome: 'Reações de Substituição', subconteudos: []}, 
                                         {id: 'sabonificacao', nome: 'Sabonificação e Esterificação', subconteudos: []}, 
@@ -735,12 +731,16 @@
                     document.documentElement.classList.add('dark');
                 }
 
+                // CORREÇÃO: Leitura robusta do cache
                 const savedQ = localStorage.getItem(this.CACHE_PREFIX + 'questoes');
                 if (savedQ) {
                     try {
                         this.db.questoes = JSON.parse(savedQ);
                         this.renderQuestoes();
-                    } catch(e) { console.error("Cache inválido", e); }
+                    } catch(e) { 
+                        console.error("Cache de questões inválido. Resetando.", e);
+                        this.db.questoes = []; // Reseta se falhar
+                    }
                 }
 
                 await this.initFirebase();
@@ -1099,14 +1099,12 @@
                     const startIdx = this.db.questoes.length;
                     this.db.questoes = [...this.db.questoes, ...data.questoes];
                     
-                    // ATUALIZAÇÃO DO CACHE: Salva o novo estado
                     localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
                     
                     this.appendQuestoesToDOM(data.questoes, startIdx);
                 } catch(e) {
                     alert("Erro na geração: " + e.message);
                 } finally {
-                    // Garante que o botão seja reativado, resolvendo o problema de carregamento infinito
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
                     document.getElementById('loading-indicator').classList.add('hidden');
@@ -1450,7 +1448,7 @@
                     if(val.length < 2) { res.classList.add('hidden'); return; }
                     const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
                     if(hits.length) {
-                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearchResult(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearch(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
                         res.classList.remove('hidden');
                     } else {
                         res.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
