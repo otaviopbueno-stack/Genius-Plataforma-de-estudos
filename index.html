@@ -64,10 +64,6 @@
             </div>
 
             <div class="flex items-center md:hidden gap-4">
-                <button id="theme-toggle-mobile" class="text-gray-600 dark:text-gray-300" onclick="window.app.toggleTheme()">
-                    <i data-lucide="moon" class="block dark:hidden w-5 h-5"></i>
-                    <i data-lucide="sun" class="hidden dark:block w-5 h-5"></i>
-                </button>
                 <button id="mobile-menu-btn" class="text-gray-600 dark:text-gray-300"><i data-lucide="menu"></i></button>
             </div>
         </nav>
@@ -484,9 +480,9 @@
                                 nome: 'Demografia e Cultura',
                                 modulos: [
                                     { nome: 'Módulo 1: População e Migrações', assuntos: [
-                                        {id: 'estrutura-pop', nome: 'Estrutura Populacional'},
-                                        {id: 'cultura-migracoes', nome: 'Cultura e Migrações'},
-                                        {id: 'tensoes-migratorias', nome: 'Tensões Migratórias e Xenofobia'}
+                                        {id: 'estrutura-pop', nome: 'Estrutura Populacional', subconteudos: []},
+                                        {id: 'cultura-migracoes', nome: 'Cultura e Migrações', subconteudos: []},
+                                        {id: 'tensoes-migratorias', nome: 'Tensões Migratórias e Xenofobia', subconteudos: []}
                                     ]}
                                 ]
                             },
@@ -494,28 +490,19 @@
                                 nome: 'Geopolítica Contemporânea',
                                 modulos: [
                                     { nome: 'Módulo 1: Poder e Organizações', assuntos: [
-                                        {id: 'onu', nome: 'Estrutura da ONU'},
-                                        {id: 'blocos', nome: 'Blocos Econômicos'},
-                                        {id: 'brasil-comercio', nome: 'Brasil no Comércio'},
-                                        {id: 'terceiro-setor', nome: 'Terceiro Setor'},
-                                        {id: 'impasses', nome: 'Impasses Globais'}
+                                        {id: 'onu', nome: 'Estrutura da ONU', subconteudos: []},
+                                        {id: 'blocos', nome: 'Blocos Econômicos', subconteudos: []},
+                                        {id: 'brasil-comercio', nome: 'Brasil no Comércio', subconteudos: []},
+                                        {id: 'terceiro-setor', nome: 'Terceiro Setor', subconteudos: []},
+                                        {id: 'impasses', nome: 'Impasses Globais', subconteudos: []}
                                     ]},
                                     { nome: 'Módulo 2: Conflitos e Tensões', assuntos: [
-                                        {id: 'nacionalismos', nome: 'Nacionalismos'},
-                                        {id: 'oriente-medio', nome: 'Oriente Médio'},
-                                        {id: 'guerra-fria-xxi', nome: 'Herança da Guerra Fria'},
-                                        {id: 'terrorismo', nome: 'Terrorismo Internacional'},
-                                        {id: 'conflitos-regionais', nome: 'Conflitos Regionais'}
+                                        {id: 'nacionalismos', nome: 'Nacionalismos', subconteudos: []},
+                                        {id: 'oriente-medio', nome: 'Oriente Médio', subconteudos: []},
+                                        {id: 'guerra-fria-xxi', nome: 'Herança da Guerra Fria', subconteudos: []},
+                                        {id: 'terrorismo', nome: 'Terrorismo Internacional', subconteudos: []},
+                                        {id: 'conflitos-regionais', nome: 'Conflitos Regionais', subconteudos: []}
                                     ]}
-                                ]
-                            },
-                             {
-                                nome: 'Conteúdos Extras',
-                                modulos: [
-                                    { nome: 'Módulo Extra: Agrário e Rural', assuntos: [{ id: 'espaco-agrario-geral', nome: 'Espaço Agrário', subconteudos: [{ id: 'producao-rural', nome: 'A produção dos espaços rurais' }, { id: 'agrario-desenvolvidos', nome: 'Espaço agrário em países desenvolvidos' }, { id: 'agrario-desenvolvimento', nome: 'Espaço agrário em países em desenvolvimento' }, { id: 'reforma-agraria', nome: 'A questão da reforma agrária' }] }] },
-                                    { nome: 'Módulo Extra: Dinâmica Socioeconômica', assuntos: [{ id: 'dinamica-socioeconomica', nome: 'Dinâmica Socioeconômica', subconteudos: [{ id: 'desigualdades-socioeconomicas', nome: 'Desigualdades socioeconômicas: vários mundos' }, { id: 'contradicoes-globalizacao', nome: 'Contradições do mundo globalizado' }, { id: 'regionalizacao-br', nome: 'Regionalização do território brasileiro' }, { id: 'estrutura-populacional', nome: 'Estrutura e distribuição populacional' }, { id: 'cultura-migracoes', nome: 'Cultura e migrações' }, { id: 'tensa-migratoria', nome: 'Tensões migratórias e xenofobia' }] }] },
-                                    { nome: 'Módulo Extra: Redes e Fluxos', assuntos: [{ id: 'redes-fluxos', nome: 'Redes e Fluxos Globais', subconteudos: [{ id: 'rede-transportes', nome: 'Rede de transportes mundial' }, { id: 'turismo', nome: 'Expansão do turismo no Brasil e mundo' }, { id: 'comercio-global', nome: 'Comércio global: fluxo de mercadorias' }, { id: 'sistema-financeiro', nome: 'Sistema financeiro mundial' }] }] },
-                                    { nome: 'Módulo Extra: Geopolítica Contemporânea', assuntos: [{ id: 'geopolitica-contemporanea', nome: 'Geopolítica Contemporânea', subconteudos: [{ id: 'onu', nome: 'A estrutura da ONU' }, { id: 'poder-global-blocos', nome: 'Poder global e blocos econômicos' }, { id: 'brasil-comercio', nome: 'Brasil e o comércio multilateral' }, { id: 'terceiro-setor', nome: 'Terceiro setor e mobilizações sociais' }, { id: 'impasses-gestao', nome: 'Impasses na gestão global' }, { id: 'nacionalismos', nome: 'Nacionalismos e tensões políticas' }, { id: 'oriente-medio', nome: 'Oriente Médio' }, { id: 'heranca-guerra-fria', nome: 'Herança da Guerra Fria no séc XXI' }, { id: 'terrorismo', nome: 'Terrorismo Internacional' }, { id: 'conflitos-regionais', nome: 'Conflitos regionais e conexões globais' }] }] }
                                 ]
                             }
                         ]
@@ -573,7 +560,7 @@
                             {
                                 nome: 'Texto e Interpretação',
                                 modulos: [
-                                    { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência'}]},
+                                    { nome: 'Módulo 1: Fundamentos do Texto', assuntos: [{id: 'coesao-coerencia', nome: 'Coesão e Coerência', subconteudos: []}]},
                                     { nome: 'Módulo 2: Análise Textual', assuntos: [{id: 'interpretacao-textos', nome: 'Interpretação e Tipos Textuais', subconteudos: [{id: 'tipologia-textual', nome: 'Tipologia Textual'}, {id: 'generos-textuais', nome: 'Gêneros Textuais'}, {id: 'intertextualidade', nome: 'Intertextualidade'}]}]},
                                     { nome: 'Módulo 3: Recursos Expressivos', assuntos: [{id: 'figuras-variacao-linguistica', nome: 'Figuras e Variação Linguística', subconteudos: [{id: 'figuras-linguagem', nome: 'Figuras de Linguagem'}, {id: 'variacao-linguistica', nome: 'Variação Linguística'}, {id: 'funcoes-linguagem', nome: 'Funções da Linguagem'}]}]}
                                 ]
@@ -617,6 +604,14 @@
                                         nome: 'Módulo 2: Estrutura da Frase',
                                         assuntos: [
                                             { 
+                                                id: 'articles', nome: 'Articles',
+                                                subconteudos: [
+                                                     { id: 'definite', nome: 'Definite Article (The)' },
+                                                     { id: 'indefinite', nome: 'Indefinite Articles (A/An)' },
+                                                     { id: 'zero', nome: 'Zero Article' }
+                                                ]
+                                            },
+                                            { 
                                                 id: 'prepositions-conjunctions', nome: 'Prepositions and Conjunctions',
                                                 subconteudos: [
                                                     { id: 'prepositions-time', nome: 'Prepositions of Time' },
@@ -626,20 +621,25 @@
                                                 ]
                                             },
                                             { 
-                                                id: 'pronouns-articles', nome: 'Pronouns and Articles',
+                                                id: 'pronouns-articles', nome: 'Pronouns and Determiners',
                                                 subconteudos: [
                                                     { id: 'subject-object-pronouns', nome: 'Subject & Object Pronouns' },
                                                     { id: 'possessive-pronouns-adjectives', nome: 'Possessive Pronouns & Adjectives' },
-                                                    { id: 'definite-indefinite-articles', nome: 'Definite & Indefinite Articles' }
+                                                    { id: 'indefinite-pronouns', nome: 'Indefinite Pronouns' }
+                                                ]
+                                            },
+                                            {
+                                                id: 'relative-clauses', nome: 'Relative Clauses',
+                                                subconteudos: [
+                                                    { id: 'defining', name: 'Defining vs. Non-Defining Clauses' },
+                                                    { id: 'pronouns-use', name: 'Uso de Pronomes Relativos (Who, Which, That, Whose)' }
                                                 ]
                                             },
                                             {
                                                 id: 'reported-speech', nome: 'Reported Speech',
                                                 subconteudos: [
                                                     { id: 'reported-statements', nome: 'Reported Statements' },
-                                                    { id: 'reported-questions', nome: 'Reported Questions' },
-                                                    { id: 'reporting-verbs', nome: 'Reporting Verbs' },
-                                                    { id: 'tense-pronoun-changes', nome: 'Changes in Tense, Pronouns, and Time' }
+                                                    { id: 'reported-questions', nome: 'Reported Questions' }
                                                 ]
                                             }
                                         ]
@@ -651,23 +651,20 @@
                                                 id: 'modal-verbs', nome: 'Modal Verbs',
                                                 subconteudos: [
                                                     { id: 'modals-ability', nome: 'Modals of Ability' },
-                                                    { id: 'modals-obligation', nome: 'Modals of Obligation' },
-                                                    { id: 'modals-possibility', nome: 'Modals of Possibility' }
+                                                    { id: 'modals-obligation', nome: 'Modals of Obligation' }
                                                 ]
                                             },
                                             {
                                                 id: 'conditionals', nome: 'Conditionals',
                                                 subconteudos: [
                                                     { id: 'zero-first-conditional', nome: 'Zero & First Conditional' },
-                                                    { id: 'second-conditional', nome: 'Second Conditional' },
-                                                    { id: 'third-conditional', nome: 'Third Conditional' }
+                                                    { id: 'second-conditional', nome: 'Second Conditional' }
                                                 ]
                                             },
                                             { 
                                                 id: 'passive-voice', nome: 'Passive Voice',
                                                 subconteudos: [
-                                                    { id: 'passive-voice-tenses', nome: 'Passive Voice in Different Tenses' },
-                                                    { id: 'passive-with-by', nome: 'Using "by" in the Passive Voice' }
+                                                    { id: 'passive-voice-tenses', nome: 'Passive Voice in Different Tenses' }
                                                 ]
                                             }
                                         ]
@@ -699,30 +696,6 @@
                                                 subconteudos: [
                                                     { id: 'understanding-context', nome: 'Understanding Context and Tone' },
                                                     { id: 'identifying-purpose', nome: 'Identifying Author\'s Purpose' }
-                                                ]
-                                            }
-                                        ]
-                                    },
-                                    {
-                                        nome: 'Módulo 2: Construção de Vocabulário',
-                                        assuntos: [
-                                            { 
-                                                id: 'phrasal-verbs', nome: 'Phrasal Verbs',
-                                                subconteudos: [
-                                                    { id: 'common-phrasal-verbs', nome: 'Common Phrasal Verbs' },
-                                                    { id: 'separable-inseparable', nome: 'Separable vs. Inseparable' }
-                                                ]
-                                            },
-                                            { 
-                                                id: 'idioms', nome: 'Idiomatic Expressions',
-                                                subconteudos: [
-                                                    { id: 'common-idioms', nome: 'Common English Idioms' }
-                                                ]
-                                            },
-                                            { 
-                                                id: 'false-cognates', nome: 'False Cognates',
-                                                subconteudos: [
-                                                    { id: 'common-false-friends', nome: 'Common False Friends' }
                                                 ]
                                             }
                                         ]
@@ -899,7 +872,7 @@
             toggleTheme: function() {
                 const html = document.documentElement;
                 if (html.classList.contains('dark')) { html.classList.remove('dark'); localStorage.setItem('theme', 'light'); } 
-                else { html.classList.add('dark'); localStorage.setItem('theme', 'dark'); }
+                else { html.classList.add('dark'); localStorage.setItem('theme', 'light'); }
             },
 
             callAPI: async function(prompt, isJson, agentType = 'default') {
@@ -1122,11 +1095,15 @@
 
                     const startIdx = this.db.questoes.length;
                     this.db.questoes = [...this.db.questoes, ...data.questoes];
+                    
+                    // ATUALIZAÇÃO DO CACHE: Salva o novo estado
                     localStorage.setItem(this.CACHE_PREFIX + 'questoes', JSON.stringify(this.db.questoes));
+                    
                     this.appendQuestoesToDOM(data.questoes, startIdx);
                 } catch(e) {
                     alert("Erro na geração: " + e.message);
                 } finally {
+                    // Garante que o botão seja reativado, resolvendo o problema de carregamento infinito
                     btn.disabled = false;
                     btn.innerHTML = "Gerar 5 Novas Questões";
                     document.getElementById('loading-indicator').classList.add('hidden');
@@ -1470,7 +1447,7 @@
                     if(val.length < 2) { res.classList.add('hidden'); return; }
                     const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
                     if(hits.length) {
-                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearchResult(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearch(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
                         res.classList.remove('hidden');
                     } else {
                         res.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
