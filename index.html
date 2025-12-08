@@ -491,13 +491,6 @@
                                         {id: 'brasil-comercio', nome: 'Brasil no Comércio', subconteudos: []},
                                         {id: 'terceiro-setor', nome: 'Terceiro Setor', subconteudos: []},
                                         {id: 'impasses', nome: 'Impasses Globais', subconteudos: []}
-                                    ]},
-                                    { nome: 'Módulo 2: Conflitos e Tensões', assuntos: [
-                                        {id: 'nacionalismos', nome: 'Nacionalismos', subconteudos: []},
-                                        {id: 'oriente-medio', nome: 'Oriente Médio', subconteudos: []},
-                                        {id: 'guerra-fria-xxi', nome: 'Herança da Guerra Fria', subconteudos: []},
-                                        {id: 'terrorismo', nome: 'Terrorismo Internacional', subconteudos: []},
-                                        {id: 'conflitos-regionais', nome: 'Conflitos Regionais', subconteudos: []}
                                     ]}
                                 ]
                             }
@@ -1012,12 +1005,11 @@
                     if(aId) {
                         const ass = this.currentAssuntos.find(a => a.id === aId);
                         
-                        // Correção para evitar 'undefined': Checa se a.subconteudos existe E tem itens
                         if(ass && ass.subconteudos && ass.subconteudos.length > 0) {
+                            // Correção da Nomenclatura no Array de subconteúdos
                             sub.innerHTML = '<option value="">Geral</option>' + ass.subconteudos.map(s => `<option value="${s.nome}">${s.nome}</option>`).join('');
                             sub.disabled = false;
                         } else {
-                            // Se não houver subconteúdos, mantém o input "Geral" desativado
                             sub.innerHTML = '<option value="">N/A (Tópico Único)</option>';
                             sub.disabled = true;
                         }
@@ -1107,7 +1099,6 @@
                 } catch(e) {
                     alert("Erro na geração: " + e.message);
                 } finally {
-                    // CORREÇÃO: Garante que o botão seja reativado após qualquer erro ou sucesso
                     btn.disabled = false;
                     btn.innerHTML = originalBtnContent; 
                     document.getElementById('loading-indicator').classList.add('hidden');
@@ -1451,7 +1442,7 @@
                     if(val.length < 2) { res.classList.add('hidden'); return; }
                     const hits = this.searchIndex.filter(i => i.label.toLowerCase().includes(val)).slice(0,5);
                     if(hits.length) {
-                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearchResult(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
+                        res.innerHTML = hits.map(i => `<div class="p-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer border-b dark:border-gray-700 transition-colors flex flex-col" onclick='window.app.selectSearch(${JSON.stringify(i.data)}, "${i.label}")'><span class="font-medium text-gray-800 dark:text-gray-200">${i.label}</span><span class="text-xs text-gray-500 dark:text-gray-400">${i.type} em ${i.context}</span></div>`).join('');
                         res.classList.remove('hidden');
                     } else {
                         res.innerHTML = `<div class="p-3 text-sm text-gray-500 text-center">Nenhum conteúdo encontrado.</div>`;
@@ -1482,4 +1473,3 @@
     </script>
 </body>
 </html>
-
